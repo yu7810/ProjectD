@@ -10,31 +10,60 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f78e6b9ee5e4cf94bbb1bd67cf4a1fdc, type: 3}
-  m_Name: UpgradeDatabase1
+  m_Name: UpgradeDatabase
   m_EditorClassIdentifier: 
   UpgradeList:
-  - Name: Skill_A
+  - Name: '-'
     ID: 0
-    Lv: 1
-    maxLv: 1
+    Lv: 0
+    maxLv: 0
+    Context: '-'
     Weights: 0
-  - Name: Skill_A_attackUp
+  - Name: "\u57FA\u790E\u653B\u64CA-\u50B7\u5BB3"
     ID: 1
     Lv: 0
     maxLv: 3
+    Context: "\u57FA\u790E\u653B\u64CA\u7684\u653B\u64CA\u529B\u63D0\u53470.5"
     Weights: 10
-  - Name: Skill_A_speedUp
+  - Name: "\u57FA\u790E\u653B\u64CA-\u901F\u5EA6"
     ID: 2
     Lv: 0
     maxLv: 3
+    Context: "\u57FA\u790E\u653B\u64CA\u7684\u653B\u64CA\u901F\u5EA6\u63D0\u5347"
     Weights: 10
-  - Name: Skill_A_sizeUp
+  - Name: "\u57FA\u790E\u653B\u64CA-\u7BC4\u570D"
     ID: 3
     Lv: 0
     maxLv: 3
+    Context: "\u57FA\u790E\u653B\u64CA\u7684\u7BC4\u570D\u63D0\u5347"
     Weights: 10
-  - Name: Skill_A_colorUp
+  - Name: "\u57FA\u790E\u653B\u64CA-\u6514\u622A"
     ID: 4
     Lv: 0
     maxLv: 1
-    Weights: 10
+    Context: "\u57FA\u790E\u653B\u64CA\u53EF\u4EE5\u547D\u4E2D\u6295\u5C04\u7269"
+    Weights: 2
+  - Name: "\u97F3\u6CE2"
+    ID: 5
+    Lv: 0
+    maxLv: 4
+    Context: "\u7372\u5F97\u4E00\u500B\u570D\u7E5E\u7684\u97F3\u6CE2\uFF0C\u5C0D\u63A5\u89F8\u5230\u7684\u6575\u4EBA\u9020\u6210(1)\u50B7\u5BB3\uFF0C\u96A8\u7B49\u7D1A\u63D0\u5347\u97F3\u6CE2\u6578\u91CF"
+    Weights: 100
+  - Name: "\u97F3\u6CE2-\u901F\u5EA6"
+    ID: 6
+    Lv: 0
+    maxLv: 3
+    Context: "\u97F3\u6CE2\u74B0\u7E5E\u901F\u5EA6\u63D0\u5347"
+    Weights: 0
+  - Name: "\u97F3\u6CE2-\u50B7\u5BB3"
+    ID: 7
+    Lv: 0
+    maxLv: 3
+    Context: "\u97F3\u6CE2\u653B\u64CA\u529B\u63D0\u53470.5"
+    Weights: 0
+  - Name: Skill B atkUp
+    ID: 8
+    Lv: 0
+    maxLv: 3
+    Context: Skill B
+    Weights: 0

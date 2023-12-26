@@ -1,27 +1,29 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
 
-    //public GameObject PlayerCtrl;
-    //public GameObject UICtrl;
-    public bool HitSlowMotion;
+    //public bool HitSlowMotion;
     public GameObject AttackParticle;
-    public int Skill_ID;//1=§Ş¯àA¡A¨Ì¦¹Ãş±À
+    public int Skill_ID;//1=æŠ€èƒ½Aï¼Œä¾æ­¤é¡æ¨
     float Dmg;
-
-    void Start()
-    {
-        HitSlowMotion = false;
-    }
+    public GameObject _UpgradeSystem;
 
     private void OnEnable()
     {
-        //¨Ì§Ş¯àID¨M©w¶Ë®`
+        _UpgradeSystem = GameObject.Find("Upgrade System");
+    }
+
+    void DmgUpdate()
+    {
+        //ä¾æŠ€èƒ½IDæ±ºå®šæ•¸å€¼
         if (Skill_ID == 1)
             Dmg = UICtrl.Attack * UICtrl.Skill_A_DmgAdd;
+        else if (Skill_ID == 2)
+            Dmg = UICtrl.Attack * UICtrl.Skill_B_DmgAdd;
         else
             Dmg = 0;
     }
@@ -30,10 +32,13 @@ public class PlayerAttack : MonoBehaviour
     {
         if (other.gameObject.transform.tag == "Barrel" || other.gameObject.transform.tag == "Enemy")
         {
-            //ÂH¤M¡A§ï®É¶¡®ÄªG¤£©úÅã¡A¥B·|¼vÅT¨ì²É¤lªí²{
+            //é»åˆ€ï¼Œæ”¹æ™‚é–“æ•ˆæœä¸æ˜é¡¯ï¼Œä¸”æœƒå½±éŸ¿åˆ°ç²’å­è¡¨ç¾
             /*if (!HitSlowMotion) {
                 StartCoroutine(SlowMotion(0.05f));
             }*/
+            if (!other.transform.GetComponent<Enemy>().canBeHit)
+                return;
+            DmgUpdate();
             if (other.transform.GetComponent<Enemy>().Hp > Dmg) {
                 other.transform.GetComponent<Enemy>().Hp -= Dmg;
                 other.transform.GetComponent<Enemy>().beAttack();
@@ -46,15 +51,23 @@ public class PlayerAttack : MonoBehaviour
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);
         }
-
+        if (other.gameObject.transform.tag == "EnemyAttack") {
+            if (_UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[4].Lv >= 1) {
+                GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
+                Destroy(P, 1f);
+                Destroy(other.gameObject);
+            }
+        }
+        
     }
 
+    /*
     IEnumerator SlowMotion(float time) {
         HitSlowMotion = true;
         Time.timeScale = 0.55f;
         yield return new WaitForSeconds(time);
         Time.timeScale = 1;
         HitSlowMotion = false;
-    }
+    }*/
 
 }

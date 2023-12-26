@@ -1,22 +1,23 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    //public string Type;
     public float Hp;
     public float maxHp;
     public float Attack;
-    public float EXP;//©Çª«´£¨Ñªº¸gÅç­È
+    public float EXP;//æ€ªç‰©æä¾›çš„ç¶“é©—å€¼
 
     public GameObject Mesh;
     private Color C;
     private GameObject UICtrl;
+    public bool canBeHit;//å—æ“Šæ™‚çŸ­æš«ç„¡æ•µï¼Œé¿å…é‡è¤‡åˆ¤å®š
 
     private void OnEnable(){
         UICtrl = GameObject.Find("UICtrl");
         Hp = maxHp;
+        canBeHit = true;
         if (gameObject.tag == "Barrel"){
             C = Mesh.transform.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
         }
@@ -35,17 +36,21 @@ public class Enemy : MonoBehaviour
     }
 
     IEnumerator beAttackEffect() {
-        //±í¤l¬O¥ÎMeshRenderer¡A©Çª«¬O¥ÎSkinnedMeshRenderer
+        //æ¡¶å­æ˜¯ç”¨MeshRendererï¼Œæ€ªç‰©æ˜¯ç”¨SkinnedMeshRenderer
         if (gameObject.tag == "Barrel")
         {
+            canBeHit = false;
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.188f, 0.188f, 0.188f));
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", C);
+            canBeHit = true;
         }
         else if (gameObject.tag == "Enemy"){
+            canBeHit = false;
             Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
+            canBeHit = true;
         }
     }
 

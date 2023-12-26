@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -21,7 +21,7 @@ public class PlayerCtrl : MonoBehaviour
     public bool canMove;
     public bool canAttack02;
     public GameObject SmokeTrail;
-    public bool canBehurt;//¥i³Q§ğÀ»¡A¥Î©ó¨ü¶ËµL¼Ä´V
+    public bool canBehurt;//å¯è¢«æ”»æ“Šï¼Œç”¨æ–¼å—å‚·ç„¡æ•µå¹€
     public GameObject Mesh;
     public GameObject Skill_A;
 
@@ -37,16 +37,16 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void Update(){
-        //ÃèÀY¸òÀH
+        //é¡é ­è·Ÿéš¨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
-        //¦ÛµM¦^Åé
+        //è‡ªç„¶å›é«”
         if (UIctrl.GetComponent<UICtrl>().AP >= UIctrl.GetComponent<UICtrl>().maxAP){
             UIctrl.GetComponent<UICtrl>().AP = UIctrl.GetComponent<UICtrl>().maxAP;
         }
         else {
             UIctrl.GetComponent<UICtrl>().AP += 3f * Time.deltaTime;
         }
-        //°ò¥»²¾°Ê
+        //åŸºæœ¬ç§»å‹•
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             if (!canMove)
@@ -70,7 +70,7 @@ public class PlayerCtrl : MonoBehaviour
         if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D)){
             m_Rigidbody.velocity = Vector3.zero;
         }
-        //¶]¨B
+        //è·‘æ­¥
         if (Input.GetKey(KeyCode.LeftControl)){
             if (UIctrl.GetComponent<UICtrl>().AP <= 0.1f) {
                 Run = false;
@@ -87,7 +87,7 @@ public class PlayerCtrl : MonoBehaviour
             m_Animator.SetBool("Run", Run);
             UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
         }
-        //¨¤¦âÂà¦V
+        //è§’è‰²è½‰å‘
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
         if (Physics.Raycast(camRay, out floorhit , 30f, mask)) { 
@@ -96,14 +96,14 @@ public class PlayerCtrl : MonoBehaviour
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
         }
-        //§ğÀ»
-        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+        //æ”»æ“Š
+        /*if (Input.GetKeyDown(KeyCode.Mouse0)) {
             if (canAttack02 && !m_Animator.GetBool("Attack02"))
                 m_Animator.SetBool("Attack02", true);
             else if(!m_Animator.GetBool("Attack01"))
                 m_Animator.SetBool("Attack01",true);
-        }
-        //°{Á×
+        }*/
+        //é–ƒé¿
         if (Input.GetKeyDown(KeyCode.Space)) {
             if (UIctrl.GetComponent<UICtrl>().AP >= UIctrl.GetComponent<UICtrl>().FlashCost) {
                 UIctrl.GetComponent<UICtrl>().AP -= UIctrl.GetComponent<UICtrl>().FlashCost;
@@ -117,7 +117,7 @@ public class PlayerCtrl : MonoBehaviour
         UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
     }
 
-    //ÂÂ´¶§ğ¡A¥i§ï¦¨­nª±®a¦Û¤v±ÛÂàªZ¾¹¥h¼²¼Ä¤H
+    //èˆŠæ™®æ”»ï¼Œå¯æ”¹æˆè¦ç©å®¶è‡ªå·±æ—‹è½‰æ­¦å™¨å»æ’æ•µäºº
     void AttackParticle(int show) {
         if (show == 0){
             weapon.transform.GetComponent<MeleeWeaponTrail>().enabled = false;
@@ -163,19 +163,21 @@ public class PlayerCtrl : MonoBehaviour
     private void OnTriggerStay(Collider other){
         if (!canBehurt)
             return;
-        if (other.tag == "Enemy") {
+        if (other.tag == "Enemy" || other.tag == "EnemyAttack" ) {
             if (UIctrl.GetComponent<UICtrl>().HP > other.GetComponent<Enemy>().Attack){
                 UIctrl.GetComponent<UICtrl>().HP -= other.GetComponent<Enemy>().Attack;
                 StartCoroutine(BehurtTimer());
             }
             else {
                 UIctrl.GetComponent<UICtrl>().HP = 0;
-                //¥¢±Ñ
+                //å¤±æ•—
             }
+            if(other.tag == "EnemyAttack")
+                Destroy(other.gameObject);
         }
     }
 
-    //¨ü¶ËµL¼Ä´V
+    //å—å‚·ç„¡æ•µå¹€
     IEnumerator BehurtTimer() {
         canBehurt = false;
         Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));

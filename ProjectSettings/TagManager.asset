@@ -7,6 +7,8 @@ TagManager:
   - PlayerAttack
   - Barrel
   - Enemy
+  - EnemyAttack
+  - Wall
   layers:
   - Default
   - TransparentFX

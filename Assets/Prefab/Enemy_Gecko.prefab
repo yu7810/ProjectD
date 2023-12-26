@@ -416,6 +416,7 @@ MonoBehaviour:
   Attack: 1
   EXP: 1
   Mesh: {fileID: 9218854589415559279}
+  canBeHit: 0
 --- !u!1 &8871002627414563217
 GameObject:
   m_ObjectHideFlags: 0

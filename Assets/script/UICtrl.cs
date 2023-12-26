@@ -1,5 +1,7 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
@@ -10,9 +12,11 @@ public class UICtrl : MonoBehaviour
     public GameObject Value_AP;
     public GameObject Value_HP;
     public GameObject Value_EXP;
+    public GameObject Upgrade;
     public GameObject Upgrade_A;
     public GameObject Upgrade_B;
     public GameObject Upgrade_C;
+    public GameObject UpgradeSys;//UpgradeSystem
     public float AP;
     public float maxAP;
     public float EXP;
@@ -23,7 +27,7 @@ public class UICtrl : MonoBehaviour
     public float value_maxHp = 10;
     public float value_MoveSpeed = 5f;
     public float value_Attack = 5;
-    public static float Attack;//∞Ú¬¶ß¿ª§O
+    public static float Attack = 1;//Âü∫Â∫ïÊîªÊìäÂäõ
     public float MoveSpeed;
     public float FlashDistance;
     public float value_FlashDistance;
@@ -31,10 +35,14 @@ public class UICtrl : MonoBehaviour
     public float value_FlashCost;
     public float EnemyTimer;
     public int[] UpgradeBtn;
-
-    public static float Skill_A_AttackSpeed = 1;//ßﬁØ‡A®C¨Ìß¿ª¶∏º∆
-    public static float Skill_A_Size = 1;//•uºv≈Tx∏Úz∂b™∫scale
-    public static float Skill_A_DmgAdd = 1;//∂ÀÆ`∂ÀÆ`≠ø≤v
+    //Skill A
+    public static float Skill_A_AttackSpeed = 0.6f;//ÊØèÁßíÊîªÊìäÊ¨°Êï∏
+    public static float Skill_A_Size = 1;//ÁØÑÂúç
+    public static float Skill_A_DmgAdd = 1;//ÂÇ∑ÂÆ≥ÂÄçÁéá
+    //Skill B
+    public static float Skill_B_AttackSpeed = 1;//ËΩâÂúàÈÄüÂ∫¶
+    public static float Skill_B_Range = 3;//Ë∑ùÈõ¢
+    public static float Skill_B_DmgAdd = 1;//ÂÇ∑ÂÆ≥ÂÄçÁéá
 
     private void Start(){
         ValueUpdate();
@@ -58,7 +66,7 @@ public class UICtrl : MonoBehaviour
         Value_EXP.GetComponent<Image>().fillAmount = valueEXP;
     }
 
-    //∑Ì®§¶‚æ˜≈ÈßÛ∞ Æ…≠´∫‚º∆≠»•Œ
+    //ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ Æ…≠ÔøΩÔøΩÔøΩ∆≠»•ÔøΩ
     void ValueUpdate() {
         maxAP = value_maxAp;
         maxHP = value_maxHp;
@@ -69,13 +77,48 @@ public class UICtrl : MonoBehaviour
 
     public void GetEXP(float Value) {
         if (Value >= maxEXP - EXP){
-            //§…Ø≈
+            //ÂçáÁ¥ö
             EXP = 0;
             maxEXP += maxEXP;
+            LevelUP();
         }
         else {
             EXP += Value;
         }
     }
 
+    void LevelUP() {
+        UpgradeBtn = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeBtn();
+        if (UpgradeBtn.Length <= 0)//Ê±†Â≠êÁÇ∫Á©∫ÊôÇÁõ¥Êé•Ë∑≥ÈÅé3ÈÅ∏1ÈöéÊÆµ
+        {
+            Debug.Log("Ê±†Â≠êÁÇ∫Á©∫");
+            return;
+        }
+        Upgrade.SetActive(true);
+        Upgrade_A.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[0]].Name.ToString();
+        Upgrade_A.transform.Find("Lv").GetComponent<TextMeshProUGUI>().text = "(" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[0]].Lv.ToString() + "/" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[0]].maxLv.ToString() + ")";
+        Upgrade_A.transform.Find("Context").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[0]].Context.ToString();
+        Upgrade_B.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[1]].Name.ToString();
+        Upgrade_B.transform.Find("Lv").GetComponent<TextMeshProUGUI>().text = "(" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[1]].Lv.ToString() + "/" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[1]].maxLv.ToString() + ")";
+        Upgrade_B.transform.Find("Context").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[1]].Context.ToString();
+        Upgrade_C.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[2]].Name.ToString();
+        Upgrade_C.transform.Find("Lv").GetComponent<TextMeshProUGUI>().text = "(" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[2]].Lv.ToString() + "/" + UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[2]].maxLv.ToString() + ")";
+        Upgrade_C.transform.Find("Context").GetComponent<TextMeshProUGUI>().text = UpgradeSys.GetComponent<UpgradeSystem>().UpgradeList[UpgradeBtn[2]].Context.ToString();
+        Time.timeScale = 0;
+    }
+
+    //ÊåâÈàï‰∫ã‰ª∂
+    public void _UpgradeBtn(int btnID) {
+        if (btnID == 1) { 
+            UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[0]);
+        }
+        else if (btnID == 2){
+            UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[1]);
+        }
+        else if (btnID == 3){
+            UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[2]);
+        }
+        Upgrade.SetActive(false);
+        Time.timeScale = 1;
+    }
 }
