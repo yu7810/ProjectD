@@ -1,0 +1,133 @@
+# Macro for Unity YAML-based asset files #
+[attr]unity_yaml            -text merge=unityyamlmerge
+[attr]unity_lfs             -text filter=lfs diff=lfs merge=lfs
+
+# Default Setting #
+*                           -text
+*.meta                      text eol=lf
+*.cs                        text diff=csharp
+*.c                         text
+*.h                         text
+*.xml                       text
+*.cginc                     text
+*.shader                    text
+*.compute                   text
+*.hlsl                      text
+# JSON 格式
+*.json                      text
+*.asmdef                    text
+*.asmref                    text
+*.inputactions              text
+*.shadergraph               text
+*.shadersubgraph            text
+# 需將換行結尾符強制轉換為 LF (Mac / Linux) #
+*.sh                        text eol=lf
+*.m                         text eol=lf
+*.mm                        text eol=lf
+*.plist                     text eol=lf
+# 需將換行結尾符強制轉換為 CRLF (Windows) #
+*.vcproj                    text eol=crlf
+*.sln                       text eol=crlf
+*.bat                       text eol=crlf
+*.cmd                       text eol=crlf
+# Unity LFS Assets #
+*.anim                      unity_lfs
+*.asset                     unity_yaml
+*.brush                     unity_yaml
+*.controller                unity_yaml
+*.flare                     unity_yaml
+*.giparams                  unity_yaml
+*.lighting                  unity_yaml
+*.mask                      unity_yaml
+*.mat                       unity_yaml
+*.mixer                     unity_yaml
+*.overrideController        unity_yaml
+*.physicMaterial            unity_yaml
+*.playable                  unity_yaml
+*.prefab                    unity_yaml
+*.preset                    unity_yaml
+*.renderTexture             unity_yaml
+*.shadervariants            unity_yaml
+*.spriteatlas               unity_yaml
+*.terrainlayer              unity_yaml
+*.unity                     unity_lfs
+*.vfx                       unity_yaml
+*.wlt                       unity_yaml
+# Font #
+*.ttf                       unity_lfs
+*.otf                       unity_lfs
+# Audio #
+*.ogg                       unity_lfs
+*.wav                       unity_lfs
+*.mp3                       unity_lfs
+# Model & Material #
+*.fbx                       unity_lfs
+*.obj                       unity_lfs
+*.max                       unity_lfs
+*.sbsar                     unity_lfs
+# Texture #
+*.png                       unity_lfs
+*.jpg                       unity_lfs
+*.jpeg                      unity_lfs
+*.tga                       unity_lfs
+*.psd                       unity_lfs
+*.gif                       unity_lfs
+*.tif                       unity_lfs
+*.tiff                      unity_lfs
+*.hdr                       unity_lfs
+*.exr                       unity_lfs
+*.svg                       unity_lfs
+*.dds                       unity_lfs
+*.raw                       unity_lfs
+# Movie #
+*.mp4                       unity_lfs
+*.mov                       unity_lfs
+*.avi                       unity_lfs
+*.mpeg                      unity_lfs
+*.mpg                       unity_lfs
+# Windows platform #
+*.exe                       unity_lfs
+*.dll                       unity_lfs
+*.pdb                       unity_lfs
+*.mdb                       unity_lfs
+*.lib                       unity_lfs
+# Linux platform #
+*.a                         unity_lfs
+*.so                        unity_lfs
+# MacOS platform #
+*.dylib                     unity_lfs
+*.bundle                    unity_lfs
+# Android platform #
+*.jar                       unity_lfs
+*.aar                       unity_lfs
+*.srcaar                    unity_lfs
+# Compressed file format #
+*.zip                       unity_lfs
+*.rar                       unity_lfs
+*.7z                        unity_lfs
+*.gz                        unity_lfs
+*.tgz                       unity_lfs
+*.tar                       unity_lfs
+*.bz2                       unity_lfs
+# 其他 Others #
+*.unitypackage              unity_lfs
+*.pdf                       unity_lfs
+*.dat                       unity_lfs
+*.pak                       unity_lfs
+*.bin                       unity_lfs
+# NavMesh #
+NavMesh.asset               unity_lfs
+# LightingData #
+LightingData.asset          unity_lfs
+# scene template #
+*.scenetemplate             unity_lfs
+# TextMesh Pro #
+*SDF*.asset                 unity_lfs
+# VUPLEX #
+*.vuplex                    unity_lfs
+# BatchFew #
+*MapsTextureArray.asset     unity_lfs
+# SpeedTree
+*.spm                       unity_lfs
+# FFMPEG
+ffmpeg                      unity_lfs
