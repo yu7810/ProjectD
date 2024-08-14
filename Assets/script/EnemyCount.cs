@@ -10,6 +10,7 @@ public class EnemyCount : MonoBehaviour
     public GameObject Player;
     public GameObject Enemy_A;
     public GameObject Enemy_B;
+    public GameObject Enemy_C;
     public int Count;//已生敵人數量
     
 
@@ -52,9 +53,18 @@ public class EnemyCount : MonoBehaviour
             GameObject b = Instantiate(Enemy_B, new Vector3(x, 0.5f, z), Enemy_B.transform.rotation);
             b.GetComponent<Move>().target = Player.transform;
             if (UICtrl.GetComponent<UICtrl>().EnemyTimer > 0.2f)
-                UICtrl.GetComponent<UICtrl>().EnemyTimer -= 0.1f;
+                UICtrl.GetComponent<UICtrl>().EnemyTimer -= 0.05f;
             else
-                UICtrl.GetComponent<UICtrl>().EnemyTimer = 0.1f;
+                UICtrl.GetComponent<UICtrl>().EnemyTimer = 0.2f;
+            Count += 1;
+        }
+
+        //坦克怪
+        if (Count >= 100 && UICtrl.GetComponent<UICtrl>().EnemyTimer == 0.2f)
+        {
+            GameObject c = Instantiate(Enemy_C, new Vector3(x, 0.5f, z), Enemy_C.transform.rotation);
+            UICtrl.GetComponent<UICtrl>().EnemyTimer = 0.3f;
+            c.GetComponent<Move>().target = Player.transform;
             Count += 1;
         }
 

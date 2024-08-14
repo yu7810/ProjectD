@@ -24,12 +24,12 @@ public class PlayerCtrl : MonoBehaviour
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
     public GameObject Mesh;
     public GameObject Skill_A;
+    public GameObject UpgradeSystem;
 
     void Start(){
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
-        ValueCount();
         canMove = true;
         canAttack02 = false;
         canBehurt = true;
@@ -44,23 +44,25 @@ public class PlayerCtrl : MonoBehaviour
             UIctrl.GetComponent<UICtrl>().AP = UIctrl.GetComponent<UICtrl>().maxAP;
         }
         else {
-            UIctrl.GetComponent<UICtrl>().AP += 3f * Time.deltaTime;
+            UIctrl.GetComponent<UICtrl>().AP += 0.6f * Time.deltaTime;
         }
         //基本移動
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             if (!canMove)
                 return;
+            ValueCount();
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.GetComponent<UICtrl>().MoveSpeed);
             m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * UIctrl.GetComponent<UICtrl>().MoveSpeed, 0, Input.GetAxis("Vertical") * Time.timeScale * UIctrl.GetComponent<UICtrl>().MoveSpeed);
-            if (Run)
+            //跑步耗體
+            /*if (Run)
             {
                 if (UIctrl.GetComponent<UICtrl>().AP > 0.1f)
                     UIctrl.GetComponent<UICtrl>().AP -= 1f * Time.deltaTime;
-            }
+            }*/
         }
         else
         {
@@ -71,7 +73,7 @@ public class PlayerCtrl : MonoBehaviour
             m_Rigidbody.velocity = Vector3.zero;
         }
         //跑步
-        if (Input.GetKey(KeyCode.LeftControl)){
+        /*if (Input.GetKey(KeyCode.LeftControl)){
             if (UIctrl.GetComponent<UICtrl>().AP <= 0.1f) {
                 Run = false;
                 m_Animator.SetBool("Run", Run);
@@ -86,7 +88,7 @@ public class PlayerCtrl : MonoBehaviour
             Run = false;
             m_Animator.SetBool("Run", Run);
             UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
-        }
+        }*/
         //角色轉向
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
@@ -103,10 +105,10 @@ public class PlayerCtrl : MonoBehaviour
             else if(!m_Animator.GetBool("Attack01"))
                 m_Animator.SetBool("Attack01",true);
         }*/
-        //閃避
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            if (UIctrl.GetComponent<UICtrl>().AP >= UIctrl.GetComponent<UICtrl>().FlashCost) {
-                UIctrl.GetComponent<UICtrl>().AP -= UIctrl.GetComponent<UICtrl>().FlashCost;
+        //衝刺
+        if (Input.GetKeyDown(KeyCode.Space) && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1) {
+            if (UIctrl.GetComponent<UICtrl>().AP >= UICtrl.FlashCost) {
+                UIctrl.GetComponent<UICtrl>().AP -= UICtrl.FlashCost;
                 StartCoroutine(Flash());
             }
         }
@@ -114,7 +116,7 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void ValueCount() {
-        UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
+        UIctrl.GetComponent<UICtrl>().MoveSpeed = UICtrl.value_MoveSpeed + UICtrl.value_SkillB_MoveSpeed;
     }
 
     //舊普攻，可改成要玩家自己旋轉武器去撞敵人
@@ -147,17 +149,22 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     IEnumerator Flash() {
+        canBehurt = false;
         SmokeTrail.GetComponent<ParticleSystem>().Play();
+        if (UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[11].Lv > 0) {
+            Health(0.5f);
+        }
         Vector3 m_Input;
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
             m_Input = transform.forward;
         for (int i = 0; i < 20; i++) {
-            m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.GetComponent<UICtrl>().FlashDistance);
+            m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UICtrl.FlashDistance);
             yield return new WaitForSeconds(0.01f);
         }
         SmokeTrail.GetComponent<ParticleSystem>().Stop();
+        canBehurt = true;
     }
 
     private void OnTriggerStay(Collider other){
@@ -169,8 +176,10 @@ public class PlayerCtrl : MonoBehaviour
                 StartCoroutine(BehurtTimer());
             }
             else {
-                UIctrl.GetComponent<UICtrl>().HP = 0;
                 //失敗
+                UIctrl.GetComponent<UICtrl>().HP = 0;
+                UIctrl.GetComponent<UICtrl>().gameover();
+                
             }
             if(other.tag == "EnemyAttack")
                 Destroy(other.gameObject);
@@ -194,6 +203,14 @@ public class PlayerCtrl : MonoBehaviour
         float CD = 1 / UICtrl.Skill_A_AttackSpeed;
         yield return new WaitForSeconds(CD);
         StartCoroutine(AutoSkill_A());
+    }
+
+    //回復生命
+    public void Health(float value) {
+        if (UIctrl.GetComponent<UICtrl>().HP < UIctrl.GetComponent<UICtrl>().maxHP - value)
+            UIctrl.GetComponent<UICtrl>().HP += value;
+        else
+            UIctrl.GetComponent<UICtrl>().HP = UIctrl.GetComponent<UICtrl>().maxHP;
     }
 
 }

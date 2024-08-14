@@ -31,7 +31,7 @@ public class UpgradeSystem : MonoBehaviour
     public List<UpgradeData> _UpgradeData => _dataAsset.UpgradeList;
 
     //強化池，放ID
-    public static int[] UpgradePool = new int[10];
+    public static int[] UpgradePool = new int[20];
 
     private void Start(){
         for (int i = 0; i < _UpgradeData.Count; i++) {
@@ -111,7 +111,15 @@ public class UpgradeSystem : MonoBehaviour
 
     //升級
     public void Upgrade(int ID) {
-        if (ID == 1)
+        UpgradeList[ID].Lv += 1;
+        if (UpgradeList[ID].Lv >= UpgradeList[ID].maxLv){
+            //從卡池移除
+            UpgradeList[ID].Weights = 0;
+        }
+
+        if (ID == 0)
+            return;
+        else if (ID == 1)
             Skill_A_atkUp();
         else if (ID == 2)
             Skill_A_speedUp();
@@ -123,12 +131,17 @@ public class UpgradeSystem : MonoBehaviour
             Skill_B_speedUp();
         else if (ID == 7)
             Skill_B_attackUp();
+        else if (ID == 8)
+            Skill_B_moveSpeedUp();
+        else if (ID == 9)
+            Skill_C();
+        else if (ID == 10)
+            Skill_C_quick();
+        else if (ID == 11)
+            Skill_C_health();
+        else if (ID == 12)
+            Skill_C_distance();
 
-        UpgradeList[ID].Lv += 1;
-        if (UpgradeList[ID].Lv >= UpgradeList[ID].maxLv) {
-            //從卡池移除
-            UpgradeList[ID].Weights = 0;
-        }
     }
 
     //=================================各技能的升級事件=================================
@@ -136,30 +149,57 @@ public class UpgradeSystem : MonoBehaviour
         UICtrl.Skill_A_DmgAdd += 0.5f;
     }
     public void Skill_A_speedUp(){
-        UICtrl.Skill_A_AttackSpeed += 0.5f;
+        UICtrl.Skill_A_AttackSpeed += 0.2f;
     }
     public void Skill_A_sizeUp(){
-        UICtrl.Skill_A_Size += 0.3f;
+        UICtrl.Skill_A_Size += 0.2f;
     }
     public void Skill_B() {
-        if (UpgradeList[5].Lv == 0) {
+        if (UpgradeList[5].Lv == 1) {
             Skill_B_1.SetActive(true);
             UpgradeList[6].Weights = 10;
             UpgradeList[7].Weights = 10;
+            UpgradeList[8].Weights = 10;
         }
-        else if (UpgradeList[5].Lv == 1)
-            Skill_B_2.SetActive(true);
         else if (UpgradeList[5].Lv == 2)
-            Skill_B_3.SetActive(true);
+            Skill_B_2.SetActive(true);
         else if (UpgradeList[5].Lv == 3)
+            Skill_B_3.SetActive(true);
+        else if (UpgradeList[5].Lv == 4)
             Skill_B_4.SetActive(true);
+        if (UpgradeList[8].Lv > 0)
+            Skill_B_moveSpeedUp();
     }
     public void Skill_B_speedUp() {
-        UICtrl.Skill_B_AttackSpeed += 0.5f;
+        UICtrl.Skill_B_AttackSpeed += 0.4f;
         Skill_B_1.GetComponent<SkillRotation>().globalSpeed = 100 * UICtrl.Skill_B_AttackSpeed;
     }
     public void Skill_B_attackUp(){
         UICtrl.Skill_B_DmgAdd += 0.5f;
+    }
+    public void Skill_B_moveSpeedUp() {
+        UICtrl.value_SkillB_MoveSpeed = UpgradeList[5].Lv * 0.1f * UpgradeList[8].Lv;
+    }
+    public void Skill_C(){
+        UpgradeList[10].Weights = 10;
+        UpgradeList[11].Weights = 10;
+        UpgradeList[12].Weights = 10;
+    }
+    public void Skill_C_quick() {
+        UICtrl.value_FlashCost = 3f;
+        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
+        UpgradeList[11].Weights = 0;
+    }
+    public void Skill_C_health()
+    {
+        UICtrl.value_FlashCost = 10f;
+        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
+        UpgradeList[10].Weights = 0;
+    }
+    public void Skill_C_distance()
+    {
+        UICtrl.value_FlashDistance += 3;
+        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
     }
 
 }

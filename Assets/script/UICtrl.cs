@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -17,26 +18,28 @@ public class UICtrl : MonoBehaviour
     public GameObject Upgrade_B;
     public GameObject Upgrade_C;
     public GameObject UpgradeSys;//UpgradeSystem
+    public GameObject GameOverUI;
     public float AP;
     public float maxAP;
     public float EXP;
     public float maxEXP;
     public float HP;
     public float maxHP;
-    public float value_maxAp = 10;
-    public float value_maxHp = 10;
-    public float value_MoveSpeed = 5f;
-    public float value_Attack = 5;
+    public static float value_maxAp = 10;
+    public static float value_maxHp = 10;
+    public static float value_MoveSpeed = 3f;
+    public static float value_SkillB_MoveSpeed = 0;
+    public static float value_Attack = 5;
     public static float Attack = 1;//基底攻擊力
     public float MoveSpeed;
-    public float FlashDistance;
-    public float value_FlashDistance;
-    public float FlashCost;
-    public float value_FlashCost;
+    public static float FlashDistance;
+    public static float value_FlashDistance = 11;
+    public static float FlashCost;
+    public static float value_FlashCost = 5;
     public float EnemyTimer;
     public int[] UpgradeBtn;
     //Skill A
-    public static float Skill_A_AttackSpeed = 0.6f;//每秒攻擊次數
+    public static float Skill_A_AttackSpeed = 0.5f;//每秒攻擊次數
     public static float Skill_A_Size = 1;//範圍
     public static float Skill_A_DmgAdd = 1;//傷害倍率
     //Skill B
@@ -67,7 +70,7 @@ public class UICtrl : MonoBehaviour
     }
 
     //����������ʮɭ���ƭȥ�
-    void ValueUpdate() {
+    public void ValueUpdate() {
         maxAP = value_maxAp;
         maxHP = value_maxHp;
         FlashDistance = value_FlashDistance;
@@ -79,7 +82,7 @@ public class UICtrl : MonoBehaviour
         if (Value >= maxEXP - EXP){
             //升級
             EXP = 0;
-            maxEXP += maxEXP;
+            maxEXP += maxEXP/2;
             LevelUP();
         }
         else {
@@ -109,16 +112,33 @@ public class UICtrl : MonoBehaviour
 
     //按鈕事件
     public void _UpgradeBtn(int btnID) {
-        if (btnID == 1) { 
+        if (btnID == 1) {
+            if (UpgradeBtn[0] == 0)
+                return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[0]);
         }
         else if (btnID == 2){
+            if (UpgradeBtn[1] == 0)
+                return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[1]);
         }
         else if (btnID == 3){
+            if (UpgradeBtn[2] == 0)
+                return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[2]);
         }
         Upgrade.SetActive(false);
         Time.timeScale = 1;
+    }
+
+    public void gameover() {
+        Time.timeScale = 0;
+        GameOverUI.SetActive(true);
+    }
+
+    public void retry_Event() {
+        Time.timeScale = 1;
+        GameOverUI.SetActive(false);
+        SceneManager.LoadScene(0);
     }
 }
