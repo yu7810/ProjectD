@@ -29,20 +29,20 @@ public class EnemyCount : MonoBehaviour
         float x;
         float z;
         if (m == 0){
-            x = Random.Range(9, 10);
-            z = Random.Range(9, 10);
+            x = Random.Range(-10, 10);
+            z = 10;
         }
         else if (m == 1) {
-            x = Random.Range(9, 10);
-            z = Random.Range(-9, -10);
+            x = Random.Range(-10, 10);
+            z = -10;
         }
         else if (m == 2){
-            x = Random.Range(-9, -10);
-            z = Random.Range(9, 10);
+            x = 10;
+            z = Random.Range(-10, 10);
         }
         else{
-            x = Random.Range(-9, -10);
-            z = Random.Range(-9, -10);
+            x = -10;
+            z = Random.Range(-10, 10);
         }
         GameObject a = Instantiate(Enemy_A, new Vector3(x,0.5f,z) , Enemy_A.transform.rotation);
         a.GetComponent<Move>().target = Player.transform;
