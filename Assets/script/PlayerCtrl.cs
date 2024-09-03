@@ -34,6 +34,7 @@ public class PlayerCtrl : MonoBehaviour
         canAttack02 = false;
         canBehurt = true;
         StartCoroutine(AutoSkill_A());
+        StartCoroutine(TimeHP());
     }
 
     void Update(){
@@ -171,18 +172,31 @@ public class PlayerCtrl : MonoBehaviour
         if (!canBehurt)
             return;
         if (other.tag == "Enemy" || other.tag == "EnemyAttack" ) {
-            if (UIctrl.GetComponent<UICtrl>().HP > other.GetComponent<Enemy>().Attack){
-                UIctrl.GetComponent<UICtrl>().HP -= other.GetComponent<Enemy>().Attack;
-                StartCoroutine(BehurtTimer());
-            }
-            else {
-                //失敗
-                UIctrl.GetComponent<UICtrl>().HP = 0;
-                UIctrl.GetComponent<UICtrl>().gameover();
-                
-            }
-            if(other.tag == "EnemyAttack")
+            BeHurt(other.GetComponent<Enemy>().Attack,true);
+            if (other.tag == "EnemyAttack")
                 Destroy(other.gameObject);
+
+        }
+    }
+
+    /// <summary>
+    /// 扣血通用含式
+    /// </summary>
+    /// <param name="Value"></param>
+    /// <param name="useBehurtTimer">是否進無敵幀</param>
+    public void BeHurt(float Value, bool useBehurtTimer) {
+        if (UIctrl.GetComponent<UICtrl>().HP > Value)
+        {
+            UIctrl.GetComponent<UICtrl>().HP -= Value;
+            if (useBehurtTimer == true)
+                StartCoroutine(BehurtTimer());
+        }
+        else
+        {
+            //失敗
+            UIctrl.GetComponent<UICtrl>().HP = 0;
+            UIctrl.GetComponent<UICtrl>().gameover();
+
         }
     }
 
@@ -211,6 +225,13 @@ public class PlayerCtrl : MonoBehaviour
             UIctrl.GetComponent<UICtrl>().HP += value;
         else
             UIctrl.GetComponent<UICtrl>().HP = UIctrl.GetComponent<UICtrl>().maxHP;
+    }
+
+    //暫，將血條與時間倒數合併
+    IEnumerator TimeHP() {
+        yield return new WaitForSeconds(0.1f);
+        BeHurt(0.1f,false);
+        StartCoroutine(TimeHP());
     }
 
 }

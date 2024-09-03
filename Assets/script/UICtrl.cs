@@ -26,7 +26,7 @@ public class UICtrl : MonoBehaviour
     public float HP;
     public float maxHP;
     public static float value_maxAp = 10;
-    public static float value_maxHp = 10;
+    public static float value_maxHp = 30;
     public static float value_MoveSpeed = 3f;
     public static float value_SkillB_MoveSpeed = 0;
     public static float value_Attack = 5;
@@ -141,4 +141,9 @@ public class UICtrl : MonoBehaviour
         GameOverUI.SetActive(false);
         SceneManager.LoadScene(0);
     }
+
+    public void ExitGame() {
+        Application.Quit();
+    }
+
 }
