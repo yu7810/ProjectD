@@ -1,5 +1,33 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4223015712723021298
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 66f335fb1ffd8684294ad653bf1c7564, type: 3}
+  m_Name: ColorAdjustments
+  m_EditorClassIdentifier: 
+  active: 1
+  postExposure:
+    m_OverrideState: 0
+    m_Value: 0.8
+  contrast:
+    m_OverrideState: 0
+    m_Value: 5
+  colorFilter:
+    m_OverrideState: 1
+    m_Value: {r: 1, g: 0.9917453, b: 0.9669811, a: 1}
+  hueShift:
+    m_OverrideState: 0
+    m_Value: 26
+  saturation:
+    m_OverrideState: 1
+    m_Value: -20
 --- !u!114 &-903943283455624940
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -18,7 +46,7 @@ MonoBehaviour:
     m_Value: 1
   gaussianStart:
     m_OverrideState: 1
-    m_Value: 10
+    m_Value: 1
   gaussianEnd:
     m_OverrideState: 1
     m_Value: 200
@@ -62,6 +90,7 @@ MonoBehaviour:
   - {fileID: -903943283455624940}
   - {fileID: 8671102891346462073}
   - {fileID: 1199008926184449938}
+  - {fileID: -4223015712723021298}
 --- !u!114 &1199008926184449938
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -83,7 +112,7 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.3
+    m_Value: 0.4
   smoothness:
     m_OverrideState: 1
     m_Value: 0.5
@@ -111,7 +140,7 @@ MonoBehaviour:
     m_Value: 0.9
   intensity:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 5
   scatter:
     m_OverrideState: 1
     m_Value: 0.7
@@ -120,7 +149,7 @@ MonoBehaviour:
     m_Value: 65472
   tint:
     m_OverrideState: 1
-    m_Value: {r: 1, g: 1, b: 1, a: 1}
+    m_Value: {r: 0.9150943, g: 0.88356525, b: 0.82444817, a: 1}
   highQualityFiltering:
     m_OverrideState: 1
     m_Value: 0
