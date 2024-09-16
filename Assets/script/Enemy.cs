@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -13,6 +14,7 @@ public class Enemy : MonoBehaviour
     private Color C;
     private GameObject UICtrl;
     public bool canBeHit;//受擊時短暫無敵，避免重複判定
+    
 
     private void OnEnable(){
         UICtrl = GameObject.Find("UICtrl");

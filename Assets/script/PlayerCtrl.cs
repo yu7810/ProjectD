@@ -171,10 +171,12 @@ public class PlayerCtrl : MonoBehaviour
     private void OnTriggerStay(Collider other){
         if (!canBehurt)
             return;
-        if (other.tag == "Enemy" || other.tag == "EnemyAttack" ) {
-            BeHurt(other.GetComponent<Enemy>().Attack,true);
-            if (other.tag == "EnemyAttack")
-                Destroy(other.gameObject);
+        if (other.tag == "EnemyAttack" ) {
+            BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
+            if (other.tag == "EnemyAttack") {
+                Debug.Log("Attack");
+                //Destroy(other.gameObject); //要思考子彈怎處理
+            }
 
         }
     }
