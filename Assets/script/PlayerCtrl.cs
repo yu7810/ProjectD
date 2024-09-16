@@ -14,22 +14,21 @@ public class PlayerCtrl : MonoBehaviour
     bool Run;
     bool Move;
     float value_RunSpeed = 1.5f;
-    public GameObject weapon;
-    public GameObject weapon_box;
     public GameObject UIctrl;
     LayerMask mask = ~(1 << 6);
     public bool canMove;
     public bool canAttack02;
     public GameObject SmokeTrail;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
-    public GameObject Mesh;
+    //public GameObject Mesh;
     public GameObject Skill_A;
     public GameObject UpgradeSystem;
+    public GameObject Warrior;
 
     void Start(){
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
-        m_Animator = GetComponent<Animator>();
+        m_Animator = Warrior.GetComponent<Animator>();
         canMove = true;
         canAttack02 = false;
         canBehurt = true;
@@ -38,6 +37,8 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void Update(){
+        if (Input.GetKeyDown(KeyCode.X))
+            Debug.Log(transform.rotation.y);
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
         //自然回體
@@ -64,6 +65,11 @@ public class PlayerCtrl : MonoBehaviour
                 if (UIctrl.GetComponent<UICtrl>().AP > 0.1f)
                     UIctrl.GetComponent<UICtrl>().AP -= 1f * Time.deltaTime;
             }*/
+            //2D角色轉向
+            if (Input.GetKey(KeyCode.A))
+                transform.rotation = Quaternion.Euler(0,180,0);
+            else if (Input.GetKey(KeyCode.D))
+                transform.rotation = Quaternion.Euler(0,0,0);
         }
         else
         {
@@ -90,15 +96,15 @@ public class PlayerCtrl : MonoBehaviour
             m_Animator.SetBool("Run", Run);
             UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
         }*/
-        //角色轉向
-        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        //3D角色轉向
+        /*Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
         if (Physics.Raycast(camRay, out floorhit , 30f, mask)) { 
             Vector3 playerToMouse = floorhit.point - transform.position;
             playerToMouse.y = 0;
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
-        }
+        }*/
         //攻擊
         /*if (Input.GetKeyDown(KeyCode.Mouse0)) {
             if (canAttack02 && !m_Animator.GetBool("Attack02"))
@@ -118,18 +124,6 @@ public class PlayerCtrl : MonoBehaviour
 
     void ValueCount() {
         UIctrl.GetComponent<UICtrl>().MoveSpeed = UICtrl.value_MoveSpeed + UICtrl.value_SkillB_MoveSpeed;
-    }
-
-    //舊普攻，可改成要玩家自己旋轉武器去撞敵人
-    void AttackParticle(int show) {
-        if (show == 0){
-            weapon.transform.GetComponent<MeleeWeaponTrail>().enabled = false;
-            weapon_box.GetComponent<BoxCollider>().enabled = false;
-        }
-        else {
-            weapon.transform.GetComponent<MeleeWeaponTrail>().enabled = true;
-            weapon_box.GetComponent<BoxCollider>().enabled = true;
-        }
     }
 
     void AttackEnd(int AttackID) {
@@ -205,9 +199,9 @@ public class PlayerCtrl : MonoBehaviour
     //受傷無敵幀
     IEnumerator BehurtTimer() {
         canBehurt = false;
-        Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
+        //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
         yield return new WaitForSeconds(0.3f);
-        Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
+        //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
         yield return new WaitForSeconds(0.2f);
         canBehurt = true;
     }
