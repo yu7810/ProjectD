@@ -37,8 +37,6 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void Update(){
-        if (Input.GetKeyDown(KeyCode.X))
-            Debug.Log(transform.rotation.y);
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
         //自然回體
@@ -208,6 +206,7 @@ public class PlayerCtrl : MonoBehaviour
 
     IEnumerator AutoSkill_A() {
         GameObject a = Instantiate(Skill_A, transform.position, transform.rotation);
+        Debug.Log(transform.rotation);
         float size = UICtrl.Skill_A_Size;
         a.transform.localScale = new Vector3(size, 1,size);
         float CD = 1 / UICtrl.Skill_A_AttackSpeed;
