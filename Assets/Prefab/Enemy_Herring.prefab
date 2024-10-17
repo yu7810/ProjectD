@@ -197,6 +197,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  AttackCD: 1
+  canAttack: 0
 --- !u!195 &6556137973244480266
 NavMeshAgent:
   m_ObjectHideFlags: 0

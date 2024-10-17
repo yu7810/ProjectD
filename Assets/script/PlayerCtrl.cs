@@ -23,16 +23,16 @@ public class PlayerCtrl : MonoBehaviour
     //public GameObject Mesh;
     public GameObject Skill_A;
     public GameObject UpgradeSystem;
-    public GameObject Warrior;
+    //public GameObject Warrior; //2D人物
 
     void Start(){
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
-        m_Animator = Warrior.GetComponent<Animator>();
+        //m_Animator = Warrior.GetComponent<Animator>();
+        m_Animator = GetComponent<Animator>();
         canMove = true;
         canAttack02 = false;
         canBehurt = true;
-        StartCoroutine(AutoSkill_A());
         StartCoroutine(TimeHP());
     }
 
@@ -64,10 +64,10 @@ public class PlayerCtrl : MonoBehaviour
                     UIctrl.GetComponent<UICtrl>().AP -= 1f * Time.deltaTime;
             }*/
             //2D角色轉向
-            if (Input.GetKey(KeyCode.A))
+            /*if (Input.GetKey(KeyCode.A))
                 transform.rotation = Quaternion.Euler(0,180,0);
             else if (Input.GetKey(KeyCode.D))
-                transform.rotation = Quaternion.Euler(0,0,0);
+                transform.rotation = Quaternion.Euler(0,0,0);*/
         }
         else
         {
@@ -95,21 +95,22 @@ public class PlayerCtrl : MonoBehaviour
             UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
         }*/
         //3D角色轉向
-        /*Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
         if (Physics.Raycast(camRay, out floorhit , 30f, mask)) { 
             Vector3 playerToMouse = floorhit.point - transform.position;
             playerToMouse.y = 0;
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
-        }*/
+        }
         //攻擊
-        /*if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            if (canAttack02 && !m_Animator.GetBool("Attack02"))
+        if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            UseSkill_A();
+            /*if (canAttack02 && !m_Animator.GetBool("Attack02"))
                 m_Animator.SetBool("Attack02", true);
             else if(!m_Animator.GetBool("Attack01"))
-                m_Animator.SetBool("Attack01",true);
-        }*/
+                m_Animator.SetBool("Attack01",true);*/
+        }
         //衝刺
         if (Input.GetKeyDown(KeyCode.Space) && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1) {
             if (UIctrl.GetComponent<UICtrl>().AP >= UICtrl.FlashCost) {
@@ -205,13 +206,16 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     IEnumerator AutoSkill_A() {
-        GameObject a = Instantiate(Skill_A, transform.position, transform.rotation);
-        Debug.Log(transform.rotation);
-        float size = UICtrl.Skill_A_Size;
-        a.transform.localScale = new Vector3(size, 1,size);
+        UseSkill_A();
         float CD = 1 / UICtrl.Skill_A_AttackSpeed;
         yield return new WaitForSeconds(CD);
         StartCoroutine(AutoSkill_A());
+    }
+
+    void UseSkill_A() {
+        GameObject a = Instantiate(Skill_A, transform.position, transform.rotation);
+        float size = UICtrl.Skill_A_Size;
+        a.transform.localScale = new Vector3(size, 1, size);
     }
 
     //回復生命

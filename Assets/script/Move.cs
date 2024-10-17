@@ -37,11 +37,11 @@ public class Move : MonoBehaviour
     public void StartAttack(){
         AttackCollider.SetActive(true);
         canAttack = false;
+        m_Animator.SetBool("Attack", false);
         StartCoroutine(_AttackCD());
     }
     public void EndAttack(){
         AttackCollider.SetActive(false);
-        m_Animator.SetBool("Attack", false);
     }
 
     IEnumerator _AttackCD() {
