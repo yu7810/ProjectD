@@ -159,8 +159,10 @@ MonoBehaviour:
   maxHp: 0
   Attack: 1
   EXP: 0
+  AttackCD: 0
   Mesh: {fileID: 0}
   canBeHit: 0
+  target: {fileID: 0}
 --- !u!1 &6183726798585497844
 GameObject:
   m_ObjectHideFlags: 0

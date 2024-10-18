@@ -38,6 +38,8 @@ public class UICtrl : MonoBehaviour
     public static float value_FlashCost = 5;
     public float EnemyTimer;
     public int[] UpgradeBtn;
+
+    public float Skill_A_CD;
     //Skill A
     public static float Skill_A_AttackSpeed = 0.5f;//每秒攻擊次數
     public static float Skill_A_Size = 1;//範圍

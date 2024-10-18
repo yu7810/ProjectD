@@ -28,12 +28,11 @@ public class PlayerCtrl : MonoBehaviour
     void Start(){
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
-        //m_Animator = Warrior.GetComponent<Animator>();
         m_Animator = GetComponent<Animator>();
         canMove = true;
         canAttack02 = false;
         canBehurt = true;
-        StartCoroutine(TimeHP());
+        //StartCoroutine(TimeHP());
     }
 
     void Update(){
@@ -167,7 +166,6 @@ public class PlayerCtrl : MonoBehaviour
         if (other.tag == "EnemyAttack" ) {
             BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
             if (other.tag == "EnemyAttack") {
-                Debug.Log("Attack");
                 //Destroy(other.gameObject); //要思考子彈怎處理
             }
 
@@ -213,6 +211,9 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void UseSkill_A() {
+        if (UIctrl.GetComponent<UICtrl>().Skill_A_CD > 0)
+            return;
+        //呼叫技能CD
         GameObject a = Instantiate(Skill_A, transform.position, transform.rotation);
         float size = UICtrl.Skill_A_Size;
         a.transform.localScale = new Vector3(size, 1, size);
