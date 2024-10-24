@@ -10,9 +10,9 @@ using static UnityEngine.Rendering.DebugUI;
 public class UICtrl : MonoBehaviour
 {
     public GameObject PlayerCtrl;
-    public GameObject Value_AP;
-    public GameObject Value_HP;
-    public GameObject Value_EXP;
+    public Image Value_AP;
+    public Image Value_HP;
+    public Image Value_EXP;
     public GameObject Upgrade;
     public GameObject Upgrade_A;
     public GameObject Upgrade_B;
@@ -64,14 +64,13 @@ public class UICtrl : MonoBehaviour
 
     void UIUpdate() {
         float valueAP = AP / maxAP;
-        Value_AP.GetComponent<Image>().fillAmount = valueAP;
+        Value_AP.fillAmount = valueAP;
         float valueHP = HP / maxHP;
-        Value_HP.GetComponent<Image>().fillAmount = valueHP;
+        Value_HP.fillAmount = valueHP;
         float valueEXP = EXP / maxEXP;
-        Value_EXP.GetComponent<Image>().fillAmount = valueEXP;
+        Value_EXP.fillAmount = valueEXP;
     }
 
-    //����������ʮɭ���ƭȥ�
     public void ValueUpdate() {
         maxAP = value_maxAp;
         maxHP = value_maxHp;

@@ -14,7 +14,7 @@ public class PlayerCtrl : MonoBehaviour
     bool Run;
     bool Move;
     float value_RunSpeed = 1.5f;
-    public GameObject UIctrl;
+    public UICtrl UIctrl;
     LayerMask mask = ~(1 << 6);
     public bool canMove;
     public bool canAttack02;
@@ -39,11 +39,11 @@ public class PlayerCtrl : MonoBehaviour
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
         //自然回體
-        if (UIctrl.GetComponent<UICtrl>().AP >= UIctrl.GetComponent<UICtrl>().maxAP){
-            UIctrl.GetComponent<UICtrl>().AP = UIctrl.GetComponent<UICtrl>().maxAP;
+        if (UIctrl.AP >= UIctrl.maxAP){
+            UIctrl.AP = UIctrl.maxAP;
         }
         else {
-            UIctrl.GetComponent<UICtrl>().AP += 0.6f * Time.deltaTime;
+            UIctrl.AP += 0.6f * Time.deltaTime;
         }
         //基本移動
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
@@ -54,13 +54,13 @@ public class PlayerCtrl : MonoBehaviour
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.GetComponent<UICtrl>().MoveSpeed);
-            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * UIctrl.GetComponent<UICtrl>().MoveSpeed, 0, Input.GetAxis("Vertical") * Time.timeScale * UIctrl.GetComponent<UICtrl>().MoveSpeed);
+            //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.MoveSpeed);
+            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * UIctrl.MoveSpeed, 0, Input.GetAxis("Vertical") * Time.timeScale * UIctrl.MoveSpeed);
             //跑步耗體
             /*if (Run)
             {
-                if (UIctrl.GetComponent<UICtrl>().AP > 0.1f)
-                    UIctrl.GetComponent<UICtrl>().AP -= 1f * Time.deltaTime;
+                if (UIctrl.AP > 0.1f)
+                    UIctrl.AP -= 1f * Time.deltaTime;
             }*/
             //2D角色轉向
             /*if (Input.GetKey(KeyCode.A))
@@ -78,20 +78,20 @@ public class PlayerCtrl : MonoBehaviour
         }
         //跑步
         /*if (Input.GetKey(KeyCode.LeftControl)){
-            if (UIctrl.GetComponent<UICtrl>().AP <= 0.1f) {
+            if (UIctrl.AP <= 0.1f) {
                 Run = false;
                 m_Animator.SetBool("Run", Run);
-                UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
+                UIctrl.MoveSpeed = UIctrl.value_MoveSpeed;
                 return;
             }
             Run = true;
             m_Animator.SetBool("Run", Run);
-            UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed * value_RunSpeed;
+            UIctrl.MoveSpeed = UIctrl.value_MoveSpeed * value_RunSpeed;
         }
         else if (Input.GetKeyUp(KeyCode.LeftControl)){
             Run = false;
             m_Animator.SetBool("Run", Run);
-            UIctrl.GetComponent<UICtrl>().MoveSpeed = UIctrl.GetComponent<UICtrl>().value_MoveSpeed;
+            UIctrl.MoveSpeed = UIctrl.value_MoveSpeed;
         }*/
         //3D角色轉向
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -104,7 +104,7 @@ public class PlayerCtrl : MonoBehaviour
         }
         //攻擊
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            UseSkill_A();
+            //UseSkill_A();
             /*if (canAttack02 && !m_Animator.GetBool("Attack02"))
                 m_Animator.SetBool("Attack02", true);
             else if(!m_Animator.GetBool("Attack01"))
@@ -112,8 +112,8 @@ public class PlayerCtrl : MonoBehaviour
         }
         //衝刺
         if (Input.GetKeyDown(KeyCode.Space) && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1) {
-            if (UIctrl.GetComponent<UICtrl>().AP >= UICtrl.FlashCost) {
-                UIctrl.GetComponent<UICtrl>().AP -= UICtrl.FlashCost;
+            if (UIctrl.AP >= UICtrl.FlashCost) {
+                UIctrl.AP -= UICtrl.FlashCost;
                 StartCoroutine(Flash());
             }
         }
@@ -121,7 +121,7 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void ValueCount() {
-        UIctrl.GetComponent<UICtrl>().MoveSpeed = UICtrl.value_MoveSpeed + UICtrl.value_SkillB_MoveSpeed;
+        UIctrl.MoveSpeed = UICtrl.value_MoveSpeed + UICtrl.value_SkillB_MoveSpeed;
     }
 
     void AttackEnd(int AttackID) {
@@ -178,17 +178,17 @@ public class PlayerCtrl : MonoBehaviour
     /// <param name="Value"></param>
     /// <param name="useBehurtTimer">是否進無敵幀</param>
     public void BeHurt(float Value, bool useBehurtTimer) {
-        if (UIctrl.GetComponent<UICtrl>().HP > Value)
+        if (UIctrl.HP > Value)
         {
-            UIctrl.GetComponent<UICtrl>().HP -= Value;
+            UIctrl.HP -= Value;
             if (useBehurtTimer == true)
                 StartCoroutine(BehurtTimer());
         }
         else
         {
             //失敗
-            UIctrl.GetComponent<UICtrl>().HP = 0;
-            UIctrl.GetComponent<UICtrl>().gameover();
+            UIctrl.HP = 0;
+            UIctrl.gameover();
 
         }
     }
@@ -204,27 +204,18 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     IEnumerator AutoSkill_A() {
-        UseSkill_A();
+        //UseSkill_A();
         float CD = 1 / UICtrl.Skill_A_AttackSpeed;
         yield return new WaitForSeconds(CD);
         StartCoroutine(AutoSkill_A());
     }
 
-    void UseSkill_A() {
-        if (UIctrl.GetComponent<UICtrl>().Skill_A_CD > 0)
-            return;
-        //呼叫技能CD
-        GameObject a = Instantiate(Skill_A, transform.position, transform.rotation);
-        float size = UICtrl.Skill_A_Size;
-        a.transform.localScale = new Vector3(size, 1, size);
-    }
-
     //回復生命
     public void Health(float value) {
-        if (UIctrl.GetComponent<UICtrl>().HP < UIctrl.GetComponent<UICtrl>().maxHP - value)
-            UIctrl.GetComponent<UICtrl>().HP += value;
+        if (UIctrl.HP < UIctrl.GetComponent<UICtrl>().maxHP - value)
+            UIctrl.HP += value;
         else
-            UIctrl.GetComponent<UICtrl>().HP = UIctrl.GetComponent<UICtrl>().maxHP;
+            UIctrl.HP = UIctrl.maxHP;
     }
 
     //暫，將血條與時間倒數合併
