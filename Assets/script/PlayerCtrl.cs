@@ -20,10 +20,9 @@ public class PlayerCtrl : MonoBehaviour
     public bool canAttack02;
     public GameObject SmokeTrail;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
-    //public GameObject Mesh;
-    public GameObject Skill_A;
     public GameObject UpgradeSystem;
-    //public GameObject Warrior; //2D人物
+    public ValueData valuedata;
+    public Skill skill;
 
     void Start(){
         Application.targetFrameRate = 60;
@@ -39,23 +38,22 @@ public class PlayerCtrl : MonoBehaviour
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
         //自然回體
-        if (UIctrl.AP >= UIctrl.maxAP){
-            UIctrl.AP = UIctrl.maxAP;
+        if (valuedata.AP >= valuedata.maxAP){
+            valuedata.AP = valuedata.maxAP;
         }
         else {
-            UIctrl.AP += 0.6f * Time.deltaTime;
+            valuedata.AP += 0.6f * Time.deltaTime;
         }
         //基本移動
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             if (!canMove)
                 return;
-            ValueCount();
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.MoveSpeed);
-            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * UIctrl.MoveSpeed, 0, Input.GetAxis("Vertical") * Time.timeScale * UIctrl.MoveSpeed);
+            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed , 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed);
             //跑步耗體
             /*if (Run)
             {
@@ -102,26 +100,23 @@ public class PlayerCtrl : MonoBehaviour
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
         }
-        //攻擊
+        //滑鼠L
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            //UseSkill_A();
-            /*if (canAttack02 && !m_Animator.GetBool("Attack02"))
-                m_Animator.SetBool("Attack02", true);
-            else if(!m_Animator.GetBool("Attack01"))
-                m_Animator.SetBool("Attack01",true);*/
+            if (valuedata.SkillField[0].nowCD <= 0) {
+                valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
+                UIctrl.UpdateSkillCD();
+                skill.UseSkill(valuedata.SkillField[0].ID);
+                StartCoroutine(UIctrl.SkillCD(0));
+            }
         }
         //衝刺
         if (Input.GetKeyDown(KeyCode.Space) && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1) {
-            if (UIctrl.AP >= UICtrl.FlashCost) {
-                UIctrl.AP -= UICtrl.FlashCost;
+            if (valuedata.AP >= valuedata.Skill[2].Cost) {
+                valuedata.AP -= valuedata.Skill[2].Cost;
                 StartCoroutine(Flash());
             }
         }
 
-    }
-
-    void ValueCount() {
-        UIctrl.MoveSpeed = UICtrl.value_MoveSpeed + UICtrl.value_SkillB_MoveSpeed;
     }
 
     void AttackEnd(int AttackID) {
@@ -153,7 +148,7 @@ public class PlayerCtrl : MonoBehaviour
         else
             m_Input = transform.forward;
         for (int i = 0; i < 20; i++) {
-            m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UICtrl.FlashDistance);
+            m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * valuedata.Skill[2].Size);
             yield return new WaitForSeconds(0.01f);
         }
         SmokeTrail.GetComponent<ParticleSystem>().Stop();
@@ -178,16 +173,16 @@ public class PlayerCtrl : MonoBehaviour
     /// <param name="Value"></param>
     /// <param name="useBehurtTimer">是否進無敵幀</param>
     public void BeHurt(float Value, bool useBehurtTimer) {
-        if (UIctrl.HP > Value)
+        if (valuedata.HP > Value)
         {
-            UIctrl.HP -= Value;
+            valuedata.HP -= Value;
             if (useBehurtTimer == true)
                 StartCoroutine(BehurtTimer());
         }
         else
         {
             //失敗
-            UIctrl.HP = 0;
+            valuedata.HP = 0;
             UIctrl.gameover();
 
         }
@@ -203,19 +198,12 @@ public class PlayerCtrl : MonoBehaviour
         canBehurt = true;
     }
 
-    IEnumerator AutoSkill_A() {
-        //UseSkill_A();
-        float CD = 1 / UICtrl.Skill_A_AttackSpeed;
-        yield return new WaitForSeconds(CD);
-        StartCoroutine(AutoSkill_A());
-    }
-
     //回復生命
     public void Health(float value) {
-        if (UIctrl.HP < UIctrl.GetComponent<UICtrl>().maxHP - value)
-            UIctrl.HP += value;
+        if (valuedata.HP < valuedata.maxHP - value)
+            valuedata.HP += value;
         else
-            UIctrl.HP = UIctrl.maxHP;
+            valuedata.HP = valuedata.maxHP;
     }
 
     //暫，將血條與時間倒數合併

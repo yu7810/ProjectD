@@ -19,27 +19,16 @@ public class UICtrl : MonoBehaviour
     public GameObject Upgrade_C;
     public GameObject UpgradeSys;//UpgradeSystem
     public GameObject GameOverUI;
-    public float AP;
-    public float maxAP;
-    public float EXP;
-    public float maxEXP;
-    public float HP;
-    public float maxHP;
-    public static float value_maxAp = 10;
-    public static float value_maxHp = 30;
-    public static float value_MoveSpeed = 3f;
-    public static float value_SkillB_MoveSpeed = 0;
-    public static float value_Attack = 5;
-    public static float Attack = 1;//基底攻擊力
-    public float MoveSpeed;
-    public static float FlashDistance;
-    public static float value_FlashDistance = 11;
-    public static float FlashCost;
-    public static float value_FlashCost = 5;
-    public float EnemyTimer;
+
+    public ValueData valuedata;
     public int[] UpgradeBtn;
 
-    public float Skill_A_CD;
+    //技能欄位icon
+    public Image Skill_0;
+    public Image Skill_1;
+    public Image Skill_2;
+
+    /*
     //Skill A
     public static float Skill_A_AttackSpeed = 0.5f;//每秒攻擊次數
     public static float Skill_A_Size = 1;//範圍
@@ -48,12 +37,13 @@ public class UICtrl : MonoBehaviour
     public static float Skill_B_AttackSpeed = 1;//轉圈速度
     public static float Skill_B_Range = 3;//距離
     public static float Skill_B_DmgAdd = 1;//傷害倍率
+    */
 
     private void Start(){
-        ValueUpdate();
-        HP = maxHP;
-        AP = maxAP;
-        EXP = 0;
+        valuedata.ValueUpdate();
+        valuedata.HP = valuedata.maxHP;
+        valuedata.AP = valuedata.maxAP;
+        valuedata.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
     }
 
@@ -63,31 +53,23 @@ public class UICtrl : MonoBehaviour
     }
 
     void UIUpdate() {
-        float valueAP = AP / maxAP;
+        float valueAP = valuedata.AP / valuedata.maxAP;
         Value_AP.fillAmount = valueAP;
-        float valueHP = HP / maxHP;
+        float valueHP = valuedata.HP / valuedata.maxHP;
         Value_HP.fillAmount = valueHP;
-        float valueEXP = EXP / maxEXP;
+        float valueEXP = valuedata.EXP / valuedata.maxEXP;
         Value_EXP.fillAmount = valueEXP;
     }
 
-    public void ValueUpdate() {
-        maxAP = value_maxAp;
-        maxHP = value_maxHp;
-        FlashDistance = value_FlashDistance;
-        FlashCost = value_FlashCost;
-        Attack = value_Attack;
-    }
-
     public void GetEXP(float Value) {
-        if (Value >= maxEXP - EXP){
+        if (Value >= valuedata.maxEXP - valuedata.EXP){
             //升級
-            EXP = 0;
-            maxEXP += maxEXP/2;
+            valuedata.EXP = 0;
+            valuedata.maxEXP += valuedata.maxEXP /2;
             LevelUP();
         }
         else {
-            EXP += Value;
+            valuedata.EXP += Value;
         }
     }
 
@@ -145,6 +127,33 @@ public class UICtrl : MonoBehaviour
 
     public void ExitGame() {
         Application.Quit();
+    }
+
+    public IEnumerator SkillCD(int FieldID) {
+        if (valuedata.SkillField[FieldID].nowCD <= 0.01f && valuedata.SkillField[FieldID].nowCD > 0) {
+            valuedata.SkillField[FieldID].nowCD = 0;
+            yield return new WaitForSeconds(valuedata.SkillField[FieldID].nowCD);
+        }
+        else {
+            valuedata.SkillField[FieldID].nowCD -= 0.01f;
+            yield return new WaitForSeconds(0.01f);
+            StartCoroutine(SkillCD(FieldID));
+        }
+        UpdateSkillCD();
+    }
+
+    public void UpdateSkillCD() {
+        for (int FieldID = 0; FieldID < 3; FieldID++) {
+            float now = valuedata.SkillField[FieldID].nowCD;
+            float max = valuedata.SkillField[FieldID].maxCD;
+            float value = now / max;
+            if (FieldID == 0)
+                Skill_0.fillAmount = value;
+            else if (FieldID == 1)
+                Skill_1.fillAmount = value;
+            else if (FieldID == 2)
+                Skill_2.fillAmount = value;
+        }
     }
 
 }

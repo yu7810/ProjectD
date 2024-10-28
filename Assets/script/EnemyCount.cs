@@ -12,7 +12,8 @@ public class EnemyCount : MonoBehaviour
     public GameObject Enemy_B;
     public GameObject Enemy_C;
     public int Count;//已生敵人數量
-    
+    public ValueData valuedata;
+
 
     private void OnEnable(){
         Count = 0;
@@ -20,11 +21,11 @@ public class EnemyCount : MonoBehaviour
     }
 
     IEnumerator InstanceCount() {
-        if (UICtrl.GetComponent<UICtrl>().EnemyTimer <= 0) {
+        if (valuedata.EnemyTimer <= 0) {
             yield return new WaitForSeconds(1);
             yield break;
         }
-        yield return new WaitForSeconds(UICtrl.GetComponent<UICtrl>().EnemyTimer);
+        yield return new WaitForSeconds(valuedata.EnemyTimer);
         int m = Random.Range(0, 4);
         float x;
         float z;
@@ -52,18 +53,18 @@ public class EnemyCount : MonoBehaviour
         if (Count >= 30 && (Count % 10) == 0) {
             GameObject b = Instantiate(Enemy_B, new Vector3(x, 0.5f, z), Enemy_B.transform.rotation);
             b.GetComponent<Enemy>().target = Player.transform;
-            if (UICtrl.GetComponent<UICtrl>().EnemyTimer > 0.2f)
-                UICtrl.GetComponent<UICtrl>().EnemyTimer -= 0.05f;
+            if (valuedata.EnemyTimer > 0.2f)
+                valuedata.EnemyTimer -= 0.05f;
             else
-                UICtrl.GetComponent<UICtrl>().EnemyTimer = 0.2f;
+                valuedata.EnemyTimer = 0.2f;
             Count += 1;
         }
 
         //坦克怪
-        if (Count >= 100 && UICtrl.GetComponent<UICtrl>().EnemyTimer == 0.2f)
+        if (Count >= 100 && valuedata.EnemyTimer == 0.2f)
         {
             GameObject c = Instantiate(Enemy_C, new Vector3(x, 0.5f, z), Enemy_C.transform.rotation);
-            UICtrl.GetComponent<UICtrl>().EnemyTimer = 0.3f;
+            valuedata.EnemyTimer = 0.3f;
             c.GetComponent<Enemy>().target = Player.transform;
             Count += 1;
         }

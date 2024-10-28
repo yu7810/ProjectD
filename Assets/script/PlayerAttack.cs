@@ -9,23 +9,13 @@ public class PlayerAttack : MonoBehaviour
     //public bool HitSlowMotion;
     public GameObject AttackParticle;
     public int Skill_ID;//1=技能A，依此類推
-    float Dmg;
+    public float Dmg;//由useskill指派數值
     public GameObject _UpgradeSystem;
+    public ValueData valuedata;
 
     private void OnEnable()
     {
         _UpgradeSystem = GameObject.Find("Upgrade System");
-    }
-
-    void DmgUpdate()
-    {
-        //依技能ID決定數值
-        if (Skill_ID == 1)
-            Dmg = UICtrl.Attack * UICtrl.Skill_A_DmgAdd;
-        else if (Skill_ID == 2)
-            Dmg = UICtrl.Attack * UICtrl.Skill_B_DmgAdd;
-        else
-            Dmg = 0;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,7 +28,6 @@ public class PlayerAttack : MonoBehaviour
             }*/
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
-            DmgUpdate();
             if (other.transform.GetComponent<Enemy>().Hp > Dmg) {
                 other.transform.GetComponent<Enemy>().Hp -= Dmg;
                 other.transform.GetComponent<Enemy>().beAttack();

@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 
 public class UpgradeSystem : MonoBehaviour
 {
+    public ValueData valuedata;
     public GameObject _UICtrl;
     public GameObject Skill_B_1;//放SkillB
     public GameObject Skill_B_2;
@@ -146,13 +147,13 @@ public class UpgradeSystem : MonoBehaviour
 
     //=================================各技能的升級事件=================================
     public void Skill_A_atkUp() {
-        UICtrl.Skill_A_DmgAdd += 0.5f;
+        valuedata.Skill[1].DamageAdd += 0.5f;
     }
     public void Skill_A_speedUp(){
-        UICtrl.Skill_A_AttackSpeed += 0.2f;
+        valuedata.Skill[1].maxCD -= 0.5f;
     }
     public void Skill_A_sizeUp(){
-        UICtrl.Skill_A_Size += 0.2f;
+        valuedata.Skill[1].Size += 0.2f;
     }
     public void Skill_B() {
         if (UpgradeList[5].Lv == 1) {
@@ -171,14 +172,14 @@ public class UpgradeSystem : MonoBehaviour
             Skill_B_moveSpeedUp();
     }
     public void Skill_B_speedUp() {
-        UICtrl.Skill_B_AttackSpeed += 0.4f;
-        Skill_B_1.GetComponent<SkillRotation>().globalSpeed = 100 * UICtrl.Skill_B_AttackSpeed;
+        valuedata.Skill[3].Speed += 0.4f;
+        Skill_B_1.GetComponent<SkillRotation>().globalSpeed = 100 * valuedata.Skill[2].Speed; //旋轉速度
     }
     public void Skill_B_attackUp(){
-        UICtrl.Skill_B_DmgAdd += 0.5f;
+        valuedata.Skill[3].DamageAdd += 0.5f;
     }
     public void Skill_B_moveSpeedUp() {
-        UICtrl.value_SkillB_MoveSpeed = UpgradeList[5].Lv * 0.1f * UpgradeList[8].Lv;
+        valuedata.Skill[3].Speed = UpgradeList[5].Lv * 0.1f * UpgradeList[8].Lv;
     }
     public void Skill_C(){
         UpgradeList[10].Weights = 10;
@@ -186,20 +187,20 @@ public class UpgradeSystem : MonoBehaviour
         UpgradeList[12].Weights = 10;
     }
     public void Skill_C_quick() {
-        UICtrl.value_FlashCost = 3f;
-        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
+        valuedata.Skill[3].Cost = 3f;
+        valuedata.ValueUpdate();
         UpgradeList[11].Weights = 0;
     }
     public void Skill_C_health()
     {
-        UICtrl.value_FlashCost = 10f;
-        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
+        valuedata.Skill[3].Cost = 10f;
+        valuedata.ValueUpdate();
         UpgradeList[10].Weights = 0;
     }
     public void Skill_C_distance()
     {
-        UICtrl.value_FlashDistance += 3;
-        _UICtrl.GetComponent<UICtrl>().ValueUpdate();
+        valuedata.Skill[2].Size += 3;
+        valuedata.ValueUpdate();
     }
 
 }
