@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ValueData : MonoBehaviour
 {
@@ -9,9 +10,6 @@ public class ValueData : MonoBehaviour
     public float base_maxHp = 30;
     public float base_MoveSpeed = 3f;
     public float base_Attack = 5;
-    //public float base_FlashCost = 5;
-    //public float base_SkillB_MoveSpeed = 0;
-
 
     //局內數值
     public float add_maxAp;
@@ -33,17 +31,20 @@ public class ValueData : MonoBehaviour
     public float MoveSpeed;
     public float EnemyTimer;
 
+    //技能icon
+    public Sprite[] SkillIcon;
+
     //技能總表
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,"-",1f,1,1,1,1,0),//無
-        new SkillBase(1,"基礎攻擊",0,1.3f,10,1f,1,0),//基礎攻擊
+        new SkillBase(1,"基礎攻擊",0,1.1f,10,1f,1,0),//基礎攻擊
         new SkillBase(2,"基礎閃避",0,3f,0,11f,1,0),//基礎閃避 size=位移距離
         new SkillBase(3,"音符",0,3f,10,1f,1,0),
     };
 
     //已裝備技能欄位
     public SkillBase[] SkillField = new SkillBase[] {
-        new SkillBase(1,"基礎攻擊",0,3f,10,1f,1,0),//滑鼠L
+        new SkillBase(1,"基礎攻擊",0,1f,10,1f,1,0),//滑鼠L
         new SkillBase(0,"-",1f,1,1,1,1,0),//滑鼠R
         new SkillBase(0,"-",1f,1,1,1,1,0),//空白鍵
     };

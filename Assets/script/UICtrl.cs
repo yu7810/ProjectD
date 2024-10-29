@@ -19,14 +19,14 @@ public class UICtrl : MonoBehaviour
     public GameObject Upgrade_C;
     public GameObject UpgradeSys;//UpgradeSystem
     public GameObject GameOverUI;
+    public GameObject SkillStoreUI;
+    public GameObject FieldSelectUI;//選擇技能要放的欄位
 
     public ValueData valuedata;
     public int[] UpgradeBtn;
-
-    //技能欄位icon
-    public Image Skill_0;
-    public Image Skill_1;
-    public Image Skill_2;
+    int ChangeSkill_ID;//更換技能的ID暫存
+    public Image[] SkillCdMask = new Image[3];//技能CD遮罩
+    public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
 
     /*
     //Skill A
@@ -131,15 +131,17 @@ public class UICtrl : MonoBehaviour
 
     public IEnumerator SkillCD(int FieldID) {
         if (valuedata.SkillField[FieldID].nowCD <= 0.01f && valuedata.SkillField[FieldID].nowCD > 0) {
-            valuedata.SkillField[FieldID].nowCD = 0;
             yield return new WaitForSeconds(valuedata.SkillField[FieldID].nowCD);
+            valuedata.SkillField[FieldID].nowCD = 0;
+            UpdateSkillCD();
         }
         else {
-            valuedata.SkillField[FieldID].nowCD -= 0.01f;
             yield return new WaitForSeconds(0.01f);
+            valuedata.SkillField[FieldID].nowCD -= 0.01f;
+            UpdateSkillCD();
             StartCoroutine(SkillCD(FieldID));
         }
-        UpdateSkillCD();
+        
     }
 
     public void UpdateSkillCD() {
@@ -147,13 +149,18 @@ public class UICtrl : MonoBehaviour
             float now = valuedata.SkillField[FieldID].nowCD;
             float max = valuedata.SkillField[FieldID].maxCD;
             float value = now / max;
-            if (FieldID == 0)
-                Skill_0.fillAmount = value;
-            else if (FieldID == 1)
-                Skill_1.fillAmount = value;
-            else if (FieldID == 2)
-                Skill_2.fillAmount = value;
+            SkillCdMask[FieldID].fillAmount = value;
         }
     }
 
+    public void ChangeSkill(int target) {
+        ChangeSkill_ID = target;
+        FieldSelectUI.SetActive(true);
+    }
+    public void SelectChangeField(int Field) {
+        FieldSelectUI.SetActive(false);
+        valuedata.SkillField[Field] = valuedata.Skill[ChangeSkill_ID];
+        SkillFieldIcon[Field].sprite = valuedata.SkillIcon[ChangeSkill_ID];
+        SkillFieldIcon[Field].SetNativeSize();
+    }
 }
