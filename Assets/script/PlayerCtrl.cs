@@ -102,19 +102,39 @@ public class PlayerCtrl : MonoBehaviour
         }
         //滑鼠L
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
-            if (valuedata.SkillField[0].nowCD <= 0) {
+            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost) {
+                valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UIctrl.UpdateSkillCD();
                 skill.UseSkill(valuedata.SkillField[0].ID);
                 StartCoroutine(UIctrl.SkillCD(0));
             }
         }
-        //衝刺
-        if (Input.GetKeyDown(KeyCode.Space) && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1) {
-            if (valuedata.AP >= valuedata.Skill[2].Cost) {
+        //滑鼠R
+        if (Input.GetKeyDown(KeyCode.Mouse1)){
+            if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost)
+            {
+                valuedata.AP -= valuedata.SkillField[1].Cost;
+                valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
+                UIctrl.UpdateSkillCD();
+                skill.UseSkill(valuedata.SkillField[1].ID);
+                StartCoroutine(UIctrl.SkillCD(1));
+            }
+        }
+        //空白鍵
+        if (Input.GetKeyDown(KeyCode.Space)){ // && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1
+            if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost)
+            {
+                valuedata.AP -= valuedata.SkillField[2].Cost;
+                valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
+                UIctrl.UpdateSkillCD();
+                skill.UseSkill(valuedata.SkillField[2].ID);
+                StartCoroutine(UIctrl.SkillCD(2));
+            }
+            /*if (valuedata.AP >= valuedata.Skill[2].Cost) {
                 valuedata.AP -= valuedata.Skill[2].Cost;
                 StartCoroutine(Flash());
-            }
+            }*/
         }
 
     }
