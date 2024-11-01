@@ -18,8 +18,6 @@ public class PlayerCtrl : MonoBehaviour
     LayerMask mask = ~(1 << 6);
     public bool canMove;
     public bool canAttack02;
-    public GameObject SmokeTrail;
-    public bool canBehurt;//可被攻擊，用於受傷無敵幀
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
@@ -30,7 +28,7 @@ public class PlayerCtrl : MonoBehaviour
         m_Animator = GetComponent<Animator>();
         canMove = true;
         canAttack02 = false;
-        canBehurt = true;
+        valuedata.canBehurt = true;
         //StartCoroutine(TimeHP());
     }
 
@@ -131,10 +129,6 @@ public class PlayerCtrl : MonoBehaviour
                 skill.UseSkill(valuedata.SkillField[2].ID);
                 StartCoroutine(UIctrl.SkillCD(2));
             }
-            /*if (valuedata.AP >= valuedata.Skill[2].Cost) {
-                valuedata.AP -= valuedata.Skill[2].Cost;
-                StartCoroutine(Flash());
-            }*/
         }
 
     }
@@ -156,27 +150,8 @@ public class PlayerCtrl : MonoBehaviour
         canAttack02 = true;
     }
 
-    IEnumerator Flash() {
-        canBehurt = false;
-        SmokeTrail.GetComponent<ParticleSystem>().Play();
-        if (UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[11].Lv > 0) {
-            Health(0.5f);
-        }
-        Vector3 m_Input;
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-            m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        else
-            m_Input = transform.forward;
-        for (int i = 0; i < 20; i++) {
-            m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * valuedata.Skill[2].Size);
-            yield return new WaitForSeconds(0.01f);
-        }
-        SmokeTrail.GetComponent<ParticleSystem>().Stop();
-        canBehurt = true;
-    }
-
     private void OnTriggerStay(Collider other){
-        if (!canBehurt)
+        if (!valuedata.canBehurt)
             return;
         if (other.tag == "EnemyAttack" ) {
             BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
@@ -210,12 +185,12 @@ public class PlayerCtrl : MonoBehaviour
 
     //受傷無敵幀
     IEnumerator BehurtTimer() {
-        canBehurt = false;
+        valuedata.canBehurt = false;
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
         yield return new WaitForSeconds(0.3f);
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
         yield return new WaitForSeconds(0.2f);
-        canBehurt = true;
+        valuedata.canBehurt = true;
     }
 
     //回復生命

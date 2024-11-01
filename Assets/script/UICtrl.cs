@@ -27,17 +27,8 @@ public class UICtrl : MonoBehaviour
     int ChangeSkill_ID;//更換技能的ID暫存
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
-
-    /*
-    //Skill A
-    public static float Skill_A_AttackSpeed = 0.5f;//每秒攻擊次數
-    public static float Skill_A_Size = 1;//範圍
-    public static float Skill_A_DmgAdd = 1;//傷害倍率
-    //Skill B
-    public static float Skill_B_AttackSpeed = 1;//轉圈速度
-    public static float Skill_B_Range = 3;//距離
-    public static float Skill_B_DmgAdd = 1;//傷害倍率
-    */
+    public GameObject _passiveskill;
+    public PassiveSkill[] passiveskill;
 
     private void Start(){
         valuedata.ValueUpdate();
@@ -45,6 +36,7 @@ public class UICtrl : MonoBehaviour
         valuedata.AP = valuedata.maxAP;
         valuedata.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
+        passiveskill = _passiveskill.GetComponentsInChildren<PassiveSkill>();
     }
 
     void Update()
@@ -163,4 +155,25 @@ public class UICtrl : MonoBehaviour
         SkillFieldIcon[Field].sprite = valuedata.SkillIcon[ChangeSkill_ID];
         SkillFieldIcon[Field].SetNativeSize();
     }
+
+    public void UpdatePassiveSkill() {
+        for (int i = 0; i < passiveskill.Length; i++) { //重製所有天賦，避免出錯
+            passiveskill[i].Btn.interactable = false;
+            passiveskill[i].Btn.isOn = false;
+        }
+        passiveskill[0].Btn.interactable = true; //開放初始天賦
+        for (int i = 0; i < passiveskill.Length; i++) {
+            if (valuedata.PassiveSkills[i]) //若已有當前天賦
+            {
+                passiveskill[i].Btn.isOn = true;
+                passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
+                int x = passiveskill[i].link.Length; //開放下層天賦
+                for (int z = 0; z < x; z++) {
+                    passiveskill[i].link[z].Btn.interactable = true;
+                    Debug.Log(passiveskill[i].link[z].ID + "打開");
+                }
+            }
+        }
+    }
+
 }

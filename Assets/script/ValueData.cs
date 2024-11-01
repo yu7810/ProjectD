@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class ValueData : MonoBehaviour
 {
+    public bool canBehurt;//可被攻擊，用於受傷無敵幀
+
     //基底數值
     public float base_maxAp = 10;
     public float base_maxHp = 30;
@@ -21,6 +23,7 @@ public class ValueData : MonoBehaviour
 
 
     //當前數值
+    public bool[] PassiveSkills; //當前各天賦點的加點
     public float AP;
     public float maxAP;
     public float HP;
