@@ -9,6 +9,8 @@ using static UnityEngine.Rendering.DebugUI;
 
 public class UICtrl : MonoBehaviour
 {
+    private static UICtrl instance;
+    public Canvas canvas;
     public GameObject PlayerCtrl;
     public Image Value_AP;
     public Image Value_HP;
@@ -30,6 +32,11 @@ public class UICtrl : MonoBehaviour
     public GameObject _passiveskill;
     public PassiveSkill[] passiveskill;
 
+    public Color BtnColor_Have;//有天賦時的天賦點顏色
+    public Color BtnColor_Normal;//無天賦時的
+    public Line line;
+    public Transform LineFather;
+
     private void Start(){
         valuedata.ValueUpdate();
         valuedata.HP = valuedata.maxHP;
@@ -37,11 +44,37 @@ public class UICtrl : MonoBehaviour
         valuedata.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
         passiveskill = _passiveskill.GetComponentsInChildren<PassiveSkill>();
+        _passiveskill.transform.parent.gameObject.SetActive(false);
     }
 
     void Update()
     {
         UIUpdate();
+        if (Input.GetKeyDown(KeyCode.F)) {
+            if (_passiveskill.transform.parent.gameObject.activeSelf)
+                _passiveskill.transform.parent.gameObject.SetActive(false);
+            else {
+                _passiveskill.transform.parent.gameObject.SetActive(true);
+                UpdatePassiveSkill();
+                UpdateLine();
+            }
+        }
+    }
+
+    //單例實體
+    public static UICtrl Instance {
+        get => instance;
+    }
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+
+            return;
+        }
+        instance = this;
+        DontDestroyOnLoad(gameObject);
     }
 
     void UIUpdate() {
@@ -159,19 +192,36 @@ public class UICtrl : MonoBehaviour
     public void UpdatePassiveSkill() {
         for (int i = 0; i < passiveskill.Length; i++) { //重製所有天賦，避免出錯
             passiveskill[i].Btn.interactable = false;
-            passiveskill[i].Btn.isOn = false;
+            passiveskill[i].Img.color = BtnColor_Normal;
         }
         passiveskill[0].Btn.interactable = true; //開放初始天賦
         for (int i = 0; i < passiveskill.Length; i++) {
             if (valuedata.PassiveSkills[i]) //若已有當前天賦
             {
-                passiveskill[i].Btn.isOn = true;
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
+                passiveskill[i].Img.color = BtnColor_Have;
                 int x = passiveskill[i].link.Length; //開放下層天賦
                 for (int z = 0; z < x; z++) {
                     passiveskill[i].link[z].Btn.interactable = true;
-                    Debug.Log(passiveskill[i].link[z].ID + "打開");
                 }
+            }
+        }
+    }
+    
+    public void UpdateLine() {
+        if (LineFather.childCount > 0) { //刪除場上已有的Line
+            for (int i = 0; i < LineFather.childCount; i++) {
+                Destroy(LineFather.GetChild(i).gameObject);
+            }
+        }
+        for (int i = 0; i < passiveskill.Length; i++){ //生成Line
+            for (int x = 0; x < passiveskill[i].link.Length; x++)
+            {
+                Line L = Instantiate(line, LineFather);
+                L.line = L.GetComponent<RectTransform>();
+                L.button1 = passiveskill[i].Btn;
+                L.button2 = passiveskill[i].link[x].Btn;
+                L.UpdateLine();
             }
         }
     }

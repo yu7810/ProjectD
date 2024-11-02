@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour
 
     public GameObject Mesh;
     private Color C;
-    private GameObject UICtrl;
     public bool canBeHit;//受擊時短暫無敵，避免重複判定
     Animator m_Animator;
 
@@ -26,7 +25,6 @@ public class Enemy : MonoBehaviour
 
     private void OnEnable(){
         m_Animator = GetComponent<Animator>();
-        UICtrl = GameObject.Find("UICtrl");
         Hp = maxHp;
         canBeHit = true;
         if (gameObject.tag == "Barrel"){
@@ -47,7 +45,7 @@ public class Enemy : MonoBehaviour
     }
 
     public void Die() {
-        UICtrl.GetComponent<UICtrl>().GetEXP(EXP);
+        UICtrl.Instance.GetEXP(EXP);
         Destroy(transform.gameObject);
     }
 

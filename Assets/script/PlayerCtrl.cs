@@ -14,7 +14,6 @@ public class PlayerCtrl : MonoBehaviour
     bool Run;
     bool Move;
     float value_RunSpeed = 1.5f;
-    public UICtrl UIctrl;
     LayerMask mask = ~(1 << 6);
     public bool canMove;
     public bool canAttack02;
@@ -103,9 +102,9 @@ public class PlayerCtrl : MonoBehaviour
             if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost) {
                 valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
-                UIctrl.UpdateSkillCD();
+                UICtrl.Instance.UpdateSkillCD();
                 skill.UseSkill(valuedata.SkillField[0].ID);
-                StartCoroutine(UIctrl.SkillCD(0));
+                StartCoroutine(UICtrl.Instance.SkillCD(0));
             }
         }
         //滑鼠R
@@ -114,9 +113,9 @@ public class PlayerCtrl : MonoBehaviour
             {
                 valuedata.AP -= valuedata.SkillField[1].Cost;
                 valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
-                UIctrl.UpdateSkillCD();
+                UICtrl.Instance.UpdateSkillCD();
                 skill.UseSkill(valuedata.SkillField[1].ID);
-                StartCoroutine(UIctrl.SkillCD(1));
+                StartCoroutine(UICtrl.Instance.SkillCD(1));
             }
         }
         //空白鍵
@@ -125,9 +124,9 @@ public class PlayerCtrl : MonoBehaviour
             {
                 valuedata.AP -= valuedata.SkillField[2].Cost;
                 valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
-                UIctrl.UpdateSkillCD();
+                UICtrl.Instance.UpdateSkillCD();
                 skill.UseSkill(valuedata.SkillField[2].ID);
-                StartCoroutine(UIctrl.SkillCD(2));
+                StartCoroutine(UICtrl.Instance.SkillCD(2));
             }
         }
 
@@ -178,7 +177,7 @@ public class PlayerCtrl : MonoBehaviour
         {
             //失敗
             valuedata.HP = 0;
-            UIctrl.gameover();
+            UICtrl.Instance.gameover();
 
         }
     }

@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class EnemyCount : MonoBehaviour
 {
-
-    public GameObject UICtrl;
     public GameObject Player;
     public GameObject Enemy_A;
     public GameObject Enemy_B;
