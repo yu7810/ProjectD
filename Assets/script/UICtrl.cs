@@ -23,6 +23,10 @@ public class UICtrl : MonoBehaviour
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
     public GameObject FieldSelectUI;//選擇技能要放的欄位
+    public TextMeshProUGUI HP_text;
+    public TextMeshProUGUI AP_text;
+    public TextMeshProUGUI Atk_text;
+    public TextMeshProUGUI Movespeed_text;
 
     public ValueData valuedata;
     public int[] UpgradeBtn;
@@ -58,6 +62,7 @@ public class UICtrl : MonoBehaviour
                 UpdatePassiveSkill();
                 UpdateLine();
             }
+            UpdateValueUI();
         }
     }
 
@@ -224,6 +229,13 @@ public class UICtrl : MonoBehaviour
                 L.UpdateLine();
             }
         }
+    }
+
+    public void UpdateValueUI() {
+        HP_text.text = valuedata.maxHP.ToString();
+        AP_text.text = valuedata.maxAP.ToString();
+        Atk_text.text = valuedata.Attack.ToString();
+        Movespeed_text.text = valuedata.MoveSpeed.ToString();
     }
 
 }
