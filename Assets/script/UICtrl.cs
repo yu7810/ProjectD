@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
+using UnityEngine.EventSystems;
 
 public class UICtrl : MonoBehaviour
 {
@@ -23,12 +24,15 @@ public class UICtrl : MonoBehaviour
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
     public GameObject FieldSelectUI;//選擇技能要放的欄位
-    public TextMeshProUGUI HP_text;
+
+    public GameObject Tip;//說明窗相關
+    public TextMeshProUGUI Tip_Name;
+
+    public TextMeshProUGUI HP_text;//數值欄相關
     public TextMeshProUGUI AP_text;
     public TextMeshProUGUI Atk_text;
     public TextMeshProUGUI Movespeed_text;
 
-    public ValueData valuedata;
     public int[] UpgradeBtn;
     int ChangeSkill_ID;//更換技能的ID暫存
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
@@ -41,29 +45,46 @@ public class UICtrl : MonoBehaviour
     public Line line;
     public Transform LineFather;
 
+    private EventSystem eventSystem;//滑鼠射線用
+    private GraphicRaycaster graphicRaycaster;
+
     private void Start(){
-        valuedata.ValueUpdate();
-        valuedata.HP = valuedata.maxHP;
-        valuedata.AP = valuedata.maxAP;
-        valuedata.EXP = 0;
+        ValueData.Instance.PlayerValueUpdate();
+        ValueData.Instance.HP = ValueData.Instance.maxHP;
+        ValueData.Instance.AP = ValueData.Instance.maxAP;
+        ValueData.Instance.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
         passiveskill = _passiveskill.GetComponentsInChildren<PassiveSkill>();
         _passiveskill.transform.parent.gameObject.SetActive(false);
+        eventSystem = EventSystem.current;
+        graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
     }
 
     void Update()
     {
         UIUpdate();
+
         if (Input.GetKeyDown(KeyCode.F)) {
-            if (_passiveskill.transform.parent.gameObject.activeSelf)
+            if (_passiveskill.transform.parent.gameObject.activeSelf) {
                 _passiveskill.transform.parent.gameObject.SetActive(false);
+                Time.timeScale = 1;
+            }
             else {
                 _passiveskill.transform.parent.gameObject.SetActive(true);
                 UpdatePassiveSkill();
                 UpdateLine();
+                Time.timeScale = 0;
             }
             UpdateValueUI();
         }
+        //Tip彈窗
+        if (IsPointerOverUI(out GameObject uiElement))
+        {
+            Tip.SetActive(true);
+            Tip_Name.text = uiElement.name;
+        }
+        else
+            Tip.SetActive(false);
     }
 
     //單例實體
@@ -75,7 +96,6 @@ public class UICtrl : MonoBehaviour
         if (instance != null)
         {
             Destroy(gameObject);
-
             return;
         }
         instance = this;
@@ -83,23 +103,23 @@ public class UICtrl : MonoBehaviour
     }
 
     void UIUpdate() {
-        float valueAP = valuedata.AP / valuedata.maxAP;
+        float valueAP = ValueData.Instance.AP / ValueData.Instance.maxAP;
         Value_AP.fillAmount = valueAP;
-        float valueHP = valuedata.HP / valuedata.maxHP;
+        float valueHP = ValueData.Instance.HP / ValueData.Instance.maxHP;
         Value_HP.fillAmount = valueHP;
-        float valueEXP = valuedata.EXP / valuedata.maxEXP;
+        float valueEXP = ValueData.Instance.EXP / ValueData.Instance.maxEXP;
         Value_EXP.fillAmount = valueEXP;
     }
 
     public void GetEXP(float Value) {
-        if (Value >= valuedata.maxEXP - valuedata.EXP){
+        if (Value >= ValueData.Instance.maxEXP - ValueData.Instance.EXP){
             //升級
-            valuedata.EXP = 0;
-            valuedata.maxEXP += valuedata.maxEXP /2;
+            ValueData.Instance.EXP = 0;
+            ValueData.Instance.maxEXP += ValueData.Instance.maxEXP /2;
             LevelUP();
         }
         else {
-            valuedata.EXP += Value;
+            ValueData.Instance.EXP += Value;
         }
     }
 
@@ -160,14 +180,14 @@ public class UICtrl : MonoBehaviour
     }
 
     public IEnumerator SkillCD(int FieldID) {
-        if (valuedata.SkillField[FieldID].nowCD <= 0.01f && valuedata.SkillField[FieldID].nowCD > 0) {
-            yield return new WaitForSeconds(valuedata.SkillField[FieldID].nowCD);
-            valuedata.SkillField[FieldID].nowCD = 0;
+        if (ValueData.Instance.SkillField[FieldID].nowCD <= 0.01f && ValueData.Instance.SkillField[FieldID].nowCD > 0) {
+            yield return new WaitForSeconds(ValueData.Instance.SkillField[FieldID].nowCD);
+            ValueData.Instance.SkillField[FieldID].nowCD = 0;
             UpdateSkillCD();
         }
         else {
             yield return new WaitForSeconds(0.01f);
-            valuedata.SkillField[FieldID].nowCD -= 0.01f;
+            ValueData.Instance.SkillField[FieldID].nowCD -= 0.01f;
             UpdateSkillCD();
             StartCoroutine(SkillCD(FieldID));
         }
@@ -176,8 +196,8 @@ public class UICtrl : MonoBehaviour
 
     public void UpdateSkillCD() {
         for (int FieldID = 0; FieldID < 3; FieldID++) {
-            float now = valuedata.SkillField[FieldID].nowCD;
-            float max = valuedata.SkillField[FieldID].maxCD;
+            float now = ValueData.Instance.SkillField[FieldID].nowCD;
+            float max = ValueData.Instance.SkillField[FieldID].maxCD;
             float value = now / max;
             SkillCdMask[FieldID].fillAmount = value;
         }
@@ -189,9 +209,10 @@ public class UICtrl : MonoBehaviour
     }
     public void SelectChangeField(int Field) {
         FieldSelectUI.SetActive(false);
-        valuedata.SkillField[Field] = valuedata.Skill[ChangeSkill_ID];
-        SkillFieldIcon[Field].sprite = valuedata.SkillIcon[ChangeSkill_ID];
+        ValueData.Instance.SkillField[Field] = ValueData.Instance.Skill[ChangeSkill_ID];
+        SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID];
         SkillFieldIcon[Field].SetNativeSize();
+        ValueData.Instance.SkillFieldValueUpdate();
     }
 
     public void UpdatePassiveSkill() {
@@ -201,7 +222,7 @@ public class UICtrl : MonoBehaviour
         }
         passiveskill[0].Btn.interactable = true; //開放初始天賦
         for (int i = 0; i < passiveskill.Length; i++) {
-            if (valuedata.PassiveSkills[i]) //若已有當前天賦
+            if (ValueData.Instance.PassiveSkills[i]) //若已有當前天賦
             {
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
                 passiveskill[i].Img.color = BtnColor_Have;
@@ -232,10 +253,34 @@ public class UICtrl : MonoBehaviour
     }
 
     public void UpdateValueUI() {
-        HP_text.text = valuedata.maxHP.ToString();
-        AP_text.text = valuedata.maxAP.ToString();
-        Atk_text.text = valuedata.Attack.ToString();
-        Movespeed_text.text = valuedata.MoveSpeed.ToString();
+        HP_text.text = ValueData.Instance.maxHP.ToString();
+        AP_text.text = ValueData.Instance.maxAP.ToString();
+        Atk_text.text = ValueData.Instance.Power.ToString();
+        Movespeed_text.text = ValueData.Instance.MoveSpeed.ToString();
+    }
+
+    //滑鼠射線
+    public bool IsPointerOverUI(out GameObject uiElement)
+    {
+        // 用來儲存射線檢測結果
+        PointerEventData pointerEventData = new PointerEventData(eventSystem);
+        pointerEventData.position = Input.mousePosition;
+
+        // 射線檢測結果清單
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        // 執行射線檢測
+        graphicRaycaster.Raycast(pointerEventData, results);
+
+        // 若檢測到UI元素，返回該元素
+        if (results.Count > 0)
+        {
+            uiElement = results[0].gameObject;
+            return true;
+        }
+
+        uiElement = null;
+        return false;
     }
 
 }

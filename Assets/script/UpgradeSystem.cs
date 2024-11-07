@@ -147,7 +147,7 @@ public class UpgradeSystem : MonoBehaviour
 
     //=================================各技能的升級事件=================================
     public void Skill_A_atkUp() {
-        valuedata.Skill[1].DamageAdd += 0.5f;
+        valuedata.Skill[1].Damage += 0.5f;
     }
     public void Skill_A_speedUp(){
         valuedata.Skill[1].maxCD -= 0.5f;
@@ -176,7 +176,7 @@ public class UpgradeSystem : MonoBehaviour
         Skill_B_1.GetComponent<SkillRotation>().globalSpeed = 100 * valuedata.Skill[2].Speed; //旋轉速度
     }
     public void Skill_B_attackUp(){
-        valuedata.Skill[3].DamageAdd += 0.5f;
+        valuedata.Skill[3].Damage += 0.5f;
     }
     public void Skill_B_moveSpeedUp() {
         valuedata.Skill[3].Speed = UpgradeList[5].Lv * 0.1f * UpgradeList[8].Lv;
@@ -188,19 +188,19 @@ public class UpgradeSystem : MonoBehaviour
     }
     public void Skill_C_quick() {
         valuedata.Skill[3].Cost = 3f;
-        valuedata.ValueUpdate();
+        valuedata.PlayerValueUpdate();
         UpgradeList[11].Weights = 0;
     }
     public void Skill_C_health()
     {
         valuedata.Skill[3].Cost = 10f;
-        valuedata.ValueUpdate();
+        valuedata.PlayerValueUpdate();
         UpgradeList[10].Weights = 0;
     }
     public void Skill_C_distance()
     {
         valuedata.Skill[2].Size += 3;
-        valuedata.ValueUpdate();
+        valuedata.PlayerValueUpdate();
     }
 
 }

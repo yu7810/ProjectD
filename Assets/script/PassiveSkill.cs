@@ -9,34 +9,33 @@ public class PassiveSkill : MonoBehaviour
     public int ID; //該天賦的ID，需與Hierarchy裡附物件的子物件順序相符(不算disable的)，從0開始算
     public Button Btn;
     public Image Img;
-    ValueData valuedata;
 
     private void Awake()
     {
         Btn = this.GetComponent<Button>();
         Img = this.GetComponent<Image>();
-        valuedata = GameObject.Find("ValueData").GetComponent<ValueData>();
     }
 
     public void OnBtn() { //toggle事件，當該天賦點被點擊時
-        if (valuedata.PassiveSkills[ID]) //後悔天賦時
+        if (ValueData.Instance.PassiveSkills[ID]) //後悔天賦時
         {
             for (int i = 0; i < link.Length; i++)
             {
-                if (valuedata.PassiveSkills[link[i].ID]) //下層天賦有任何是已點擊的狀態，則不能後悔此天賦點
+                if (ValueData.Instance.PassiveSkills[link[i].ID]) //下層天賦有任何是已點擊的狀態，則不能後悔此天賦點
                     return;
             }
-            valuedata.PassiveSkills[ID] = false; //後悔成功
+            ValueData.Instance.PassiveSkills[ID] = false; //後悔成功
             for (int i = 0; i < link.Length; i++) //關閉關聯天賦的按鈕
             {
                 link[i].Btn.interactable = false;
             }
         }
         else { //取得天賦時
-            valuedata.PassiveSkills[ID] = true;
+            ValueData.Instance.PassiveSkills[ID] = true;
         }
         UICtrl.Instance.UpdatePassiveSkill();
-        valuedata.ValueUpdate();
+        ValueData.Instance.PlayerValueUpdate();
+        ValueData.Instance.SkillFieldValueUpdate();
     }
 
 }

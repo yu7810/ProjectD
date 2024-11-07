@@ -8,19 +8,20 @@ public class PlayerAttack : MonoBehaviour
 
     //public bool HitSlowMotion;
     public GameObject AttackParticle;
-    public int Skill_ID;//1=技能A，依此類推
-    public float Dmg;//由useskill指派數值
-    public GameObject _UpgradeSystem;
-    public ValueData valuedata;
+    //public int Skill_ID;//1=技能A，依此類推
+    //public float Dmg;//由useskill指派數值
+    //public GameObject _UpgradeSystem;
+    public SkillBase thisSkill;
+    public WeaponBase thisWeapon;
 
     private void OnEnable()
     {
-        _UpgradeSystem = GameObject.Find("Upgrade System");
+        //_UpgradeSystem = GameObject.Find("Upgrade System");
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.transform.tag == "Barrel" || other.gameObject.transform.tag == "Enemy")
+        if (other.transform.tag == "Barrel" || other.transform.tag == "Enemy")
         {
             //黏刀，改時間效果不明顯，且會影響到粒子表現
             /*if (!HitSlowMotion) {
@@ -28,8 +29,8 @@ public class PlayerAttack : MonoBehaviour
             }*/
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
-            if (other.transform.GetComponent<Enemy>().Hp > Dmg) {
-                other.transform.GetComponent<Enemy>().Hp -= Dmg;
+            if (other.transform.GetComponent<Enemy>().Hp > thisSkill.Damage) {
+                other.transform.GetComponent<Enemy>().Hp -= thisSkill.Damage;
                 other.transform.GetComponent<Enemy>().beAttack();
             }
             else
@@ -40,12 +41,12 @@ public class PlayerAttack : MonoBehaviour
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);
         }
-        if (other.gameObject.transform.tag == "EnemyAttack") {
-            if (_UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[4].Lv >= 1) {
+        if (other.transform.tag == "EnemyAttack") {
+            /*if (_UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[4].Lv >= 1) {
                 GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
                 Destroy(P, 1f);
                 Destroy(other.gameObject);
-            }
+            }*/
         }
         
     }

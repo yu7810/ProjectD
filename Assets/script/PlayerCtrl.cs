@@ -99,33 +99,39 @@ public class PlayerCtrl : MonoBehaviour
         }
         //滑鼠L
         if (Input.GetKeyDown(KeyCode.Mouse0)) {
+            if (valuedata.SkillField[0].ID == 0) 
+                return;
             if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost) {
                 valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[0].ID);
+                skill.UseSkill(valuedata.SkillField[0].ID , valuedata.WeaponField[0].ID);
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
             }
         }
         //滑鼠R
         if (Input.GetKeyDown(KeyCode.Mouse1)){
+            if (valuedata.SkillField[1].ID == 0)
+                return;
             if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost)
             {
                 valuedata.AP -= valuedata.SkillField[1].Cost;
                 valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[1].ID);
+                skill.UseSkill(valuedata.SkillField[1].ID, valuedata.WeaponField[1].ID);
                 StartCoroutine(UICtrl.Instance.SkillCD(1));
             }
         }
         //空白鍵
-        if (Input.GetKeyDown(KeyCode.Space)){ // && UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[9].Lv >=1
+        if (Input.GetKeyDown(KeyCode.Space)){
+            if (valuedata.SkillField[2].ID == 0)
+                return;
             if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost)
             {
                 valuedata.AP -= valuedata.SkillField[2].Cost;
                 valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[2].ID);
+                skill.UseSkill(valuedata.SkillField[2].ID, valuedata.WeaponField[2].ID);
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
             }
         }
