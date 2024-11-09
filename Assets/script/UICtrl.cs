@@ -23,16 +23,33 @@ public class UICtrl : MonoBehaviour
     public GameObject UpgradeSys;//UpgradeSystem
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
+    public Transform SkillStoreContent;//商店內容頁父物件
+    public GameObject WeaponStoreUI;
     public GameObject SkillFieldSelectUI;//選擇技能要放的欄位
     public GameObject WeaponFieldSelectUI;//選擇技能要放的欄位
+    public GameObject StoreskillbuttonPrefab;
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
+    public TextMeshProUGUI Tip_Intro;
+    public TextMeshProUGUI Tip_Cd;
+    public TextMeshProUGUI Tip_Cost;
+    public TextMeshProUGUI Tip_Dmg;
+    public TextMeshProUGUI Tip_Crit;
+    public TextMeshProUGUI Tip_Size;
+    public TextMeshProUGUI Tip_Speed;
 
     public TextMeshProUGUI HP_text;//數值欄相關
     public TextMeshProUGUI AP_text;
-    public TextMeshProUGUI Atk_text;
+    public TextMeshProUGUI Power_text;
     public TextMeshProUGUI Movespeed_text;
+    public TextMeshProUGUI SkillSpeed_text;
+    public TextMeshProUGUI EnemyTimer_text;
+    public TextMeshProUGUI AttackSize_text;
+    public TextMeshProUGUI Cooldown_text;
+    public TextMeshProUGUI Costdown_text;
+    public TextMeshProUGUI Crit_text;
+    public TextMeshProUGUI CritDmg_text;
 
     public int[] UpgradeBtn;
     int ChangeSkill_ID;//更換技能的ID暫存
@@ -61,6 +78,7 @@ public class UICtrl : MonoBehaviour
         _passiveskill.transform.parent.gameObject.SetActive(false);
         eventSystem = EventSystem.current;
         graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
+        UpdateSkillStore();
     }
 
     void Update()
@@ -81,11 +99,8 @@ public class UICtrl : MonoBehaviour
             UpdateValueUI();
         }
         //Tip彈窗
-        if (IsPointerOverUI(out GameObject uiElement))
-        {
+        if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
             Tip.SetActive(true);
-            Tip_Name.text = uiElement.name;
-        }
         else
             Tip.SetActive(false);
     }
@@ -276,8 +291,31 @@ public class UICtrl : MonoBehaviour
     public void UpdateValueUI() {
         HP_text.text = ValueData.Instance.maxHP.ToString();
         AP_text.text = ValueData.Instance.maxAP.ToString();
-        Atk_text.text = ValueData.Instance.Power.ToString();
+        Power_text.text = ValueData.Instance.Power.ToString();
         Movespeed_text.text = ValueData.Instance.MoveSpeed.ToString();
+        SkillSpeed_text.text = ValueData.Instance.SkillSpeed.ToString();
+        EnemyTimer_text.text = ValueData.Instance.EnemyTimer.ToString();
+        AttackSize_text.text = ValueData.Instance.AttackSize.ToString();
+        Cooldown_text.text = ValueData.Instance.Cooldown.ToString();
+        Costdown_text.text = ValueData.Instance.CostDown.ToString();
+        Crit_text.text = ValueData.Instance.Crit.ToString();
+        CritDmg_text.text = ValueData.Instance.CritDmg.ToString();
+    }
+
+    //生成商店UI內容
+    public void UpdateSkillStore() {
+        //清除舊內容
+        foreach (Transform child in SkillStoreContent) {
+            Destroy(child.gameObject);
+        }
+        foreach (SkillBase skill in ValueData.Instance.Skill) {
+            if (skill.ID != 0) {
+                GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
+                newButton.GetComponent<TipInfo>().UpdateInfo(skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
+                newButton.transform.Find("Icon").GetComponent<Image>().sprite = ValueData.Instance.SkillIcon[skill.ID];
+                newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID));
+            }
+        }
     }
 
     //滑鼠射線
