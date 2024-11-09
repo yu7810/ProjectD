@@ -11,8 +11,7 @@ public class PlayerAttack : MonoBehaviour
     //public int Skill_ID;//1=技能A，依此類推
     //public float Dmg;//由useskill指派數值
     //public GameObject _UpgradeSystem;
-    public SkillBase thisSkill;
-    public WeaponBase thisWeapon;
+    public SkillFieldBase thisSkill;
 
     private void OnEnable()
     {

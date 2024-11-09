@@ -105,7 +105,7 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[0].ID , valuedata.WeaponField[0].ID);
+                skill.UseSkill(valuedata.SkillField[0].ID , 0);
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
             }
         }
@@ -118,7 +118,7 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[1].Cost;
                 valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[1].ID, valuedata.WeaponField[1].ID);
+                skill.UseSkill(valuedata.SkillField[1].ID, 1);
                 StartCoroutine(UICtrl.Instance.SkillCD(1));
             }
         }
@@ -131,7 +131,7 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[2].Cost;
                 valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[2].ID, valuedata.WeaponField[2].ID);
+                skill.UseSkill(valuedata.SkillField[2].ID, 2);
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
             }
         }

@@ -23,7 +23,8 @@ public class UICtrl : MonoBehaviour
     public GameObject UpgradeSys;//UpgradeSystem
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
-    public GameObject FieldSelectUI;//選擇技能要放的欄位
+    public GameObject SkillFieldSelectUI;//選擇技能要放的欄位
+    public GameObject WeaponFieldSelectUI;//選擇技能要放的欄位
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
@@ -35,8 +36,10 @@ public class UICtrl : MonoBehaviour
 
     public int[] UpgradeBtn;
     int ChangeSkill_ID;//更換技能的ID暫存
+    int ChangeWeapon_ID;//更換裝備的ID暫存
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
+    public Image[] WeaponFieldIcon = new Image[3];//已裝備技能icon
     public GameObject _passiveskill;
     public PassiveSkill[] passiveskill;
 
@@ -205,13 +208,31 @@ public class UICtrl : MonoBehaviour
 
     public void ChangeSkill(int target) {
         ChangeSkill_ID = target;
-        FieldSelectUI.SetActive(true);
+        SkillFieldSelectUI.SetActive(true);
     }
-    public void SelectChangeField(int Field) {
-        FieldSelectUI.SetActive(false);
-        ValueData.Instance.SkillField[Field] = ValueData.Instance.Skill[ChangeSkill_ID];
+    public void SelectSkillChangeField(int Field) {
+        SkillFieldSelectUI.SetActive(false);
+        ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID].ID;
+        ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID].Name;
+        ValueData.Instance.SkillField[Field].nowCD = 0;
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID];
         SkillFieldIcon[Field].SetNativeSize();
+        ValueData.Instance.SkillFieldValueUpdate();
+    }
+    public void ChangeWeapon(int target){
+        ChangeWeapon_ID = target;
+        WeaponFieldSelectUI.SetActive(true);
+    }
+    public void SelectWeaponChangeField(int Field){
+        WeaponFieldSelectUI.SetActive(false);
+        ValueData.Instance.WeaponField[Field].ID = ValueData.Instance.Weapon[ChangeWeapon_ID].ID;
+        ValueData.Instance.WeaponField[Field].Name = ValueData.Instance.Weapon[ChangeWeapon_ID].Name;
+        ValueData.Instance.WeaponField[Field].Damage = ValueData.Instance.Weapon[ChangeWeapon_ID].Damage;
+        ValueData.Instance.WeaponField[Field].Cooldown = ValueData.Instance.Weapon[ChangeWeapon_ID].Cooldown;
+        ValueData.Instance.WeaponField[Field].Size = ValueData.Instance.Weapon[ChangeWeapon_ID].Size;
+        ValueData.Instance.WeaponField[Field].Speed = ValueData.Instance.Weapon[ChangeWeapon_ID].Speed;
+        ValueData.Instance.WeaponField[Field].Costdown = ValueData.Instance.Weapon[ChangeWeapon_ID].Costdown;
+        WeaponFieldIcon[Field].sprite = ValueData.Instance.WeaponIcon[ChangeWeapon_ID];
         ValueData.Instance.SkillFieldValueUpdate();
     }
 

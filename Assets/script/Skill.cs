@@ -14,24 +14,23 @@ public class Skill : MonoBehaviour
         m_Rigidbody = Player.GetComponent<Rigidbody>();
     }
 
-    public void UseSkill(int Skillid, int Weaponid) {
+    public void UseSkill(int Skillid, int Fieldid) {
         switch (Skillid) {
             case 1:
-                Use_A(Weaponid);
+                Use_A(Fieldid);
                 break;
             case 2:
-                Use_B(Weaponid);
+                Use_B(Fieldid);
                 break;
         }
     }
 
 
-    void Use_A(int Weaponid)
+    void Use_A(int Fieldid)
     {
         GameObject a = Instantiate(Skill_A, Player.transform.position, Player.transform.rotation);
-        a.GetComponent<PlayerAttack>().thisWeapon = ValueData.Instance.Weapon[Weaponid];
-        a.GetComponent<PlayerAttack>().thisSkill = ValueData.Instance.Skill[1];
-        float _size = ValueData.Instance.Skill[1].Size;
+        a.GetComponent<PlayerAttack>().thisSkill = ValueData.Instance.SkillField[Fieldid];
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(_size, 1, _size);
     }
 
