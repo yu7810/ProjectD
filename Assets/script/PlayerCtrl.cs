@@ -98,7 +98,7 @@ public class PlayerCtrl : MonoBehaviour
             m_Rigidbody.MoveRotation(newRotation);
         }
         //滑鼠L
-        if (Input.GetKeyDown(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false) 
+        if (Input.GetKeyDown(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen) 
         {
             if (valuedata.SkillField[0].ID == 0) 
                 return;
@@ -111,7 +111,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //滑鼠R
-        if (Input.GetKeyDown(KeyCode.Mouse1) && UICtrl.Instance.Tip.activeSelf == false)
+        if (Input.GetKeyDown(KeyCode.Mouse1) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
         {
             if (valuedata.SkillField[1].ID == 0)
                 return;
@@ -125,7 +125,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //空白鍵
-        if (Input.GetKeyDown(KeyCode.Space) && UICtrl.Instance.Tip.activeSelf == false)
+        if (Input.GetKeyDown(KeyCode.Space) && !ValueData.Instance.isUIopen)
         {
             if (valuedata.SkillField[2].ID == 0)
                 return;

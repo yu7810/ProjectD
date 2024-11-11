@@ -5,13 +5,12 @@ using UnityEngine;
 public class Skill : MonoBehaviour
 {
     Rigidbody m_Rigidbody;
-    public GameObject Player;
     public GameObject Skill_A;
     public ParticleSystem SmokeTrail;
 
     private void Start()
     {
-        m_Rigidbody = Player.GetComponent<Rigidbody>();
+        m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
     }
 
     public void UseSkill(int Skillid, int Fieldid) {
@@ -28,8 +27,8 @@ public class Skill : MonoBehaviour
 
     void Use_A(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_A, Player.transform.position, Player.transform.rotation);
-        a.GetComponent<PlayerAttack>().thisSkill = ValueData.Instance.SkillField[Fieldid];
+        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().thisSkill = ValueData.Instance.SkillField[Fieldid];
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(_size, 1, _size);
     }
@@ -50,10 +49,10 @@ public class Skill : MonoBehaviour
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
-            m_Input = Player.transform.forward;
+            m_Input = ValueData.Instance.Player.transform.forward;
         for (int i = 0; i < 20; i++)
         {
-            m_Rigidbody.MovePosition(Player.transform.position + m_Input * Time.deltaTime * ValueData.Instance.Skill[2].Size);
+            m_Rigidbody.MovePosition(ValueData.Instance.Player.transform.position + m_Input * Time.deltaTime * ValueData.Instance.Skill[2].Size);
             yield return new WaitForSeconds(0.01f);
         }
         SmokeTrail.Stop();

@@ -102,7 +102,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6135200275470344503}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
@@ -136,7 +136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8207547, g: 0.5458793, b: 0.5458793, a: 1}
+  m_Color: {r: 0.7058299, g: 0.5484603, b: 0.8018868, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -221,6 +221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f301a27ba63bc3043a680162c98ef98b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Type: 0
   Name: "\u57FA\u790E\u653B\u64CA"
   Cd: 1
   Cost: 1
@@ -228,3 +229,4 @@ MonoBehaviour:
   Crit: 0.1
   Size: 1
   Speed: 1
+  Intro: 

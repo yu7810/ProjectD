@@ -8,15 +8,8 @@ public class PlayerAttack : MonoBehaviour
 
     //public bool HitSlowMotion;
     public GameObject AttackParticle;
-    //public int Skill_ID;//1=技能A，依此類推
-    //public float Dmg;//由useskill指派數值
-    //public GameObject _UpgradeSystem;
     public SkillFieldBase thisSkill;
 
-    private void OnEnable()
-    {
-        //_UpgradeSystem = GameObject.Find("Upgrade System");
-    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -28,15 +21,18 @@ public class PlayerAttack : MonoBehaviour
             }*/
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
-            if (other.transform.GetComponent<Enemy>().Hp > thisSkill.Damage) {
-                other.transform.GetComponent<Enemy>().Hp -= thisSkill.Damage;
-                other.transform.GetComponent<Enemy>().beAttack();
+
+            float dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
+            //暴擊
+            float randomvalue = Random.Range(0.01f, 1f);
+            if (thisSkill.Crit >= randomvalue) {
+                dmg *= ValueData.Instance.CritDmg;
+                Debug.Log(dmg + "暴擊!!" + randomvalue);
             }
             else
-            {
-                other.transform.GetComponent<Enemy>().Hp = 0;
-                other.transform.GetComponent<Enemy>().Die();
-            }
+                Debug.Log(dmg);
+            other.transform.GetComponent<Enemy>().Hurt(dmg);
+
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);
         }

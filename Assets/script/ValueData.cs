@@ -5,19 +5,21 @@ using UnityEngine.UI;
 
 public class ValueData : MonoBehaviour
 {
+    public GameObject Player;
     private static ValueData instance;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
+    public bool isUIopen;//開關UI
 
     //基底數值
     public float base_maxAp = 10;
     public float base_maxHp = 30;
     public float base_MoveSpeed = 3f;
     public float base_Power = 5;
-    public float base_SkillSpeed = 0;
+    public float base_SkillSpeed = 1;
     public float base_EnemyTimer = 1;
     public float base_AttackSize = 1;
-    public float base_Cooldown = 0;
-    public float base_CostDown = 0;
+    public float base_Cooldown = 1;
+    public float base_CostDown = 1;
     public float base_Crit = 0;
     public float base_CritDmg = 2f;
 
@@ -45,7 +47,7 @@ public class ValueData : MonoBehaviour
     public float maxHP;
     public float EXP;
     public float maxEXP;
-    public float Power;//攻擊力
+    public float Power;//基礎傷害倍率
     public float SkillSpeed;//技能移動速度
     public float MoveSpeed;//移動速度
     public float EnemyTimer;//敵人生成速度%
@@ -87,9 +89,16 @@ public class ValueData : MonoBehaviour
     //裝備總表
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,"-",0,1f,1f,1f,1f,0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,"劍",0,1f,1f,1f,1f,0),
-        new WeaponBase(2,"弓",0,1f,1f,1f,1f,0),
-        new WeaponBase(3,"斧",0,1f,1f,1f,1f,0),
+        new WeaponBase(1,"劍", 1, 0.85f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,"弓", 1, 1f, 1f , 1.5f, 1f, 0),
+        new WeaponBase(3,"斧", 1.4f, 1.2f, 1.5f, 1f, 1f, 0.1f),
+    };
+    //裝備介紹
+    public string[] WeaponIntro = new string[] {
+        "-",
+        "裝備1說明文",
+        "裝備2說明文",
+        "裝備3說明文",
     };
 
     //已裝備裝備
@@ -125,6 +134,7 @@ public class ValueData : MonoBehaviour
             SkillField[id].Speed = Skill[SkillField[id].ID].Speed * SkillSpeed * Weapon[WeaponField[id].ID].Speed;
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * CostDown * Weapon[WeaponField[id].ID].Costdown;
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + Weapon[WeaponField[id].ID].Crit;
+            UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(1, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].Size, SkillField[id].Speed, SkillIntro[SkillField[id].ID]);
         }
     }
 

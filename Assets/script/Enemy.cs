@@ -44,6 +44,20 @@ public class Enemy : MonoBehaviour
         StartCoroutine(_Move());
     }
 
+    //受到傷害時使用
+    public void Hurt(float Dmg) {
+        if (Hp > Dmg)
+        {
+            Hp -= Dmg;
+            beAttack();
+        }
+        else {
+            Hp = 0;
+            Die();
+        }
+            
+    }
+
     public void Die() {
         UICtrl.Instance.GetEXP(EXP);
         Destroy(transform.gameObject);
