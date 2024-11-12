@@ -50,7 +50,7 @@ public class PlayerCtrl : MonoBehaviour
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.MoveSpeed);
-            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed , 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed);
+            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed * 3 , 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed * 3);
             //跑步耗體
             /*if (Run)
             {
@@ -98,7 +98,7 @@ public class PlayerCtrl : MonoBehaviour
             m_Rigidbody.MoveRotation(newRotation);
         }
         //滑鼠L
-        if (Input.GetKeyDown(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen) 
+        if (Input.GetKey(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen) 
         {
             if (valuedata.SkillField[0].ID == 0) 
                 return;
@@ -111,7 +111,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //滑鼠R
-        if (Input.GetKeyDown(KeyCode.Mouse1) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
+        if (Input.GetKey(KeyCode.Mouse1) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
         {
             if (valuedata.SkillField[1].ID == 0)
                 return;

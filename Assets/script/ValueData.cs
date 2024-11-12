@@ -88,10 +88,10 @@ public class ValueData : MonoBehaviour
 
     //裝備總表
     public WeaponBase[] Weapon = new WeaponBase[] {
-        new WeaponBase(0,"-",0,1f,1f,1f,1f,0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,"劍", 1, 0.85f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,"弓", 1, 1f, 1f , 1.5f, 1f, 0),
-        new WeaponBase(3,"斧", 1.4f, 1.2f, 1.5f, 1f, 1f, 0.1f),
+        new WeaponBase(0,"-", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
+        new WeaponBase(1,"劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,"弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
+        new WeaponBase(3,"斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
     };
     //裝備介紹
     public string[] WeaponIntro = new string[] {
@@ -111,18 +111,37 @@ public class ValueData : MonoBehaviour
     //每次加減天賦時呼叫，更新所有數值
     //還需要遍歷天賦點
     public void PlayerValueUpdate() {
+        //重製
+        add_maxAp = 0;
+        add_maxHp = 0;
+        add_MoveSpeed = 0;
+        add_Power= 0;
+        add_SkillSpeed = 0;
+        add_EnemyTimer = 0;
+        add_AttackSize = 0;
+        add_Cooldown = 0;
+        add_CostDown = 0;
+        add_Crit = 0;
+        add_CritDmg = 0;
+        //天賦數值
+        for (int i = 0; i < PassiveSkills.Length; i++) {
+            if (PassiveSkills[i])
+                PassiveSkillValueUpdate(i);
+        }
+        //加總
         maxAP = base_maxAp + add_maxAp;
         maxHP = base_maxHp + add_maxHp;
         Power = base_Power + add_Power;
-        MoveSpeed = base_MoveSpeed + add_MoveSpeed;
+        MoveSpeed = 1 + add_MoveSpeed;
         SkillSpeed = base_SkillSpeed + add_SkillSpeed;
-        MoveSpeed = base_MoveSpeed + add_MoveSpeed;
         EnemyTimer = base_EnemyTimer + add_EnemyTimer;
         AttackSize = base_AttackSize + add_AttackSize;
         Cooldown = base_Cooldown + add_Cooldown;
         CostDown = base_CostDown + add_CostDown;
         Crit = base_Crit + add_Crit;
         CritDmg = base_CritDmg + add_CritDmg;
+        //更新value UI
+        UICtrl.Instance.UpdateValueUI();
     }
 
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
@@ -152,6 +171,25 @@ public class ValueData : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    //天賦數值計算
+    public void PassiveSkillValueUpdate(int id) { 
+        switch (id)
+        {
+            case 0:
+                add_Power += 0.1f;
+                break;
+            case 1:
+                add_Power += 0.1f;
+                break;
+            case 2:
+                add_Power += 0.1f;
+                break;
+            case 3:
+                add_Power += 0.1f;
+                break;
+        }
     }
 
 }

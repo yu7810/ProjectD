@@ -27,11 +27,12 @@ public class PlayerAttack : MonoBehaviour
             float randomvalue = Random.Range(0.01f, 1f);
             if (thisSkill.Crit >= randomvalue) {
                 dmg *= ValueData.Instance.CritDmg;
-                Debug.Log(dmg + "暴擊!!" + randomvalue);
+                UICtrl.Instance.ShowDamage(dmg, other.transform.position, true);
             }
             else
-                Debug.Log(dmg);
+                UICtrl.Instance.ShowDamage(dmg, other.transform.position,false);
             other.transform.GetComponent<Enemy>().Hurt(dmg);
+            
 
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);

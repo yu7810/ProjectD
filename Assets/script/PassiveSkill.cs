@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class PassiveSkill : MonoBehaviour
 {
-    public PassiveSkill[] link; //糷ぱ结翴ぱ结翴true秨┮Τlink
+    public PassiveSkill[] top; //糷ぱ结翴
+    public PassiveSkill[] down;//糷ぱ结翴
     public int ID; //赣ぱ结ID惠籔Hierarchy柑ンン抖才(ぃ衡disable)眖0秨﹍衡
     public Button Btn;
     public Image Img;
@@ -19,15 +20,27 @@ public class PassiveSkill : MonoBehaviour
     public void OnBtn() { //toggleㄆン讽赣ぱ结翴砆翴阑
         if (ValueData.Instance.PassiveSkills[ID]) //ぱ结
         {
-            for (int i = 0; i < link.Length; i++)
+            for (int i = 0; i < down.Length; i++)
             {
-                if (ValueData.Instance.PassiveSkills[link[i].ID]) //糷ぱ结Τヴ琌翴阑篈玥ぃぱ结翴
+                if (down[i].top.Length <= 1 && ValueData.Instance.PassiveSkills[down[i].ID])//璝ヴ糷糷Τи玥ぃи
+                {
+                    return;
+                }
+                bool canRemove = false;
+                for (int x = 0; x< down[i].top.Length; x++) {
+                    bool a = ValueData.Instance.PassiveSkills[down[i].top[x].ID];//и糷ヴ種糷ぱ结琌Τ翴
+                    if (down[i].top[x].ID != ID && a) //璝糷ヴ種糷埃иΤヴ翴ぱ结
+                    {
+                        canRemove = true;
+                    }
+                }
+                if (!canRemove && ValueData.Instance.PassiveSkills[down[i].ID])
                     return;
             }
             ValueData.Instance.PassiveSkills[ID] = false; //Θ
-            for (int i = 0; i < link.Length; i++) //闽超闽羛ぱ结秙
+            for (int i = 0; i < down.Length; i++) //闽超糷ぱ结秙
             {
-                link[i].Btn.interactable = false;
+                down[i].Btn.interactable = false;
             }
         }
         else { //眔ぱ结

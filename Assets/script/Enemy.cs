@@ -38,10 +38,12 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        AttackCollider = transform.Find("AttackCollider").gameObject;
         canAttack = true;
-        canMove = true;
-        StartCoroutine(_Move());
+        if (tag == "Enemy") {
+            AttackCollider = transform.Find("AttackCollider").gameObject;
+            canMove = true;
+            StartCoroutine(_Move());
+        }
     }
 
     //受到傷害時使用
@@ -64,7 +66,8 @@ public class Enemy : MonoBehaviour
     }
 
     public void beAttack() {
-        m_Animator.SetBool("BeHit", true);
+        if (gameObject.tag == "Enemy")
+            m_Animator.SetBool("BeHit", true);
         StartCoroutine(beAttackEffect());
     }
 
@@ -72,11 +75,11 @@ public class Enemy : MonoBehaviour
         //桶子是用MeshRenderer，怪物是用SkinnedMeshRenderer
         if (gameObject.tag == "Barrel")
         {
-            canBeHit = false;
+            //canBeHit = false;
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.188f, 0.188f, 0.188f));
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", C);
-            canBeHit = true;
+            //canBeHit = true;
         }
         else if (gameObject.tag == "Enemy"){
             canBeHit = false;

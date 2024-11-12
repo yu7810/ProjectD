@@ -69,9 +69,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f245ca8ad3844a8adcf6dae69566e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Hp: 10
-  maxHp: 10
+  Hp: 30
+  maxHp: 30
+  Attack: 0
+  EXP: 0
+  AttackCD: 0
   Mesh: {fileID: 505971442272338187}
+  canBeHit: 0
+  target: {fileID: 0}
+  canAttack: 0
+  canMove: 0
 --- !u!1 &505971442272338187
 GameObject:
   m_ObjectHideFlags: 0

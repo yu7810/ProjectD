@@ -12,6 +12,7 @@ public class UICtrl : MonoBehaviour
 {
     private static UICtrl instance;
     public Canvas canvas;
+    public Canvas worldspaceCanvas;
     public Image Value_AP;
     public Image Value_HP;
     public Image Value_EXP;
@@ -32,6 +33,8 @@ public class UICtrl : MonoBehaviour
     public GameObject SkillfieldUI;
     public GameObject WeaponfieldUI;
     public GameObject ValueUI;
+    public TextMeshProUGUI DamagetextPrefab;//傷害數字
+    public GameObject DamagetextParent;//傷害數字的父物件
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
@@ -65,6 +68,8 @@ public class UICtrl : MonoBehaviour
     public PassiveSkill[] passiveskill;
     public Color BtnColor_Have;//有天賦時的天賦點顏色
     public Color BtnColor_Normal;//無天賦時的
+    public Color DamagetextColor_Normal;//傷害數字顏色
+    public Color DamagetextColor_Crit;//暴擊時
     public Line line;
     public Transform LineFather;
 
@@ -91,30 +96,17 @@ public class UICtrl : MonoBehaviour
     {
         UIUpdate();
 
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            if (_passiveskill.transform.parent.gameObject.activeSelf)
-            {
-                _passiveskill.transform.parent.gameObject.SetActive(false);
-                Time.timeScale = 1;
-            }
-            else
-            {
-                _passiveskill.transform.parent.gameObject.SetActive(true);
-                UpdatePassiveSkill();
-                UpdateLine();
-                Time.timeScale = 0;
-            }
-            UpdateValueUI();
-        }
-        else if (Input.GetKeyDown(KeyCode.Tab)) {
+        if (Input.GetKeyDown(KeyCode.Tab)) {
             if (ValueData.Instance.isUIopen)
             {
+                _passiveskill.transform.parent.gameObject.SetActive(false);
                 SkillStoreUI.SetActive(false);
                 WeaponStoreUI.SetActive(false);
                 ValueUI.SetActive(false);
                 SkillFieldSelectUI.SetActive(false);
                 WeaponFieldSelectUI.SetActive(false);
+                ChangeSkill_ID = 0;
+                ChangeWeapon_ID = 0;
                 ValueData.Instance.isUIopen = false;
             }
             else {
@@ -123,6 +115,9 @@ public class UICtrl : MonoBehaviour
                 WeaponStoreUI.SetActive(true);
                 UpdateWeaponStore();
                 ValueUI.SetActive(true);
+                _passiveskill.transform.parent.gameObject.SetActive(true);
+                UpdatePassiveSkill();
+                UpdateLine();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
             }
@@ -228,14 +223,18 @@ public class UICtrl : MonoBehaviour
     }
 
     public IEnumerator SkillCD(int FieldID) {
-        if (ValueData.Instance.SkillField[FieldID].nowCD <= 0.01f && ValueData.Instance.SkillField[FieldID].nowCD > 0) {
+        if (ValueData.Instance.SkillField[FieldID].nowCD <= 0) {
+            ValueData.Instance.SkillField[FieldID].nowCD = 0;
+            UpdateSkillCD();
+        }
+        else if (ValueData.Instance.SkillField[FieldID].nowCD <= 0.02f) {
             yield return new WaitForSeconds(ValueData.Instance.SkillField[FieldID].nowCD);
             ValueData.Instance.SkillField[FieldID].nowCD = 0;
             UpdateSkillCD();
         }
         else {
             yield return new WaitForSeconds(0.01f);
-            ValueData.Instance.SkillField[FieldID].nowCD -= 0.01f;
+            ValueData.Instance.SkillField[FieldID].nowCD -= 0.02f;
             UpdateSkillCD();
             StartCoroutine(SkillCD(FieldID));
         }
@@ -270,6 +269,7 @@ public class UICtrl : MonoBehaviour
         SkillFieldIcon[Field].SetNativeSize();
         SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
+        ChangeSkill_ID = 0;
     }
     public void ChangeWeapon(int target){
         if (ChangeWeapon_ID == target){
@@ -295,6 +295,7 @@ public class UICtrl : MonoBehaviour
         WeaponFieldIcon[Field].tag = "UI";
         WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(2, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
+        ChangeWeapon_ID = 0;
     }
 
     public void UpdatePassiveSkill() {
@@ -308,9 +309,9 @@ public class UICtrl : MonoBehaviour
             {
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
                 passiveskill[i].Img.color = BtnColor_Have;
-                int x = passiveskill[i].link.Length; //開放下層天賦
+                int x = passiveskill[i].down.Length; //開放下層天賦
                 for (int z = 0; z < x; z++) {
-                    passiveskill[i].link[z].Btn.interactable = true;
+                    passiveskill[i].down[z].Btn.interactable = true;
                 }
             }
         }
@@ -323,12 +324,12 @@ public class UICtrl : MonoBehaviour
             }
         }
         for (int i = 0; i < passiveskill.Length; i++){ //生成Line
-            for (int x = 0; x < passiveskill[i].link.Length; x++)
+            for (int x = 0; x < passiveskill[i].down.Length; x++)
             {
                 Line L = Instantiate(line, LineFather);
                 L.line = L.GetComponent<RectTransform>();
                 L.button1 = passiveskill[i].Btn;
-                L.button2 = passiveskill[i].link[x].Btn;
+                L.button2 = passiveskill[i].down[x].Btn;
                 L.UpdateLine();
             }
         }
@@ -337,15 +338,15 @@ public class UICtrl : MonoBehaviour
     public void UpdateValueUI() {
         HP_text.text = ValueData.Instance.maxHP.ToString();
         AP_text.text = ValueData.Instance.maxAP.ToString();
-        Power_text.text = ValueData.Instance.Power.ToString();
-        Movespeed_text.text = ValueData.Instance.MoveSpeed.ToString();
-        SkillSpeed_text.text = ValueData.Instance.SkillSpeed.ToString();
+        Power_text.text = (ValueData.Instance.Power * 100).ToString();
+        Movespeed_text.text = (ValueData.Instance.MoveSpeed * 100).ToString();
+        SkillSpeed_text.text = (ValueData.Instance.SkillSpeed * 100).ToString();
         EnemyTimer_text.text = ValueData.Instance.EnemyTimer.ToString();
-        AttackSize_text.text = ValueData.Instance.AttackSize.ToString();
-        Cooldown_text.text = ValueData.Instance.Cooldown.ToString();
-        Costdown_text.text = ValueData.Instance.CostDown.ToString();
-        Crit_text.text = ValueData.Instance.Crit.ToString();
-        CritDmg_text.text = ValueData.Instance.CritDmg.ToString();
+        AttackSize_text.text = (ValueData.Instance.AttackSize * 100).ToString();
+        Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString();
+        Costdown_text.text = (ValueData.Instance.CostDown * 100).ToString();
+        Crit_text.text = (ValueData.Instance.Crit * 100).ToString();
+        CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString();
     }
 
     //生成商店UI內容
@@ -405,4 +406,23 @@ public class UICtrl : MonoBehaviour
         return false;
     }
 
+    //傷害數字
+    public void ShowDamage(float value, Vector3 position ,bool isCrit) {
+        //位置偏移
+        Vector3 _position = new Vector3(Random.Range(position.x-0.5f, position.x+0.5f) , position.y, Random.Range(position.z-0.5f, position.z+1f));
+        //提高高度避免被較高的物體擋到
+        Vector3 _canvas = new Vector3(_position.x, worldspaceCanvas.transform.position.y, worldspaceCanvas.transform.position.z);
+        Vector3 _lerp = Vector3.Lerp(_position, _canvas, 0.3f);
+        TextMeshProUGUI damagetext = Instantiate(DamagetextPrefab, _lerp, worldspaceCanvas.transform.rotation, DamagetextParent.transform);
+        damagetext.text = value.ToString("0");
+        if (isCrit)
+        {
+            damagetext.color = DamagetextColor_Crit;
+            damagetext.fontSize += 0.8f;
+        }
+        else {
+            damagetext.color = DamagetextColor_Normal;
+        }
+        
+    }
 }
