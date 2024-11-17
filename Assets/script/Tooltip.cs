@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-using UnityEngine;
 using UnityEngine.UI;
 
 public class Tooltip : MonoBehaviour
@@ -17,7 +15,7 @@ public class Tooltip : MonoBehaviour
         tooltipPanel = this.gameObject.GetComponent<RectTransform>();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         FollowMouse();
     }
@@ -31,7 +29,7 @@ public class Tooltip : MonoBehaviour
             Input.mousePosition,
             UICtrl.Instance.canvas.worldCamera,
             out mousePosition);
-
+        
         // 設定視窗位置
         tooltipPanel.localPosition = mousePosition + offset;
 

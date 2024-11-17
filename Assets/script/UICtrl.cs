@@ -35,6 +35,7 @@ public class UICtrl : MonoBehaviour
     public GameObject ValueUI;
     public TextMeshProUGUI DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
+    public GameObject[] DontDestroy;
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
@@ -72,9 +73,12 @@ public class UICtrl : MonoBehaviour
     public Color DamagetextColor_Crit;//暴擊時
     public Line line;
     public Transform LineFather;
+    public TextMeshProUGUI passiveskillPoint;//天賦點數
 
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
+
+    public Material lineMaterial; // 用來繪製線條的材質
 
     private void Start(){
         ValueData.Instance.PlayerValueUpdate();
@@ -143,6 +147,21 @@ public class UICtrl : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (DontDestroy.Length > 0)
+        {
+            GameObject[] objects = new GameObject[DontDestroy.Length];
+            for (int i = 1; i < objects.Length; i++)
+            {
+                Destroy(objects[i]);
+            }
+            //= GameObject.Find(DontDestroy[0].name);
+        }
+
+        foreach (GameObject obj in DontDestroy) 
+        {
+            DontDestroyOnLoad(obj);
+        }
     }
 
     void UIUpdate() {
@@ -299,6 +318,7 @@ public class UICtrl : MonoBehaviour
     }
 
     public void UpdatePassiveSkill() {
+        passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
         for (int i = 0; i < passiveskill.Length; i++) { //重製所有天賦，避免出錯
             passiveskill[i].Btn.interactable = false;
             passiveskill[i].Img.color = BtnColor_Normal;
@@ -309,9 +329,13 @@ public class UICtrl : MonoBehaviour
             {
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
                 passiveskill[i].Img.color = BtnColor_Have;
-                int x = passiveskill[i].down.Length; //開放下層天賦
-                for (int z = 0; z < x; z++) {
-                    passiveskill[i].down[z].Btn.interactable = true;
+                if (ValueData.Instance.passiveskillPoint > 0) //開放下層天賦
+                {
+                    int x = passiveskill[i].down.Length;
+                    for (int z = 0; z < x; z++)
+                    {
+                        passiveskill[i].down[z].Btn.interactable = true;
+                    }
                 }
             }
         }

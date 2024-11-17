@@ -37,6 +37,7 @@ public class PassiveSkill : MonoBehaviour
                 if (!canRemove && ValueData.Instance.PassiveSkills[down[i].ID])
                     return;
             }
+            ValueData.Instance.passiveskillPoint += 1;
             ValueData.Instance.PassiveSkills[ID] = false; //後悔成功
             for (int i = 0; i < down.Length; i++) //關閉下層天賦的按鈕
             {
@@ -44,6 +45,9 @@ public class PassiveSkill : MonoBehaviour
             }
         }
         else { //取得天賦時
+            if (ValueData.Instance.passiveskillPoint <= 0)
+                return;
+            ValueData.Instance.passiveskillPoint -= 1;
             ValueData.Instance.PassiveSkills[ID] = true;
         }
         UICtrl.Instance.UpdatePassiveSkill();

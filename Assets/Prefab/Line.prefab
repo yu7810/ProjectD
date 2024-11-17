@@ -91,3 +91,4 @@ MonoBehaviour:
   button1: {fileID: 0}
   button2: {fileID: 0}
   line: {fileID: 0}
+  lineMaterial: {fileID: 2100000, guid: d054475553648624293879f5ab39c210, type: 2}

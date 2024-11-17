@@ -14,14 +14,34 @@ public class PlayerCtrl : MonoBehaviour
     bool Run;
     bool Move;
     float value_RunSpeed = 1.5f;
-    LayerMask mask = ~(1 << 6);
+    LayerMask mask = (1 << 6);
     public bool canMove;
     public bool canAttack02;
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
+    GameObject ontriggerTarget;//放碰到的物體
 
-    void Start(){
+    // 靜態實例，用於存儲唯一的實例
+    private static PlayerCtrl instance;
+
+    // 在 Awake 中檢查和創建單例
+    void Awake()
+    {
+        // 如果實例尚未存在，設置此物件為唯一實例並保留在場景切換中
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // 如果已經存在一個實例，銷毀當前物件
+            Destroy(gameObject);
+        }
+    }
+    void Start()
+    {
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
@@ -31,14 +51,17 @@ public class PlayerCtrl : MonoBehaviour
         //StartCoroutine(TimeHP());
     }
 
-    void Update(){
+    void Update()
+    {
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
         //自然回體
-        if (valuedata.AP >= valuedata.maxAP){
+        if (valuedata.AP >= valuedata.maxAP)
+        {
             valuedata.AP = valuedata.maxAP;
         }
-        else {
+        else
+        {
             valuedata.AP += 0.6f * Time.deltaTime;
         }
         //基本移動
@@ -50,25 +73,21 @@ public class PlayerCtrl : MonoBehaviour
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
             //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.MoveSpeed);
-            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed * 3 , 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed * 3);
-            //跑步耗體
+            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed * 3, 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed * 3);
+            // 跑步耗體
             /*if (Run)
             {
                 if (UIctrl.AP > 0.1f)
                     UIctrl.AP -= 1f * Time.deltaTime;
             }*/
-            //2D角色轉向
-            /*if (Input.GetKey(KeyCode.A))
-                transform.rotation = Quaternion.Euler(0,180,0);
-            else if (Input.GetKey(KeyCode.D))
-                transform.rotation = Quaternion.Euler(0,0,0);*/
         }
         else
         {
             Move = false;
             m_Animator.SetBool("Move", Move);
         }
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D)){
+        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
+        {
             m_Rigidbody.velocity = Vector3.zero;
         }
         //跑步
@@ -91,22 +110,24 @@ public class PlayerCtrl : MonoBehaviour
         //3D角色轉向
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
-        if (Physics.Raycast(camRay, out floorhit , 30f, mask)) { 
+        if (Physics.Raycast(camRay, out floorhit, 30f, mask))
+        {
             Vector3 playerToMouse = floorhit.point - transform.position;
             playerToMouse.y = 0;
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
         }
         //滑鼠L
-        if (Input.GetKey(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen) 
+        if (Input.GetKey(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
         {
-            if (valuedata.SkillField[0].ID == 0) 
+            if (valuedata.SkillField[0].ID == 0)
                 return;
-            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost) {
+            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost)
+            {
                 valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[0].ID , 0);
+                skill.UseSkill(valuedata.SkillField[0].ID, 0);
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
             }
         }
@@ -138,32 +159,68 @@ public class PlayerCtrl : MonoBehaviour
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
             }
         }
-
+        //互動鍵E
+        if (Input.GetKeyDown(KeyCode.E) && !ValueData.Instance.isUIopen)
+        {
+            if (!ontriggerTarget)
+                return;
+            if (ontriggerTarget.tag == "Door")
+            {
+                LevelCtrl.Instance.nowPrize = ontriggerTarget.GetComponent<ExitDoor>().Prize;
+                int nextLevel = ontriggerTarget.GetComponent<ExitDoor>().Level;
+                LevelCtrl.Instance.NextLevel(nextLevel);
+            }
+            else if (ontriggerTarget.tag == "NPC")
+            { 
+                //對話
+            }
+        }
     }
 
-    void AttackEnd(int AttackID) {
-        if (AttackID == 1){
+    void AttackEnd(int AttackID)
+    {
+        if (AttackID == 1)
+        {
             m_Animator.SetBool("Attack01", false);
             canAttack02 = false;
         }
-        else if (AttackID == 2) {
+        else if (AttackID == 2)
+        {
             m_Animator.SetBool("Attack02", false);
             m_Animator.SetBool("Attack01", false);
             canAttack02 = false;
         }
-        
+
     }
 
-    void canAttack02Event() {
+    void canAttack02Event()
+    {
         canAttack02 = true;
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "NPC" || other.tag == "Door")
+        {
+            ontriggerTarget = other.gameObject;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.tag == "NPC" || other.tag == "Door")
+        {
+            ontriggerTarget = null;
+        }
+    }
 
-    private void OnTriggerStay(Collider other){
+    private void OnTriggerStay(Collider other)
+    {
         if (!valuedata.canBehurt)
             return;
-        if (other.tag == "EnemyAttack" ) {
+        if (other.tag == "EnemyAttack")
+        {
             BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
-            if (other.tag == "EnemyAttack") {
+            if (other.tag == "EnemyAttack")
+            {
                 //Destroy(other.gameObject); //要思考子彈怎處理
             }
 
@@ -175,7 +232,8 @@ public class PlayerCtrl : MonoBehaviour
     /// </summary>
     /// <param name="Value"></param>
     /// <param name="useBehurtTimer">是否進無敵幀</param>
-    public void BeHurt(float Value, bool useBehurtTimer) {
+    public void BeHurt(float Value, bool useBehurtTimer)
+    {
         if (valuedata.HP > Value)
         {
             valuedata.HP -= Value;
@@ -192,7 +250,8 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     //受傷無敵幀
-    IEnumerator BehurtTimer() {
+    IEnumerator BehurtTimer()
+    {
         valuedata.canBehurt = false;
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
         yield return new WaitForSeconds(0.3f);
@@ -202,7 +261,8 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     //回復生命
-    public void Health(float value) {
+    public void Health(float value)
+    {
         if (valuedata.HP < valuedata.maxHP - value)
             valuedata.HP += value;
         else
@@ -210,9 +270,10 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     //暫，將血條與時間倒數合併
-    IEnumerator TimeHP() {
+    IEnumerator TimeHP()
+    {
         yield return new WaitForSeconds(0.1f);
-        BeHurt(0.1f,false);
+        BeHurt(0.1f, false);
         StartCoroutine(TimeHP());
     }
 

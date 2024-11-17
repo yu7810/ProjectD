@@ -10,6 +10,9 @@ TagManager:
   - EnemyAttack
   - Wall
   - UI
+  - Item
+  - NPC
+  - Door
   layers:
   - Default
   - TransparentFX
@@ -17,7 +20,7 @@ TagManager:
   - 
   - Water
   - UI
-  - noRaycast
+  - Floor
   - 
   - 
   - 

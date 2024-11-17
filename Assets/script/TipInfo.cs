@@ -19,22 +19,39 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         UICtrl.Instance.Tip_Name.text = Name;
         if (Type == 1) //技能
         {
-            UICtrl.Instance.Tip_Cd.text = Cd.ToString() + " s";
+            UICtrl.Instance.Tip_Cd.text = Cd.ToString("0.0") + " s";
             UICtrl.Instance.Tip_Cost.text = Cost.ToString("0.0");
             UICtrl.Instance.Tip_Dmg.text = Dmg.ToString("0");
             UICtrl.Instance.Tip_Size.text = Size.ToString("0.0");
-            UICtrl.Instance.Tip_Speed.text = Speed.ToString("0");
+            UICtrl.Instance.Tip_Speed.text = Speed.ToString("0.0");
+            UICtrl.Instance.Tip_Crit.text = (Crit * 100).ToString("0") + " %";
         }
         else if (Type == 2) //裝備
         {
-            UICtrl.Instance.Tip_Cd.text = (Cd * 100).ToString() + " %";
-            UICtrl.Instance.Tip_Cost.text = (Cost * 100).ToString("0") + " %";
-            UICtrl.Instance.Tip_Dmg.text = (Dmg * 100).ToString("0") + " %";
-            UICtrl.Instance.Tip_Size.text = (Size * 100).ToString("0") + " %";
-            UICtrl.Instance.Tip_Speed.text = (Speed * 100).ToString("0") + " %";
+            UICtrl.Instance.Tip_Cd.text = toText(Cd * 100) + " %";
+            UICtrl.Instance.Tip_Cost.text = toText(Cost * 100) + " %";
+            UICtrl.Instance.Tip_Dmg.text = toText(Dmg * 100) + " %";
+            UICtrl.Instance.Tip_Size.text = toText(Size * 100) + " %";
+            UICtrl.Instance.Tip_Speed.text = toText(Speed * 100) + " %";
+            UICtrl.Instance.Tip_Crit.text = toText(Crit * 100) + " %";
         }
-        UICtrl.Instance.Tip_Crit.text = (Crit * 100).ToString("0") + " %";
+        else if (Type == 3) //天賦
+        {
+            UICtrl.Instance.Tip_Cd.text = toText(Cd * 100) + " %";
+            UICtrl.Instance.Tip_Cost.text = toText(Cost * 100) + " %";
+            UICtrl.Instance.Tip_Dmg.text = toText(Dmg * 100) + " %";
+            UICtrl.Instance.Tip_Size.text = toText(Size * 100) + " %";
+            UICtrl.Instance.Tip_Speed.text = toText(Speed * 100) + " %";
+            UICtrl.Instance.Tip_Crit.text = toText(Crit * 100) + " %";
+        }
         UICtrl.Instance.Tip_Intro.text = Intro;
+    }
+
+    private string toText(float value = 0, string text = "0") {
+        if (value == 0)
+            return "-";
+        else
+            return value.ToString(text);
     }
 
     public void OnPointerExit(PointerEventData eventData) { 

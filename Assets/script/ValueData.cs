@@ -24,6 +24,7 @@ public class ValueData : MonoBehaviour
     public float base_CritDmg = 2f;
 
     //ぱ结计
+    public int passiveskillPoint = 0;//ぱ结翴计
     public float add_maxAp;
     public float add_maxHp;
     public float add_MoveSpeed;

@@ -4,10 +4,25 @@ using UnityEngine;
 
 public class Skill : MonoBehaviour
 {
+    private static Skill instance;
     Rigidbody m_Rigidbody;
     public GameObject Skill_A;
     public ParticleSystem SmokeTrail;
 
+    void Awake()
+    {
+        // 如果實例尚未存在，設置此物件為唯一實例並保留在場景切換中
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            // 如果已經存在一個實例，銷毀當前物件
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();

@@ -33,10 +33,12 @@ public class Enemy : MonoBehaviour
         else if (gameObject.tag == "Enemy") {
             C = Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.GetColor("_EmissionColor");
         }
+        
     }
 
     void Start()
     {
+        target = ValueData.Instance.Player.transform;
         agent = GetComponent<NavMeshAgent>();
         canAttack = true;
         if (tag == "Enemy") {
@@ -61,7 +63,9 @@ public class Enemy : MonoBehaviour
     }
 
     public void Die() {
-        UICtrl.Instance.GetEXP(EXP);
+        //UICtrl.Instance.GetEXP(EXP);
+        LevelCtrl.Instance.leftEnemy -= 1;
+        LevelCtrl.Instance.enemycheck();
         Destroy(transform.gameObject);
     }
 
