@@ -43,13 +43,13 @@ public class EnemyCount : MonoBehaviour
             z = Random.Range(-10, 10);
         }
         GameObject a = Instantiate(Enemy_A, new Vector3(x,0.5f,z) , Enemy_A.transform.rotation);
-        a.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
+        //a.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
         Count += 1;
 
         //遠程怪
         if (Count >= 30 && (Count % 10) == 0) {
             GameObject b = Instantiate(Enemy_B, new Vector3(x, 0.5f, z), Enemy_B.transform.rotation);
-            b.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
+            //b.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
             if (valuedata.EnemyTimer > 0.2f)
                 valuedata.EnemyTimer -= 0.05f;
             else
@@ -62,7 +62,7 @@ public class EnemyCount : MonoBehaviour
         {
             GameObject c = Instantiate(Enemy_C, new Vector3(x, 0.5f, z), Enemy_C.transform.rotation);
             valuedata.EnemyTimer = 0.3f;
-            c.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
+            //c.GetComponent<Enemy>().target = ValueData.Instance.Player.transform;
             Count += 1;
         }
 

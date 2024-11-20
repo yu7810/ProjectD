@@ -11,9 +11,7 @@ public class PlayerCtrl : MonoBehaviour
 {
     Rigidbody m_Rigidbody;
     Animator m_Animator;
-    bool Run;
     bool Move;
-    float value_RunSpeed = 1.5f;
     LayerMask mask = (1 << 6);
     public bool canMove;
     public bool canAttack02;
@@ -48,10 +46,9 @@ public class PlayerCtrl : MonoBehaviour
         canMove = true;
         canAttack02 = false;
         valuedata.canBehurt = true;
-        //StartCoroutine(TimeHP());
     }
 
-    void Update()
+    void FixedUpdate()
     {
         //鏡頭跟隨
         Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
@@ -71,9 +68,10 @@ public class PlayerCtrl : MonoBehaviour
                 return;
             Move = true;
             m_Animator.SetBool("Move", Move);
-            Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            //m_Rigidbody.MovePosition(transform.position + m_Input * Time.deltaTime * UIctrl.MoveSpeed);
-            m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.timeScale * valuedata.MoveSpeed * 3, 0, Input.GetAxis("Vertical") * Time.timeScale * valuedata.MoveSpeed * 3);
+            Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
+           // m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.deltaTime * valuedata.MoveSpeed * 300, 0, Input.GetAxis("Vertical") * Time.deltaTime * valuedata.MoveSpeed * 300);
+            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3;
+            m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
             // 跑步耗體
             /*if (Run)
             {
@@ -90,23 +88,6 @@ public class PlayerCtrl : MonoBehaviour
         {
             m_Rigidbody.velocity = Vector3.zero;
         }
-        //跑步
-        /*if (Input.GetKey(KeyCode.LeftControl)){
-            if (UIctrl.AP <= 0.1f) {
-                Run = false;
-                m_Animator.SetBool("Run", Run);
-                UIctrl.MoveSpeed = UIctrl.value_MoveSpeed;
-                return;
-            }
-            Run = true;
-            m_Animator.SetBool("Run", Run);
-            UIctrl.MoveSpeed = UIctrl.value_MoveSpeed * value_RunSpeed;
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftControl)){
-            Run = false;
-            m_Animator.SetBool("Run", Run);
-            UIctrl.MoveSpeed = UIctrl.value_MoveSpeed;
-        }*/
         //3D角色轉向
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit floorhit;
@@ -170,44 +151,36 @@ public class PlayerCtrl : MonoBehaviour
                 int nextLevel = ontriggerTarget.GetComponent<ExitDoor>().Level;
                 LevelCtrl.Instance.NextLevel(nextLevel);
             }
-            else if (ontriggerTarget.tag == "NPC")
-            { 
-                //對話
-            }
         }
     }
 
-    void AttackEnd(int AttackID)
-    {
-        if (AttackID == 1)
-        {
-            m_Animator.SetBool("Attack01", false);
-            canAttack02 = false;
-        }
-        else if (AttackID == 2)
-        {
-            m_Animator.SetBool("Attack02", false);
-            m_Animator.SetBool("Attack01", false);
-            canAttack02 = false;
-        }
-
-    }
-
-    void canAttack02Event()
-    {
-        canAttack02 = true;
-    }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "NPC" || other.tag == "Door")
+        if (other.tag == "NPC")
+        {
+            other.GetComponent<Npc>().doNpc(true);
+        }
+        else if (other.tag == "Door")
         {
             ontriggerTarget = other.gameObject;
+        }
+        else if(other.tag == "Money")
+        {
+            Destroy(other.gameObject);
+            ValueData.Instance.GetMoney(1);
+            UICtrl.Instance.UpdateMoneyUI();
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        if (other.tag == "NPC" || other.tag == "Door")
+        if (other.tag == "NPC")
         {
+            other.GetComponent<Npc>().doNpc(false);
+            ontriggerTarget = null;
+        }
+        else if (other.tag == "Door")
+        {
+            
             ontriggerTarget = null;
         }
     }
@@ -267,14 +240,6 @@ public class PlayerCtrl : MonoBehaviour
             valuedata.HP += value;
         else
             valuedata.HP = valuedata.maxHP;
-    }
-
-    //暫，將血條與時間倒數合併
-    IEnumerator TimeHP()
-    {
-        yield return new WaitForSeconds(0.1f);
-        BeHurt(0.1f, false);
-        StartCoroutine(TimeHP());
     }
 
 }

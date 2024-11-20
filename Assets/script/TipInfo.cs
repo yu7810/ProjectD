@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using TMPro;
 
 public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
@@ -14,6 +15,7 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public float Size;
     public float Speed;
     public string Intro;
+    public TextMeshProUGUI Price;
 
     public void OnPointerEnter(PointerEventData eventData) {
         UICtrl.Instance.Tip_Name.text = Name;
@@ -69,7 +71,8 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     /// <param name="size"></param>
     /// <param name="speed"></param>
     /// <param name="intro"></param>
-    public void UpdateInfo(int type,string name,float cd, float cost, float dmg, float crit, float size, float speed,string intro) {
+    public void UpdateInfo(int type,string name,float cd, float cost, float dmg, float crit, float size, float speed,string intro)
+    {
         Type = type;
         Name = name;
         Cd = cd;
@@ -79,6 +82,11 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Size = size;
         Speed = speed;
         Intro = intro;
+    }
+
+    public void UpdatePrice(int price) 
+    {
+        Price.text = price.ToString();
     }
 
 }

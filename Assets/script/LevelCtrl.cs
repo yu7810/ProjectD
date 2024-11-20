@@ -12,6 +12,9 @@ public class LevelCtrl : MonoBehaviour
     GameObject ExitDoors;
     public int leftEnemy;//剩餘敵人數量
 
+    public GameObject skillstorePrefab;
+    public GameObject weaponstorePrefab;
+
     //確認剩餘敵人
     public void enemycheck() {
         if (!Enemys) 
@@ -40,10 +43,14 @@ public class LevelCtrl : MonoBehaviour
                 ValueData.Instance.passiveskillPoint += 1;
                 return;
             case PrizeBase.Skill:
-                Debug.Log("技能");
+                Debug.Log("技能商店");
+                GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(0, skillstorePrefab.transform.position.y, 2.5f), skillstorePrefab.transform.rotation);
+                skillstore.GetComponent<Npc>().item = new List<int> { 0,1,2,3 };
                 return;
             case PrizeBase.Weapon:
-                Debug.Log("武器");
+                Debug.Log("武器商店");
+                GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(0, weaponstorePrefab.transform.position.y, 2.5f), weaponstorePrefab.transform.rotation);
+                weaponstore.GetComponent<Npc>().item = new List<int> { 0, 1, 2, 3 };
                 return;
         }
     }

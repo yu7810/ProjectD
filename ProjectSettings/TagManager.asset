@@ -13,6 +13,7 @@ TagManager:
   - Item
   - NPC
   - Door
+  - Money
   layers:
   - Default
   - TransparentFX

@@ -504,13 +504,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Hp: 100
-  maxHp: 1000
+  maxHp: 100
   Attack: 1
   EXP: 1
   AttackCD: 2
+  money: 0100000003000000
+  moneyPrefab: {fileID: 6154624087441448318, guid: a89a06b1737fc4f4f89ca3e06358ed71,
+    type: 3}
   Mesh: {fileID: 9218854589415559279}
   canBeHit: 0
-  target: {fileID: 0}
   canAttack: 0
   canMove: 0
 --- !u!1 &8871002627414563217

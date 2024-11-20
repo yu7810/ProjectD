@@ -22,6 +22,7 @@ public class ValueData : MonoBehaviour
     public float base_CostDown = 1;
     public float base_Crit = 0;
     public float base_CritDmg = 2f;
+    public int money;//身上持有的金幣數量
 
     //天賦數值
     public int passiveskillPoint = 0;//天賦點數
@@ -58,18 +59,15 @@ public class ValueData : MonoBehaviour
     public float Crit;//暴率
     public float CritDmg;//暴傷
 
-
-    //技能icon
-    public Sprite[] SkillIcon;
-    //武器icon
-    public Sprite[] WeaponIcon;
+    public Sprite[] SkillIcon;//技能icon
+    public Sprite[] WeaponIcon;//武器icon
 
     //技能總表
     public SkillBase[] Skill = new SkillBase[] {
-        new SkillBase(0,"-",1,1,1,1,0,0),//無
-        new SkillBase(1,"基礎攻擊",1f,10,1f,1,1,0.1f),//基礎攻擊
-        new SkillBase(2,"基礎閃避",3f,0,11f,1,0,0),//基礎閃避 size=位移距離
-        new SkillBase(3,"音符",3f,10,1f,1,0,0),
+        new SkillBase(0,0,"-",0,0,0,0,0,0),//無
+        new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0f),//基礎攻擊
+        new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//基礎閃避 size=位移距離
+        new SkillBase(3,10,"音符",3f,10,1f,1,0,0),
     };
 
     //技能介紹
@@ -89,10 +87,11 @@ public class ValueData : MonoBehaviour
 
     //裝備總表
     public WeaponBase[] Weapon = new WeaponBase[] {
-        new WeaponBase(0,"-", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,"劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,"弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
-        new WeaponBase(3,"斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
+        new WeaponBase(0,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
+        new WeaponBase(1,10,"劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,10,"弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
+        new WeaponBase(3,10,"斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
+        new WeaponBase(4,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0f),
     };
     //裝備介紹
     public string[] WeaponIntro = new string[] {
@@ -100,6 +99,7 @@ public class ValueData : MonoBehaviour
         "裝備1說明文",
         "裝備2說明文",
         "裝備3說明文",
+        "身上每1金幣提供1%傷害增幅",
     };
 
     //已裝備裝備
@@ -137,8 +137,8 @@ public class ValueData : MonoBehaviour
         SkillSpeed = base_SkillSpeed + add_SkillSpeed;
         EnemyTimer = base_EnemyTimer + add_EnemyTimer;
         AttackSize = base_AttackSize + add_AttackSize;
-        Cooldown = base_Cooldown + add_Cooldown;
-        CostDown = base_CostDown + add_CostDown;
+        Cooldown = 1 - (base_Cooldown * add_Cooldown);
+        CostDown = 1 - (base_CostDown * add_CostDown);
         Crit = base_Crit + add_Crit;
         CritDmg = base_CritDmg + add_CritDmg;
         //更新value UI
@@ -148,12 +148,12 @@ public class ValueData : MonoBehaviour
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
-            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * Cooldown * Weapon[WeaponField[id].ID].Cooldown;
-            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * Power * Weapon[WeaponField[id].ID].Damage;
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * AttackSize * Weapon[WeaponField[id].ID].Size;
-            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * SkillSpeed * Weapon[WeaponField[id].ID].Speed;
-            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * CostDown * Weapon[WeaponField[id].ID].Costdown;
-            SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + Weapon[WeaponField[id].ID].Crit;
+            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * Cooldown * WeaponField[id].Cooldown;
+            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * Power * WeaponField[id].Damage;
+            SkillField[id].Size = Skill[SkillField[id].ID].Size * AttackSize * WeaponField[id].Size;
+            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * SkillSpeed * WeaponField[id].Speed;
+            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * CostDown * WeaponField[id].Costdown;
+            SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id].Crit;
             UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(1, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].Size, SkillField[id].Speed, SkillIntro[SkillField[id].ID]);
         }
     }
@@ -188,8 +188,33 @@ public class ValueData : MonoBehaviour
                 add_Power += 0.1f;
                 break;
             case 3:
-                add_Power += 0.1f;
+                add_Cooldown += 0.05f;
                 break;
+            case 4:
+                add_Cooldown += 0.05f;
+                break;
+            case 5:
+                add_Cooldown += 0.05f;
+                break;
+        }
+    }
+
+    public void GetMoney(int value) 
+    { 
+        if(value > 0)
+        {
+            money += value;
+        }
+        //裝備4的特殊能力
+        for(int i=0;i< WeaponField.Length;i++)
+        {
+            if (WeaponField[i].ID == 4)
+            {
+                WeaponField[i].Damage = 1 + (money * 0.01f);
+                SkillFieldValueUpdate();
+                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(2, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Costdown, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
+            }
+                
         }
     }
 
@@ -206,8 +231,9 @@ public class SkillBase
     public float Speed { get; set; }    // 技能飛行速度
     public float Cost { get; set; }     // 魔耗
     public float Crit { get; set; }     // 暴擊率
+    public int Price { get; set; }      // 價格
 
-    public SkillBase(int id, string name, float maxcd, float damage, float size, float speed, float cost, float crit)
+    public SkillBase(int id, int price,string name, float maxcd, float damage, float size, float speed, float cost, float crit)
     {
         ID = id;
         Name = name;
@@ -217,6 +243,7 @@ public class SkillBase
         Speed = speed;
         Cost = cost;
         Crit = crit;
+        Price = price;
     }
 }
 
@@ -258,8 +285,9 @@ public class WeaponBase
     public float Speed { get; set; }
     public float Costdown { get; set; }
     public float Crit { get; set; }
+    public int Price { get; set; }
 
-    public WeaponBase(int id, string name, float damage, float cooldown, float size, float speed, float costdown, float crit)
+    public WeaponBase(int id, int price, string name, float damage, float cooldown, float size, float speed, float costdown, float crit)
     {
         ID = id;
         Name = name;
@@ -269,6 +297,7 @@ public class WeaponBase
         Speed = speed;
         Costdown = costdown;
         Crit = crit;
+        Price = price;
     }
 }
 

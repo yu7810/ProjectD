@@ -11,13 +11,15 @@ public class Enemy : MonoBehaviour
     public float Attack;
     public float EXP;//怪物提供的經驗值
     public float AttackCD;//攻擊間隔
+    public int[] money = new int[2];//死亡掉落的金幣 浮動值
 
+    public GameObject moneyPrefab;
     public GameObject Mesh;
     private Color C;
     public bool canBeHit;//受擊時短暫無敵，避免重複判定
     Animator m_Animator;
 
-    public Transform target;
+    private Transform target;
     private NavMeshAgent agent;
     private GameObject AttackCollider;
     public bool canAttack;
@@ -66,6 +68,14 @@ public class Enemy : MonoBehaviour
         //UICtrl.Instance.GetEXP(EXP);
         LevelCtrl.Instance.leftEnemy -= 1;
         LevelCtrl.Instance.enemycheck();
+        float rng = 0.5f;
+        int _money = Random.Range(money[0], money[1]);
+        for(int i=0;i<_money;i++)
+        {
+            Vector3 offset = new Vector3(Random.Range(-rng, rng), 0, Random.Range(-rng, rng));
+            Vector3 pos = transform.position + offset;
+            Instantiate(moneyPrefab, pos, moneyPrefab.transform.rotation);
+        }
         Destroy(transform.gameObject);
     }
 

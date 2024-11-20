@@ -24,6 +24,7 @@ public class UICtrl : MonoBehaviour
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
     public GameObject WeaponStoreUI;
+    public GameObject PassiveskilltreeUI;
     public Transform SkillStoreContent;//商店內容頁父物件
     public Transform WeaponStoreContent;
     public GameObject SkillFieldSelectUI;//選擇技能要放的欄位
@@ -32,10 +33,10 @@ public class UICtrl : MonoBehaviour
     public GameObject StoreweaponbuttonPrefab;
     public GameObject SkillfieldUI;
     public GameObject WeaponfieldUI;
-    public GameObject ValueUI;
     public TextMeshProUGUI DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
     public GameObject[] DontDestroy;
+    public TextMeshProUGUI MoneyValue;
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
@@ -47,7 +48,8 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Tip_Size;
     public TextMeshProUGUI Tip_Speed;
 
-    public TextMeshProUGUI HP_text;//數值欄相關
+    public GameObject ValueUI;//數值欄相關
+    public TextMeshProUGUI HP_text;
     public TextMeshProUGUI AP_text;
     public TextMeshProUGUI Power_text;
     public TextMeshProUGUI Movespeed_text;
@@ -78,22 +80,22 @@ public class UICtrl : MonoBehaviour
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
 
-    public Material lineMaterial; // 用來繪製線條的材質
-
-    private void Start(){
+    private void Start() {
         ValueData.Instance.PlayerValueUpdate();
         ValueData.Instance.HP = ValueData.Instance.maxHP;
         ValueData.Instance.AP = ValueData.Instance.maxAP;
         ValueData.Instance.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
         passiveskill = _passiveskill.GetComponentsInChildren<PassiveSkill>();
-        _passiveskill.transform.parent.gameObject.SetActive(false);
         eventSystem = EventSystem.current;
         graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
         ValueData.Instance.isUIopen = false;
         SkillStoreUI.SetActive(false);
         WeaponStoreUI.SetActive(false);
+        UpdatePassiveSkill();
+        PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
+        UpdateMoneyUI();
     }
 
     void Update()
@@ -103,25 +105,25 @@ public class UICtrl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Tab)) {
             if (ValueData.Instance.isUIopen)
             {
-                _passiveskill.transform.parent.gameObject.SetActive(false);
-                SkillStoreUI.SetActive(false);
-                WeaponStoreUI.SetActive(false);
+                PassiveskilltreeUI.SetActive(false);
+                //SkillStoreUI.SetActive(false);
+                //WeaponStoreUI.SetActive(false);
                 ValueUI.SetActive(false);
-                SkillFieldSelectUI.SetActive(false);
-                WeaponFieldSelectUI.SetActive(false);
+                //SkillFieldSelectUI.SetActive(false);
+                //WeaponFieldSelectUI.SetActive(false);
                 ChangeSkill_ID = 0;
                 ChangeWeapon_ID = 0;
                 ValueData.Instance.isUIopen = false;
             }
             else {
-                SkillStoreUI.SetActive(true);
-                UpdateSkillStore();
-                WeaponStoreUI.SetActive(true);
-                UpdateWeaponStore();
+                //SkillStoreUI.SetActive(true);
+                //UpdateSkillStore(new List<int> { 0, 1 });
+                //WeaponStoreUI.SetActive(true);
+                //UpdateWeaponStore(new List<int> { 0 });
                 ValueUI.SetActive(true);
-                _passiveskill.transform.parent.gameObject.SetActive(true);
+                PassiveskilltreeUI.SetActive(true);
                 UpdatePassiveSkill();
-                UpdateLine();
+                //UpdateLine();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
             }
@@ -158,7 +160,7 @@ public class UICtrl : MonoBehaviour
             //= GameObject.Find(DontDestroy[0].name);
         }
 
-        foreach (GameObject obj in DontDestroy) 
+        foreach (GameObject obj in DontDestroy)
         {
             DontDestroyOnLoad(obj);
         }
@@ -174,10 +176,10 @@ public class UICtrl : MonoBehaviour
     }
 
     public void GetEXP(float Value) {
-        if (Value >= ValueData.Instance.maxEXP - ValueData.Instance.EXP){
+        if (Value >= ValueData.Instance.maxEXP - ValueData.Instance.EXP) {
             //升級
             ValueData.Instance.EXP = 0;
-            ValueData.Instance.maxEXP += ValueData.Instance.maxEXP /2;
+            ValueData.Instance.maxEXP += ValueData.Instance.maxEXP / 2;
             LevelUP();
         }
         else {
@@ -212,12 +214,12 @@ public class UICtrl : MonoBehaviour
                 return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[0]);
         }
-        else if (btnID == 2){
+        else if (btnID == 2) {
             if (UpgradeBtn[1] == 0)
                 return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[1]);
         }
-        else if (btnID == 3){
+        else if (btnID == 3) {
             if (UpgradeBtn[2] == 0)
                 return;
             UpgradeSys.GetComponent<UpgradeSystem>().Upgrade(UpgradeBtn[2]);
@@ -257,7 +259,7 @@ public class UICtrl : MonoBehaviour
             UpdateSkillCD();
             StartCoroutine(SkillCD(FieldID));
         }
-        
+
     }
 
     public void UpdateSkillCD() {
@@ -270,6 +272,13 @@ public class UICtrl : MonoBehaviour
     }
 
     public void ChangeSkill(int target) {
+        if (target < 0)
+            return;
+        if (ValueData.Instance.Skill[target].Price > ValueData.Instance.money)
+        {
+            Debug.Log("金幣不足");
+            return;
+        }
         if (ChangeSkill_ID == target) {
             ChangeSkill_ID = 0;
             SkillFieldSelectUI.SetActive(false);
@@ -288,11 +297,23 @@ public class UICtrl : MonoBehaviour
         SkillFieldIcon[Field].SetNativeSize();
         SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
-        ChangeSkill_ID = 0;
+        if (ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
+        {
+            ValueData.Instance.money -= ValueData.Instance.Skill[ChangeSkill_ID].Price;
+            UpdateMoneyUI();
+        }
+        ChangeSkill_ID = -1;
     }
     public void ChangeWeapon(int target){
+        if (target < 0)
+            return;
+        if (ValueData.Instance.Weapon[target].Price > ValueData.Instance.money)
+        {
+            Debug.Log("金幣不足");
+            return;
+        }
         if (ChangeWeapon_ID == target){
-            ChangeWeapon_ID = 0;
+            ChangeWeapon_ID = -1;
             WeaponFieldSelectUI.SetActive(false);
         }
         else {
@@ -314,7 +335,12 @@ public class UICtrl : MonoBehaviour
         WeaponFieldIcon[Field].tag = "UI";
         WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(2, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
-        ChangeWeapon_ID = 0;
+        if (ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
+        {
+            ValueData.Instance.money -= ValueData.Instance.Weapon[ChangeWeapon_ID].Price;
+            UpdateMoneyUI();
+        }
+        ChangeWeapon_ID = -1;
     }
 
     public void UpdatePassiveSkill() {
@@ -323,8 +349,9 @@ public class UICtrl : MonoBehaviour
             passiveskill[i].Btn.interactable = false;
             passiveskill[i].Img.color = BtnColor_Normal;
         }
-        passiveskill[0].Btn.interactable = true; //開放初始天賦
         for (int i = 0; i < passiveskill.Length; i++) {
+            if(passiveskill[i].top.Length == 0)
+                passiveskill[i].Btn.interactable = true; //開放初始天賦
             if (ValueData.Instance.PassiveSkills[i]) //若已有當前天賦
             {
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)
@@ -373,28 +400,88 @@ public class UICtrl : MonoBehaviour
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString();
     }
 
-    //生成商店UI內容
-    public void UpdateSkillStore() {
+    //開啟技能商店
+    public void showSkillstore(bool Switch, List<int> itemID) 
+    {
+        if (Switch)
+        {
+            SkillStoreUI.SetActive(true);
+            UpdateSkillStore(itemID);
+            ChangeSkill_ID = -1;
+        }
+        else
+        {
+            SkillStoreUI.SetActive(false);
+            SkillFieldSelectUI.SetActive(false);
+            ChangeSkill_ID = -1;
+        }
+    }
+
+    public void UpdateSkillStore(List<int> itemID) {
         //清除舊內容
-        foreach (Transform child in SkillStoreContent) {
+        foreach (Transform child in SkillStoreContent) 
+        {
             Destroy(child.gameObject);
         }
-        foreach (SkillBase skill in ValueData.Instance.Skill) {
+        if (itemID.Count <= 0)
+            return;
+        for (int i = 0; i < itemID.Count; i++) {
+            GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
+            SkillBase skill = ValueData.Instance.Skill[itemID[i]];
+            newButton.GetComponent<TipInfo>().UpdateInfo(1, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
+            newButton.GetComponent<TipInfo>().UpdatePrice(skill.Price);
+            Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
+            icon.sprite = ValueData.Instance.SkillIcon[skill.ID];
+            icon.SetNativeSize();
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID));
+        }
+        /*foreach (SkillBase skill in ValueData.Instance.Skill) {
             if (skill.ID != 0) {
                 GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
                 newButton.GetComponent<TipInfo>().UpdateInfo(1, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
                 newButton.transform.Find("Icon").GetComponent<Image>().sprite = ValueData.Instance.SkillIcon[skill.ID];
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID));
             }
-        }
+        }*/
     }
-    public void UpdateWeaponStore() {
+
+    //開啟武器商店
+    public void showWeaponstore(bool Switch , List<int> itemID) 
+    {
+        if (Switch)
+        {
+            WeaponStoreUI.SetActive(true);
+            UpdateWeaponStore(itemID);
+            ChangeWeapon_ID = -1;
+        }
+        else
+        {
+            WeaponStoreUI.SetActive(false);
+            WeaponFieldSelectUI.SetActive(false);
+            ChangeWeapon_ID = -1;
+        }
+        
+    }
+    public void UpdateWeaponStore(List<int> itemID) {
         //清除舊內容
         foreach (Transform child in WeaponStoreContent)
         {
             Destroy(child.gameObject);
         }
-        foreach (WeaponBase weapon in ValueData.Instance.Weapon)
+        if (itemID.Count <= 0)
+            return;
+        for (int i = 0; i < itemID.Count; i++) 
+        {
+            GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponStoreContent);
+            WeaponBase weapon = ValueData.Instance.Weapon[itemID[i]];
+            newButton.GetComponent<TipInfo>().UpdateInfo(2, weapon.Name, weapon.Cooldown, weapon.Costdown, weapon.Damage, weapon.Crit, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
+            newButton.GetComponent<TipInfo>().UpdatePrice(weapon.Price);
+            Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
+            icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
+            icon.SetNativeSize();
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID));
+        }
+        /*foreach (WeaponBase weapon in ValueData.Instance.Weapon)
         {
             if (weapon.ID != 0)
             {
@@ -403,7 +490,7 @@ public class UICtrl : MonoBehaviour
                 newButton.transform.Find("Icon").GetComponent<Image>().sprite = ValueData.Instance.WeaponIcon[weapon.ID];
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID));
             }
-        }
+        }*/
     }
 
     //滑鼠射線
@@ -449,4 +536,9 @@ public class UICtrl : MonoBehaviour
         }
         
     }
+
+    public void UpdateMoneyUI() {
+        MoneyValue.text = ValueData.Instance.money.ToString();
+    }
+
 }
