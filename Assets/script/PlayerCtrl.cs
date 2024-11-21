@@ -46,21 +46,11 @@ public class PlayerCtrl : MonoBehaviour
         canMove = true;
         canAttack02 = false;
         valuedata.canBehurt = true;
+        StartCoroutine(RestoreAP());
     }
 
     void FixedUpdate()
-    {
-        //鏡頭跟隨
-        Camera.main.transform.position = new Vector3(transform.position.x, Camera.main.transform.position.y, transform.position.z - 10f);
-        //自然回體
-        if (valuedata.AP >= valuedata.maxAP)
-        {
-            valuedata.AP = valuedata.maxAP;
-        }
-        else
-        {
-            valuedata.AP += 0.6f * Time.deltaTime;
-        }
+    {   
         //基本移動
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
@@ -240,6 +230,22 @@ public class PlayerCtrl : MonoBehaviour
             valuedata.HP += value;
         else
             valuedata.HP = valuedata.maxHP;
+    }
+
+    //自動回魔
+    IEnumerator RestoreAP() 
+    {
+        float value = valuedata.RestoreAP / 50;
+        if (valuedata.AP >= valuedata.maxAP - value)
+        {
+            valuedata.AP = valuedata.maxAP;
+        }
+        else
+        {
+            valuedata.AP += value;
+        }
+        yield return new WaitForSeconds(0.02f);
+        StartCoroutine(RestoreAP());
     }
 
 }

@@ -37,6 +37,10 @@ public class UICtrl : MonoBehaviour
     public GameObject DamagetextParent;//傷害數字的父物件
     public GameObject[] DontDestroy;
     public TextMeshProUGUI MoneyValue;
+    public TextMeshProUGUI nowhpUI;
+    public TextMeshProUGUI maxhpUI;
+    public TextMeshProUGUI nowapUI;
+    public TextMeshProUGUI maxapUI;
 
     public GameObject Tip;//說明窗相關
     public TextMeshProUGUI Tip_Name;
@@ -98,10 +102,13 @@ public class UICtrl : MonoBehaviour
         UpdateMoneyUI();
     }
 
-    void Update()
+    private void FixedUpdate()
     {
         UIUpdate();
+    }
 
+    void Update()
+    {
         if (Input.GetKeyDown(KeyCode.Tab)) {
             if (ValueData.Instance.isUIopen)
             {
@@ -169,10 +176,14 @@ public class UICtrl : MonoBehaviour
     void UIUpdate() {
         float valueAP = ValueData.Instance.AP / ValueData.Instance.maxAP;
         Value_AP.fillAmount = valueAP;
+        maxapUI.text = ValueData.Instance.maxAP.ToString("0");
+        nowapUI.text = ValueData.Instance.AP.ToString("0");
         float valueHP = ValueData.Instance.HP / ValueData.Instance.maxHP;
         Value_HP.fillAmount = valueHP;
-        float valueEXP = ValueData.Instance.EXP / ValueData.Instance.maxEXP;
-        Value_EXP.fillAmount = valueEXP;
+        maxhpUI.text = ValueData.Instance.maxHP.ToString("0");
+        nowhpUI.text = ValueData.Instance.HP.ToString("0");
+        //float valueEXP = ValueData.Instance.EXP / ValueData.Instance.maxEXP;
+        //Value_EXP.fillAmount = valueEXP;
     }
 
     public void GetEXP(float Value) {

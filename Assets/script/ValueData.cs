@@ -22,7 +22,9 @@ public class ValueData : MonoBehaviour
     public float base_CostDown = 1;
     public float base_Crit = 0;
     public float base_CritDmg = 2f;
+    public float base_RestoreAP = 1f;//AP–礛確
     public int money;//ōΤ刽计秖
+    
 
     //ぱ结计
     public int passiveskillPoint = 0;//ぱ结翴计
@@ -37,6 +39,7 @@ public class ValueData : MonoBehaviour
     public float add_CostDown;
     public float add_Crit;
     public float add_CritDmg;
+    public float add_RestoreAP;
 
     //Ы计(箇痙)
 
@@ -58,6 +61,7 @@ public class ValueData : MonoBehaviour
     public float CostDown;//臸瞯%
     public float Crit;//忌瞯
     public float CritDmg;//忌端
+    public float RestoreAP;
 
     public Sprite[] SkillIcon;//мicon
     public Sprite[] WeaponIcon;//猌竟icon
@@ -124,6 +128,7 @@ public class ValueData : MonoBehaviour
         add_CostDown = 0;
         add_Crit = 0;
         add_CritDmg = 0;
+        add_RestoreAP = 0;
         //ぱ结计
         for (int i = 0; i < PassiveSkills.Length; i++) {
             if (PassiveSkills[i])
@@ -141,6 +146,7 @@ public class ValueData : MonoBehaviour
         CostDown = 1 - (base_CostDown * add_CostDown);
         Crit = base_Crit + add_Crit;
         CritDmg = base_CritDmg + add_CritDmg;
+        RestoreAP = base_RestoreAP + add_RestoreAP;
         //穝value UI
         UICtrl.Instance.UpdateValueUI();
     }
@@ -195,6 +201,24 @@ public class ValueData : MonoBehaviour
                 break;
             case 5:
                 add_Cooldown += 0.05f;
+                break;
+            case 6:
+                add_RestoreAP += 0.2f;
+                break;
+            case 7:
+                add_RestoreAP += 0.2f;
+                break;
+            case 8:
+                add_RestoreAP += 0.2f;
+                break;
+            case 9:
+                add_maxHp += 5f;
+                break;
+            case 10:
+                add_maxHp += 5f;
+                break;
+            case 11:
+                add_maxHp += 5f;
                 break;
         }
     }
