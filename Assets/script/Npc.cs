@@ -5,6 +5,7 @@ using UnityEngine;
 public class Npc : MonoBehaviour
 {
     public NpcType npcType;
+    public string Name;
     public List<int> item = new List<int> { };
 
     public void doNpc(bool Switch) {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,7 @@ public class ValueData : MonoBehaviour
     public float base_CritDmg = 2f;
     public float base_RestoreAP = 1f;//AP每秒自然恢復
     public int money;//身上持有的金幣數量
-    
+    public float base_Damagereduction;//傷害減免
 
     //天賦數值
     public int passiveskillPoint = 0;//天賦點數
@@ -40,6 +41,7 @@ public class ValueData : MonoBehaviour
     public float add_Crit;
     public float add_CritDmg;
     public float add_RestoreAP;
+    public float add_Damagereduction;
 
     //局外數值(預留)
 
@@ -62,11 +64,13 @@ public class ValueData : MonoBehaviour
     public float Crit;//暴率
     public float CritDmg;//暴傷
     public float RestoreAP;
+    public float Damagereduction;//傷害減免%
 
     public Sprite[] SkillIcon;//技能icon
     public Sprite[] WeaponIcon;//武器icon
 
     //技能總表
+    [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
         new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0f),//基礎攻擊
@@ -75,6 +79,7 @@ public class ValueData : MonoBehaviour
     };
 
     //技能介紹
+    [NonSerialized]
     public string[] SkillIntro = new string[] {
         "-",
         "技能1說明文",
@@ -90,27 +95,33 @@ public class ValueData : MonoBehaviour
     };
 
     //裝備總表
+    [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
-        new WeaponBase(0,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,10,"劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,10,"弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
-        new WeaponBase(3,10,"斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
-        new WeaponBase(4,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0f),
+        new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
+        new WeaponBase(1,RarityType.Normal,10,"木劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,10,"木弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
+        new WeaponBase(3,RarityType.Normal,10,"木斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
+        new WeaponBase(4,RarityType.Magic,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0f),
+        new WeaponBase(5,RarityType.Rare,10,"迅刃", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.2f),
+        new WeaponBase(6,RarityType.Unique,999,"傳奇測試", 1f, 1f, 1f, 1f, 1f, 0),
     };
-    //裝備介紹
+    //裝備介紹(只能在外面改)
+    [NonSerialized]
     public string[] WeaponIntro = new string[] {
         "-",
         "裝備1說明文",
         "裝備2說明文",
         "裝備3說明文",
         "身上每1金幣提供1%傷害增幅",
+        "欄位技能暴擊時將冷卻降為0.3s",
+        "這是個傳奇裝",
     };
 
     //已裝備裝備
     public WeaponFieldBase[] WeaponField = new WeaponFieldBase[] {
-        new WeaponFieldBase(0,"-",0,1f,1f,1f,1f,0),//滑鼠L
-        new WeaponFieldBase(0,"-",0,1f,1f,1f,1f,0),//滑鼠R
-        new WeaponFieldBase(0,"-",0,1f,1f,1f,1f,0),//空白鍵
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//滑鼠L
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//滑鼠R
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//空白鍵
     };
 
     //每次加減天賦時呼叫，更新所有數值
@@ -129,6 +140,7 @@ public class ValueData : MonoBehaviour
         add_Crit = 0;
         add_CritDmg = 0;
         add_RestoreAP = 0;
+        add_Damagereduction = 0;
         //天賦數值
         for (int i = 0; i < PassiveSkills.Length; i++) {
             if (PassiveSkills[i])
@@ -147,6 +159,7 @@ public class ValueData : MonoBehaviour
         Crit = base_Crit + add_Crit;
         CritDmg = base_CritDmg + add_CritDmg;
         RestoreAP = base_RestoreAP + add_RestoreAP;
+        Damagereduction = base_Damagereduction + add_Damagereduction;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
     }
@@ -160,7 +173,7 @@ public class ValueData : MonoBehaviour
             SkillField[id].Speed = Skill[SkillField[id].ID].Speed * SkillSpeed * WeaponField[id].Speed;
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * CostDown * WeaponField[id].Costdown;
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id].Crit;
-            UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(1, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].Size, SkillField[id].Speed, SkillIntro[SkillField[id].ID]);
+            UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].Size, SkillField[id].Speed, SkillIntro[SkillField[id].ID]);
         }
     }
 
@@ -203,13 +216,13 @@ public class ValueData : MonoBehaviour
                 add_Cooldown += 0.05f;
                 break;
             case 6:
-                add_RestoreAP += 0.2f;
+                add_Cooldown += 0.05f;
                 break;
             case 7:
-                add_RestoreAP += 0.2f;
+                add_maxHp += 5f;
                 break;
             case 8:
-                add_RestoreAP += 0.2f;
+                add_maxHp += 5f;
                 break;
             case 9:
                 add_maxHp += 5f;
@@ -219,6 +232,18 @@ public class ValueData : MonoBehaviour
                 break;
             case 11:
                 add_maxHp += 5f;
+                break;
+            case 12:
+                add_Crit += 0.05f;
+                break;
+            case 13:
+                add_Crit += 0.05f;
+                break;
+            case 14:
+                add_Crit += 0.05f;
+                break;
+            case 15:
+                add_Crit += 0.05f;
                 break;
         }
     }
@@ -236,12 +261,33 @@ public class ValueData : MonoBehaviour
             {
                 WeaponField[i].Damage = 1 + (money * 0.01f);
                 SkillFieldValueUpdate();
-                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(2, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Costdown, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
+                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Costdown, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
             }
                 
         }
     }
 
+    //降冷卻通用
+    public void doCooldown(SkillFieldBase field, float reduce) 
+    {
+        if (field.nowCD == 0)
+            return;
+        else if (field.nowCD <= reduce)
+            field.nowCD = 0;
+        else
+            field.nowCD -= reduce;
+        UICtrl.Instance.UpdateSkillCD();
+    }
+
+}
+
+//稀有度架構
+public enum RarityType
+{
+    Normal,
+    Magic,
+    Rare,
+    Unique
 }
 
 //技能架構
@@ -310,8 +356,9 @@ public class WeaponBase
     public float Costdown { get; set; }
     public float Crit { get; set; }
     public int Price { get; set; }
+    public RarityType Rarity { get; set; }
 
-    public WeaponBase(int id, int price, string name, float damage, float cooldown, float size, float speed, float costdown, float crit)
+    public WeaponBase(int id, RarityType rarity, int price, string name, float damage, float cooldown, float size, float speed, float costdown, float crit)
     {
         ID = id;
         Name = name;
@@ -322,6 +369,7 @@ public class WeaponBase
         Costdown = costdown;
         Crit = crit;
         Price = price;
+        Rarity = rarity;
     }
 }
 

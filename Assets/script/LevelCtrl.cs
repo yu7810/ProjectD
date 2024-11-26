@@ -17,11 +17,6 @@ public class LevelCtrl : MonoBehaviour
 
     //確認剩餘敵人
     public void enemycheck() {
-        if (!Enemys) 
-        {
-            Enemys = GameObject.Find("Enemys");
-            leftEnemy = Enemys.transform.childCount - 1;//暫用，優化過場後要修復
-        }
         if (leftEnemy > 0)
             return;
         getPrize();
@@ -56,8 +51,30 @@ public class LevelCtrl : MonoBehaviour
     }
 
     public void NextLevel(int level) {
-        SceneManager.LoadScene(level);
+        //SceneManager.LoadScene(level);
+        //ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
+        StartCoroutine(LoadSceneWithProgress(level));
+    }
+
+    IEnumerator LoadSceneWithProgress(int level)
+    {
+        // 開始異步加載場景
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(level);
+
+        // 在場景加載完成前，讓程序等待
+        while (!asyncLoad.isDone)
+        {
+            // 可以在這裡顯示加載進度，例如載入畫面
+            float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
+            Debug.Log("Loading progress: " + (progress * 100) + "%");
+
+            yield return null;
+        }
+        // 加載完成後執行某些操作
+        Debug.Log("場景加載完成！");
         ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
+        Enemys = GameObject.Find("Enemys");
+        leftEnemy = Enemys.transform.childCount;
     }
 
     //單例實體

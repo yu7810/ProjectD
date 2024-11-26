@@ -4979,6 +4979,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcType: 2
+  Name: "\u6280\u80FD\u5546\u5E97"
   item: 00000000010000000200000003000000
 --- !u!1 &3761121554355402657
 GameObject:

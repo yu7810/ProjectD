@@ -43,7 +43,7 @@ public class Skill : MonoBehaviour
     void Use_A(int Fieldid)
     {
         GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().thisSkill = ValueData.Instance.SkillField[Fieldid];
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(_size, 1, _size);
     }

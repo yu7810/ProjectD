@@ -1,16 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DestroyAlpha : MonoBehaviour
 {
-    CanvasGroup canvasGroup;
+    TextMeshPro textmeshpro;
     public float fadeDuration = 1.0f;   // 淡出持續時間
     private float elapsedTime = 0f;
 
     void Start()
     {
-        canvasGroup = GetComponent<CanvasGroup>();
+        textmeshpro = GetComponent<TextMeshPro>();
     }
 
     // Update is called once per frame
@@ -20,7 +21,7 @@ public class DestroyAlpha : MonoBehaviour
         elapsedTime += Time.deltaTime;
         if (elapsedTime < fadeDuration)
         {
-            canvasGroup.alpha = Mathf.Lerp(1, 0, elapsedTime / fadeDuration);
+            textmeshpro.alpha = Mathf.Lerp(1, 0, elapsedTime / fadeDuration);
         }
         else
         {

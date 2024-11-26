@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UiCam : MonoBehaviour
+public class DontDestroy : MonoBehaviour
 {
     // 靜態實例，用於存儲唯一的實例
-    private static UiCam instance;
+    private static DontDestroy instance;
 
     // 在 Awake 中檢查和創建單例
     void Awake()

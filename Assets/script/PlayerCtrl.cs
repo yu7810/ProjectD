@@ -89,9 +89,9 @@ public class PlayerCtrl : MonoBehaviour
             m_Rigidbody.MoveRotation(newRotation);
         }
         //滑鼠L
-        if (Input.GetKey(KeyCode.Mouse0) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
+        if (Input.GetKey(KeyCode.Mouse0))
         {
-            if (valuedata.SkillField[0].ID == 0)
+            if (valuedata.SkillField[0].ID == 0 || UICtrl.Instance.IsPointerOverUI(out GameObject uiElement))
                 return;
             if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost)
             {
@@ -103,7 +103,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //滑鼠R
-        if (Input.GetKey(KeyCode.Mouse1) && UICtrl.Instance.Tip.activeSelf == false && !ValueData.Instance.isUIopen)
+        if (Input.GetKey(KeyCode.Mouse1))
         {
             if (valuedata.SkillField[1].ID == 0)
                 return;
@@ -117,7 +117,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //空白鍵
-        if (Input.GetKeyDown(KeyCode.Space) && !ValueData.Instance.isUIopen)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
             if (valuedata.SkillField[2].ID == 0)
                 return;
@@ -131,7 +131,7 @@ public class PlayerCtrl : MonoBehaviour
             }
         }
         //互動鍵E
-        if (Input.GetKeyDown(KeyCode.E) && !ValueData.Instance.isUIopen)
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (!ontriggerTarget)
                 return;
@@ -149,6 +149,7 @@ public class PlayerCtrl : MonoBehaviour
         if (other.tag == "NPC")
         {
             other.GetComponent<Npc>().doNpc(true);
+            UICtrl.Instance.showTouchtargetName(true, other.GetComponent<Npc>().Name);
         }
         else if (other.tag == "Door")
         {
@@ -167,6 +168,8 @@ public class PlayerCtrl : MonoBehaviour
         {
             other.GetComponent<Npc>().doNpc(false);
             ontriggerTarget = null;
+            if(UICtrl.Instance.touchTargetUI.text == other.GetComponent<Npc>().Name)
+                UICtrl.Instance.showTouchtargetName(false);
         }
         else if (other.tag == "Door")
         {
@@ -197,6 +200,7 @@ public class PlayerCtrl : MonoBehaviour
     /// <param name="useBehurtTimer">是否進無敵幀</param>
     public void BeHurt(float Value, bool useBehurtTimer)
     {
+        Value *= (1 - valuedata.Damagereduction);
         if (valuedata.HP > Value)
         {
             valuedata.HP -= Value;

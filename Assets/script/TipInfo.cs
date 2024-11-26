@@ -6,7 +6,8 @@ using TMPro;
 
 public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
-    public int Type;
+    public TipType Type;
+    public int Id;
     public string Name;
     public float Cd;
     public float Cost;
@@ -19,16 +20,18 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     public void OnPointerEnter(PointerEventData eventData) {
         UICtrl.Instance.Tip_Name.text = Name;
-        if (Type == 1) //技能
+        if (Type == TipType.Skill) //技能
         {
+            UICtrl.Instance.Tip_Name.color = UICtrl.Instance.RarityColor_Normal;//技能名稱一律白色
             UICtrl.Instance.Tip_Cd.text = Cd.ToString("0.0") + " s";
             UICtrl.Instance.Tip_Cost.text = Cost.ToString("0.0");
             UICtrl.Instance.Tip_Dmg.text = Dmg.ToString("0");
             UICtrl.Instance.Tip_Size.text = Size.ToString("0.0");
             UICtrl.Instance.Tip_Speed.text = Speed.ToString("0.0");
             UICtrl.Instance.Tip_Crit.text = (Crit * 100).ToString("0") + " %";
+            UICtrl.Instance.Tip_Intro.text = Intro;
         }
-        else if (Type == 2) //裝備
+        else if (Type == TipType.Weapon) //裝備
         {
             UICtrl.Instance.Tip_Cd.text = toText(Cd * 100) + " %";
             UICtrl.Instance.Tip_Cost.text = toText(Cost * 100) + " %";
@@ -36,17 +39,21 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             UICtrl.Instance.Tip_Size.text = toText(Size * 100) + " %";
             UICtrl.Instance.Tip_Speed.text = toText(Speed * 100) + " %";
             UICtrl.Instance.Tip_Crit.text = toText(Crit * 100) + " %";
+            UICtrl.Instance.Tip_Intro.text = Intro;
+            if (ValueData.Instance.Weapon[Id].Rarity == RarityType.Normal)
+                UICtrl.Instance.Tip_Name.color = UICtrl.Instance.RarityColor_Normal;
+            else if (ValueData.Instance.Weapon[Id].Rarity == RarityType.Magic)
+                UICtrl.Instance.Tip_Name.color = UICtrl.Instance.RarityColor_Magic;
+            else if (ValueData.Instance.Weapon[Id].Rarity == RarityType.Rare)
+                UICtrl.Instance.Tip_Name.color = UICtrl.Instance.RarityColor_Rare;
+            else if (ValueData.Instance.Weapon[Id].Rarity == RarityType.Unique)
+                UICtrl.Instance.Tip_Name.color = UICtrl.Instance.RarityColor_Unique;
         }
-        else if (Type == 3) //天賦
+        else if (Type == TipType.Passiveskill) //天賦
         {
-            UICtrl.Instance.Tip_Cd.text = toText(Cd * 100) + " %";
-            UICtrl.Instance.Tip_Cost.text = toText(Cost * 100) + " %";
-            UICtrl.Instance.Tip_Dmg.text = toText(Dmg * 100) + " %";
-            UICtrl.Instance.Tip_Size.text = toText(Size * 100) + " %";
-            UICtrl.Instance.Tip_Speed.text = toText(Speed * 100) + " %";
-            UICtrl.Instance.Tip_Crit.text = toText(Crit * 100) + " %";
+            UICtrl.Instance.Tip_Passiveskillintro.text = Intro;
         }
-        UICtrl.Instance.Tip_Intro.text = Intro;
+        
     }
 
     private string toText(float value = 0, string text = "0") {
@@ -71,9 +78,10 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     /// <param name="size"></param>
     /// <param name="speed"></param>
     /// <param name="intro"></param>
-    public void UpdateInfo(int type,string name,float cd, float cost, float dmg, float crit, float size, float speed,string intro)
+    public void UpdateInfo(TipType type, int id, string name, float cd, float cost, float dmg, float crit, float size, float speed, string intro)
     {
         Type = type;
+        Id = id;
         Name = name;
         Cd = cd;
         Cost = cost;
@@ -89,4 +97,12 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Price.text = price.ToString();
     }
 
+}
+
+public enum TipType{
+    Skill,
+    SkillField,
+    Weapon,
+    WeaponField,
+    Passiveskill
 }

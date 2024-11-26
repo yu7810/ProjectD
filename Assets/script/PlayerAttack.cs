@@ -8,8 +8,9 @@ public class PlayerAttack : MonoBehaviour
 
     //public bool HitSlowMotion;
     public GameObject AttackParticle;
-    public SkillFieldBase thisSkill;
-
+    private SkillFieldBase thisSkill;
+    private int _fidleid = -1;
+    private WeaponFieldBase thisWeapon;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -28,6 +29,13 @@ public class PlayerAttack : MonoBehaviour
             if (thisSkill.Crit >= randomvalue) {
                 dmg *= ValueData.Instance.CritDmg;
                 UICtrl.Instance.ShowDamage(dmg, other.transform.position, true);
+                //裝備5能力
+                if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
+                {
+                    float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
+                    ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
+                }
+                    
             }
             else
                 UICtrl.Instance.ShowDamage(dmg, other.transform.position,false);
@@ -45,6 +53,22 @@ public class PlayerAttack : MonoBehaviour
             }*/
         }
         
+    }
+
+    public int fidleid
+    {
+        get { return _fidleid; }
+        set
+        {
+            if (value < 0)
+                return;
+            if(_fidleid != value)
+            {
+                _fidleid = value;
+                thisWeapon = ValueData.Instance.WeaponField[fidleid];
+                thisSkill = ValueData.Instance.SkillField[fidleid];
+            }
+        }
     }
 
     /*

@@ -33,7 +33,7 @@ public class UICtrl : MonoBehaviour
     public GameObject StoreweaponbuttonPrefab;
     public GameObject SkillfieldUI;
     public GameObject WeaponfieldUI;
-    public TextMeshProUGUI DamagetextPrefab;//傷害數字
+    public TextMeshPro DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
     public GameObject[] DontDestroy;
     public TextMeshProUGUI MoneyValue;
@@ -41,8 +41,10 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI maxhpUI;
     public TextMeshProUGUI nowapUI;
     public TextMeshProUGUI maxapUI;
+    public TextMeshProUGUI touchTargetUI;
 
-    public GameObject Tip;//說明窗相關
+    public GameObject Tip_skill;//說明窗相關
+    public GameObject Tip_passiveskill;//天賦專用
     public TextMeshProUGUI Tip_Name;
     public TextMeshProUGUI Tip_Intro;
     public TextMeshProUGUI Tip_Cd;
@@ -51,6 +53,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Tip_Crit;
     public TextMeshProUGUI Tip_Size;
     public TextMeshProUGUI Tip_Speed;
+    public TextMeshProUGUI Tip_Passiveskillintro;
 
     public GameObject ValueUI;//數值欄相關
     public TextMeshProUGUI HP_text;
@@ -64,6 +67,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Costdown_text;
     public TextMeshProUGUI Crit_text;
     public TextMeshProUGUI CritDmg_text;
+    public TextMeshProUGUI Damagereduction_text;
 
     public int[] UpgradeBtn;
     int ChangeSkill_ID;//更換技能的ID暫存
@@ -77,6 +81,10 @@ public class UICtrl : MonoBehaviour
     public Color BtnColor_Normal;//無天賦時的
     public Color DamagetextColor_Normal;//傷害數字顏色
     public Color DamagetextColor_Crit;//暴擊時
+    public Color RarityColor_Normal;//物品不同稀有度的顏色，用在名字文字上
+    public Color RarityColor_Magic;
+    public Color RarityColor_Rare;
+    public Color RarityColor_Unique;
     public Line line;
     public Transform LineFather;
     public TextMeshProUGUI passiveskillPoint;//天賦點數
@@ -104,7 +112,7 @@ public class UICtrl : MonoBehaviour
 
     private void FixedUpdate()
     {
-        UIUpdate();
+        UIUpdate();//暴力解(暫)
     }
 
     void Update()
@@ -138,9 +146,25 @@ public class UICtrl : MonoBehaviour
 
         //Tip彈窗
         if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
-            Tip.SetActive(true);
+        {
+            if (uiElement.GetComponent<TipInfo>().Type == TipType.Passiveskill)
+            {
+                Tip_skill.SetActive(false);
+                Tip_passiveskill.SetActive(true);
+            }
+            else
+            {
+                Tip_skill.SetActive(true);
+                Tip_passiveskill.SetActive(false);
+            }
+
+        }
         else
-            Tip.SetActive(false);
+        {
+            Tip_skill.SetActive(false);
+            Tip_passiveskill.SetActive(false);
+        }
+            
     }
 
     //單例實體
@@ -344,7 +368,7 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.WeaponField[Field].Crit = ValueData.Instance.Weapon[ChangeWeapon_ID].Crit;
         WeaponFieldIcon[Field].sprite = ValueData.Instance.WeaponIcon[ChangeWeapon_ID];
         WeaponFieldIcon[Field].tag = "UI";
-        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(2, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
+        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
         if (ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
@@ -408,7 +432,8 @@ public class UICtrl : MonoBehaviour
         Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString();
         Costdown_text.text = (ValueData.Instance.CostDown * 100).ToString();
         Crit_text.text = (ValueData.Instance.Crit * 100).ToString();
-        CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString();
+        CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
+        Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
     }
 
     //開啟技能商店
@@ -439,11 +464,14 @@ public class UICtrl : MonoBehaviour
         for (int i = 0; i < itemID.Count; i++) {
             GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
             SkillBase skill = ValueData.Instance.Skill[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(1, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(skill.Price);
-            Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
-            icon.sprite = ValueData.Instance.SkillIcon[skill.ID];
-            icon.SetNativeSize();
+            if (ValueData.Instance.SkillIcon.Length > skill.ID)
+            {
+                Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
+                icon.sprite = ValueData.Instance.SkillIcon[skill.ID];
+                icon.SetNativeSize();
+            }
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID));
         }
         /*foreach (SkillBase skill in ValueData.Instance.Skill) {
@@ -485,11 +513,14 @@ public class UICtrl : MonoBehaviour
         {
             GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponStoreContent);
             WeaponBase weapon = ValueData.Instance.Weapon[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(2, weapon.Name, weapon.Cooldown, weapon.Costdown, weapon.Damage, weapon.Crit, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Costdown, weapon.Damage, weapon.Crit, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(weapon.Price);
-            Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
-            icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-            icon.SetNativeSize();
+            if (ValueData.Instance.WeaponIcon.Length > weapon.ID)
+            {
+                Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
+                icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
+                icon.SetNativeSize();
+            }
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID));
         }
         /*foreach (WeaponBase weapon in ValueData.Instance.Weapon)
@@ -534,8 +565,8 @@ public class UICtrl : MonoBehaviour
         Vector3 _position = new Vector3(Random.Range(position.x-0.5f, position.x+0.5f) , position.y, Random.Range(position.z-0.5f, position.z+1f));
         //提高高度避免被較高的物體擋到
         Vector3 _canvas = new Vector3(_position.x, worldspaceCanvas.transform.position.y, worldspaceCanvas.transform.position.z);
-        Vector3 _lerp = Vector3.Lerp(_position, _canvas, 0.3f);
-        TextMeshProUGUI damagetext = Instantiate(DamagetextPrefab, _lerp, worldspaceCanvas.transform.rotation, DamagetextParent.transform);
+        Vector3 _lerp = Vector3.Lerp(_position, Camera.main.transform.position , 0.1f);
+        TextMeshPro damagetext = Instantiate(DamagetextPrefab, _lerp, worldspaceCanvas.transform.rotation, DamagetextParent.transform);
         damagetext.text = value.ToString("0");
         if (isCrit)
         {
@@ -550,6 +581,12 @@ public class UICtrl : MonoBehaviour
 
     public void UpdateMoneyUI() {
         MoneyValue.text = ValueData.Instance.money.ToString();
+    }
+
+    public void showTouchtargetName(bool toggle , string name = "")
+    {
+        touchTargetUI.gameObject.SetActive(toggle);
+        touchTargetUI.text = name;
     }
 
 }
