@@ -6,6 +6,7 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    public bool immortal;//不死的
     public float Hp;
     public float maxHp;
     public float Attack;
@@ -52,7 +53,9 @@ public class Enemy : MonoBehaviour
 
     //受到傷害時使用
     public void Hurt(float Dmg) {
-        if (Hp > Dmg)
+        if(immortal)
+            beAttack();
+        else if (Hp > Dmg)
         {
             Hp -= Dmg;
             beAttack();

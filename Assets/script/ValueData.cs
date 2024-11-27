@@ -75,9 +75,9 @@ public class ValueData : MonoBehaviour
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
         new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0f),//基礎攻擊
         new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//基礎閃避 size=位移距離
-        new SkillBase(3,10,"音符",3f,10,1f,1,0,0),
+        new SkillBase(3,10,"音符",1f,10,1f,1,0,0),
+        new SkillBase(4,0,"閃現",10f,0,1f,1,1,0.25f),
     };
-
     //技能介紹
     [NonSerialized]
     public string[] SkillIntro = new string[] {
@@ -85,6 +85,17 @@ public class ValueData : MonoBehaviour
         "技能1說明文",
         "技能2說明文",
         "技能3說明文",
+        "技能4說明文",
+    };
+    //技能標籤
+    [NonSerialized]
+    public SkillTagType[][] SkillTag = new SkillTagType[][]
+    {
+        new SkillTagType[]{ } ,
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能1
+        new SkillTagType[]{ SkillTagType.Movement } , //技能2
+        new SkillTagType[]{ SkillTagType.Spell } , //技能3
+        new SkillTagType[]{ SkillTagType.Movement, SkillTagType.Spell } , //技能4
     };
 
     //已裝備技能欄位
@@ -98,14 +109,14 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,RarityType.Normal,10,"木劍", 1.6f, 0.7f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,10,"木弓", 1.5f, 1f, 1f , 1.5f, 0.6f, 0.25f),
-        new WeaponBase(3,RarityType.Normal,10,"木斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
-        new WeaponBase(4,RarityType.Magic,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0f),
-        new WeaponBase(5,RarityType.Rare,10,"迅刃", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.2f),
+        new WeaponBase(1,RarityType.Normal,10,"鐵劍", 1.2f, 0.85f, 1f, 1f, 0.85f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,10,"鐵弓", 1f, 0.7f, 1f , 1.5f, 1f, 0f),
+        new WeaponBase(3,RarityType.Normal,10,"鐵斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
+        new WeaponBase(4,RarityType.Magic,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(5,RarityType.Rare,10,"迅刃", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
         new WeaponBase(6,RarityType.Unique,999,"傳奇測試", 1f, 1f, 1f, 1f, 1f, 0),
     };
-    //裝備介紹(只能在外面改)
+    //裝備介紹
     [NonSerialized]
     public string[] WeaponIntro = new string[] {
         "-",
@@ -288,6 +299,20 @@ public enum RarityType
     Magic,
     Rare,
     Unique
+}
+
+public enum SkillTagType
+{
+    Attack,//攻擊
+    Spell,//法術
+    Movement,//位移
+    Projectile,//投射物
+    Physical,//物理
+    Fire,//火
+    Cold,//冰
+    Lightning,//電
+    Chaos,//混沌
+
 }
 
 //技能架構

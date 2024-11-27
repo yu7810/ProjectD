@@ -30,6 +30,36 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             UICtrl.Instance.Tip_Speed.text = Speed.ToString("0.0");
             UICtrl.Instance.Tip_Crit.text = (Crit * 100).ToString("0") + " %";
             UICtrl.Instance.Tip_Intro.text = Intro;
+            //tag ui
+            if(ValueData.Instance.SkillTag[Id].Length == 0)
+            {
+                return;
+            }
+            foreach (Transform child in UICtrl.Instance.Tip_tag.transform)
+            {
+                child.gameObject.SetActive(false);
+            }
+            for (int i=0 ; i<ValueData.Instance.SkillTag[Id].Length ; i++)
+            {
+                if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Attack)
+                    UICtrl.Instance.tagAttack.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Chaos)
+                    UICtrl.Instance.tagChaos.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Cold)
+                    UICtrl.Instance.tagCold.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Fire)
+                    UICtrl.Instance.tagFire.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Lightning)
+                    UICtrl.Instance.tagLightning.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Movement)
+                    UICtrl.Instance.tagMovement.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Physical)
+                    UICtrl.Instance.tagPhysical.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Projectile)
+                    UICtrl.Instance.tagProjectile.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Spell)
+                    UICtrl.Instance.tagSpell.gameObject.SetActive(true);
+            }
         }
         else if (Type == TipType.Weapon) //¸Ë³Æ
         {

@@ -69,6 +69,17 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI CritDmg_text;
     public TextMeshProUGUI Damagereduction_text;
 
+    public GameObject Tip_tag;//Tip上的Tag欄相關
+    public TextMeshProUGUI tagAttack;
+    public TextMeshProUGUI tagChaos;
+    public TextMeshProUGUI tagCold;
+    public TextMeshProUGUI tagFire;
+    public TextMeshProUGUI tagLightning;
+    public TextMeshProUGUI tagMovement;
+    public TextMeshProUGUI tagPhysical;
+    public TextMeshProUGUI tagProjectile;
+    public TextMeshProUGUI tagSpell;
+
     public int[] UpgradeBtn;
     int ChangeSkill_ID;//更換技能的ID暫存
     int ChangeWeapon_ID;//更換裝備的ID暫存
@@ -147,15 +158,27 @@ public class UICtrl : MonoBehaviour
         //Tip彈窗
         if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
         {
-            if (uiElement.GetComponent<TipInfo>().Type == TipType.Passiveskill)
+            TipInfo _tipinfo = uiElement.GetComponent<TipInfo>();
+            if (_tipinfo.Type == TipType.Passiveskill)
             {
                 Tip_skill.SetActive(false);
                 Tip_passiveskill.SetActive(true);
+                Tip_tag.SetActive(false);
+            }
+            else if (_tipinfo.Type == TipType.Skill)
+            {
+                Tip_skill.SetActive(true);
+                Tip_passiveskill.SetActive(false);
+                if (ValueData.Instance.SkillTag[_tipinfo.Id].Length > 0)
+                    Tip_tag.SetActive(true);
+                else
+                    Tip_tag.SetActive(false);
             }
             else
             {
                 Tip_skill.SetActive(true);
                 Tip_passiveskill.SetActive(false);
+                Tip_tag.SetActive(false);
             }
 
         }

@@ -12,16 +12,21 @@ public class PlayerCtrl : MonoBehaviour
     Rigidbody m_Rigidbody;
     Animator m_Animator;
     bool Move;
-    LayerMask mask = (1 << 6);
+    LayerMask mask = (1 << 7);//角色旋轉用
     public bool canMove;
     public bool canAttack02;
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
     GameObject ontriggerTarget;//放碰到的物體
+    public RaycastHit floorhit;//滑鼠指到的目標
 
     // 靜態實例，用於存儲唯一的實例
     private static PlayerCtrl instance;
+    public static PlayerCtrl Instance
+    {
+        get => instance;
+    }
 
     // 在 Awake 中檢查和創建單例
     void Awake()
@@ -59,15 +64,8 @@ public class PlayerCtrl : MonoBehaviour
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
-           // m_Rigidbody.velocity = new Vector3(Input.GetAxis("Horizontal") * Time.deltaTime * valuedata.MoveSpeed * 300, 0, Input.GetAxis("Vertical") * Time.deltaTime * valuedata.MoveSpeed * 300);
             Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3;
             m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
-            // 跑步耗體
-            /*if (Run)
-            {
-                if (UIctrl.AP > 0.1f)
-                    UIctrl.AP -= 1f * Time.deltaTime;
-            }*/
         }
         else
         {
@@ -80,7 +78,6 @@ public class PlayerCtrl : MonoBehaviour
         }
         //3D角色轉向
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit floorhit;
         if (Physics.Raycast(camRay, out floorhit, 30f, mask))
         {
             Vector3 playerToMouse = floorhit.point - transform.position;
@@ -88,6 +85,7 @@ public class PlayerCtrl : MonoBehaviour
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
         }
+        
         //滑鼠L
         if (Input.GetKey(KeyCode.Mouse0))
         {

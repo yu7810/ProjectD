@@ -8,6 +8,7 @@ public class Skill : MonoBehaviour
     Rigidbody m_Rigidbody;
     public GameObject Skill_A;
     public ParticleSystem SmokeTrail;
+    LayerMask maskFloor = (1 << 6);
 
     void Awake()
     {
@@ -35,6 +36,9 @@ public class Skill : MonoBehaviour
                 break;
             case 2:
                 Use_B(Fieldid);
+                break;
+            case 4:
+                Use_C();
                 break;
         }
     }
@@ -72,6 +76,16 @@ public class Skill : MonoBehaviour
         }
         SmokeTrail.Stop();
         ValueData.Instance.canBehurt = true;
+    }
+
+    void Use_C()
+    {
+        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
+        {
+            Vector3 targetPos = floorhit.point;
+            PlayerCtrl.Instance.gameObject.transform.position = new Vector3(targetPos.x, PlayerCtrl.Instance.gameObject.transform.position.y, targetPos.z);
+        }
     }
 
 }
