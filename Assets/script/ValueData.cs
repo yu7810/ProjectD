@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
@@ -10,8 +11,10 @@ public class ValueData : MonoBehaviour
     private static ValueData instance;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
     public bool isUIopen;//開關UI
+    public CinemachineVirtualCamera virtualCamera;//鏡頭
 
     //基底數值
+    public int money;//身上持有的金幣數量
     public float base_maxAp = 10;
     public float base_maxHp = 30;
     public float base_MoveSpeed = 3f;
@@ -24,8 +27,8 @@ public class ValueData : MonoBehaviour
     public float base_Crit = 0;
     public float base_CritDmg = 2f;
     public float base_RestoreAP = 1f;//AP每秒自然恢復
-    public int money;//身上持有的金幣數量
     public float base_Damagereduction;//傷害減免
+    public float base_Vision;
 
     //天賦數值
     public int passiveskillPoint = 0;//天賦點數
@@ -42,6 +45,7 @@ public class ValueData : MonoBehaviour
     public float add_CritDmg;
     public float add_RestoreAP;
     public float add_Damagereduction;
+    public float add_Vision;
 
     //局外數值(預留)
 
@@ -65,6 +69,7 @@ public class ValueData : MonoBehaviour
     public float CritDmg;//暴傷
     public float RestoreAP;
     public float Damagereduction;//傷害減免%
+    public float Vision;//視野範圍(FOV)
 
     public Sprite[] SkillIcon;//技能icon
     public Sprite[] WeaponIcon;//武器icon
@@ -76,7 +81,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0f),//基礎攻擊
         new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//基礎閃避 size=位移距離
         new SkillBase(3,10,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,0,"閃現",10f,0,1f,1,1,0.25f),
+        new SkillBase(4,0,"閃現",10f,1f,1f,1,1,0.55f),
     };
     //技能介紹
     [NonSerialized]
@@ -152,6 +157,7 @@ public class ValueData : MonoBehaviour
         add_CritDmg = 0;
         add_RestoreAP = 0;
         add_Damagereduction = 0;
+        add_Vision = 0;
         //天賦數值
         for (int i = 0; i < PassiveSkills.Length; i++) {
             if (PassiveSkills[i])
@@ -171,8 +177,10 @@ public class ValueData : MonoBehaviour
         CritDmg = base_CritDmg + add_CritDmg;
         RestoreAP = base_RestoreAP + add_RestoreAP;
         Damagereduction = base_Damagereduction + add_Damagereduction;
+        Vision = base_Vision + add_Vision;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
+        virtualCamera.m_Lens.FieldOfView = Vision;
     }
 
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
@@ -255,6 +263,15 @@ public class ValueData : MonoBehaviour
                 break;
             case 15:
                 add_Crit += 0.05f;
+                break;
+            case 18:
+                add_Vision += 5f;
+                break;
+            case 19:
+                add_Vision += 5f;
+                break;
+            case 20:
+                add_Vision += 5f;
                 break;
         }
     }

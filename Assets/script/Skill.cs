@@ -32,19 +32,37 @@ public class Skill : MonoBehaviour
     public void UseSkill(int Skillid, int Fieldid) {
         switch (Skillid) {
             case 1:
-                Use_A(Fieldid);
+                Basicattack(Fieldid);
                 break;
             case 2:
-                Use_B(Fieldid);
+                Dash(Fieldid);
                 break;
             case 4:
-                Use_C();
+                Flash();
                 break;
+        }
+        if(ValueData.Instance.PassiveSkills[21]) //天賦21的效果
+        {
+            foreach (SkillTagType tag in ValueData.Instance.SkillTag[Skillid])
+            {
+                if (tag == SkillTagType.Movement)//當前施放的需為位移技
+                {
+                    int _id = ValueData.Instance.SkillField[0].ID;
+                    foreach (SkillTagType _tag in ValueData.Instance.SkillTag[_id])//額外觸發的需為非位移技
+                    {
+                        if (_tag == SkillTagType.Movement)
+                            return;
+                    }
+                    //Debug.Log(ValueData.Instance.SkillField[Fieldid].ID + " / " + Fieldid);
+                    UseSkill(ValueData.Instance.SkillField[0].ID, Fieldid);
+                }
+            }
+            
         }
     }
 
 
-    void Use_A(int Fieldid)
+    void Basicattack(int Fieldid)
     {
         GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
@@ -52,11 +70,11 @@ public class Skill : MonoBehaviour
         a.transform.localScale = new Vector3(_size, 1, _size);
     }
 
-    void Use_B(int Weaponid)  //閃避
+    void Dash(int Weaponid)  //閃避
     {
-        StartCoroutine(Flash());
+        StartCoroutine(dash());
     }
-    IEnumerator Flash()
+    IEnumerator dash()
     {
         ValueData.Instance.canBehurt = false;
         SmokeTrail.Play();
@@ -78,7 +96,7 @@ public class Skill : MonoBehaviour
         ValueData.Instance.canBehurt = true;
     }
 
-    void Use_C()
+    void Flash()
     {
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))

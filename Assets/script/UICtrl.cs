@@ -353,7 +353,10 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.SkillField[Field].nowCD = 0;
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID];
         SkillFieldIcon[Field].SetNativeSize();
-        SkillFieldIcon[Field].tag = "UI";
+        if(ValueData.Instance.Skill[ChangeSkill_ID].ID == 0)
+            SkillFieldIcon[Field].tag = "Untagged";
+        else
+            SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
         if (ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
         {
