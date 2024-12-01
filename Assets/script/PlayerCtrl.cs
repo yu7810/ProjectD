@@ -52,6 +52,7 @@ public class PlayerCtrl : MonoBehaviour
         canAttack02 = false;
         valuedata.canBehurt = true;
         StartCoroutine(RestoreAP());
+        valuedata.GetMoney(1000);
     }
 
     void FixedUpdate()
@@ -96,8 +97,8 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[0].Cost;
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[0].ID, 0);
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
+                skill.UseSkill(valuedata.SkillField[0].ID, 0);
             }
         }
         //滑鼠R
@@ -110,8 +111,8 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[1].Cost;
                 valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[1].ID, 1);
                 StartCoroutine(UICtrl.Instance.SkillCD(1));
+                skill.UseSkill(valuedata.SkillField[1].ID, 1);
             }
         }
         //空白鍵
@@ -124,8 +125,8 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.AP -= valuedata.SkillField[2].Cost;
                 valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
-                skill.UseSkill(valuedata.SkillField[2].ID, 2);
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
+                skill.UseSkill(valuedata.SkillField[2].ID, 2);
             }
         }
         //互動鍵E
@@ -157,7 +158,6 @@ public class PlayerCtrl : MonoBehaviour
         {
             Destroy(other.gameObject);
             ValueData.Instance.GetMoney(1);
-            UICtrl.Instance.UpdateMoneyUI();
         }
     }
     private void OnTriggerExit(Collider other)

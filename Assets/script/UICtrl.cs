@@ -81,7 +81,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI tagSpell;
 
     public int[] UpgradeBtn;
-    int ChangeSkill_ID;//更換技能的ID暫存
+    public int ChangeSkill_ID;//更換技能的ID暫存
     int ChangeWeapon_ID;//更換裝備的ID暫存
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
@@ -322,10 +322,15 @@ public class UICtrl : MonoBehaviour
 
     public void UpdateSkillCD() {
         for (int FieldID = 0; FieldID < 3; FieldID++) {
-            float now = ValueData.Instance.SkillField[FieldID].nowCD;
-            float max = ValueData.Instance.SkillField[FieldID].maxCD;
-            float value = now / max;
-            SkillCdMask[FieldID].fillAmount = value;
+            if (ValueData.Instance.SkillField[FieldID].maxCD == 0)
+                SkillCdMask[FieldID].fillAmount = 0;
+            else
+            {
+                float now = ValueData.Instance.SkillField[FieldID].nowCD;
+                float max = ValueData.Instance.SkillField[FieldID].maxCD;
+                float value = now / max;
+                SkillCdMask[FieldID].fillAmount = value;
+            }
         }
     }
 
@@ -350,7 +355,11 @@ public class UICtrl : MonoBehaviour
         SkillFieldSelectUI.SetActive(false);
         ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID].ID;
         ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID].Name;
-        ValueData.Instance.SkillField[Field].nowCD = 0;
+        if (ValueData.Instance.SkillField[Field].nowCD == 0)
+        {
+            ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.Skill[ChangeSkill_ID].maxCD;
+            StartCoroutine(SkillCD(Field));
+        }
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID];
         SkillFieldIcon[Field].SetNativeSize();
         if(ValueData.Instance.Skill[ChangeSkill_ID].ID == 0)
@@ -360,8 +369,7 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.SkillFieldValueUpdate();
         if (ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
         {
-            ValueData.Instance.money -= ValueData.Instance.Skill[ChangeSkill_ID].Price;
-            UpdateMoneyUI();
+            ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeSkill_ID].Price);
         }
         ChangeSkill_ID = -1;
     }
@@ -398,8 +406,7 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.SkillFieldValueUpdate();
         if (ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
-            ValueData.Instance.money -= ValueData.Instance.Weapon[ChangeWeapon_ID].Price;
-            UpdateMoneyUI();
+            ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
         }
         ChangeWeapon_ID = -1;
     }

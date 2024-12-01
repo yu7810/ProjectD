@@ -7,6 +7,8 @@ public class Skill : MonoBehaviour
     private static Skill instance;
     Rigidbody m_Rigidbody;
     public GameObject Skill_A;
+    public GameObject Skill_Bell;
+    public GameObject Skill_Bellattack;
     public ParticleSystem SmokeTrail;
     LayerMask maskFloor = (1 << 6);
 
@@ -24,12 +26,16 @@ public class Skill : MonoBehaviour
             Destroy(gameObject);
         }
     }
+    public static Skill Instance
+    {
+        get => instance;
+    }
     private void Start()
     {
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
     }
 
-    public void UseSkill(int Skillid, int Fieldid) {
+    public void UseSkill(int Skillid, int Fieldid, int usedTime = 1) {
         switch (Skillid) {
             case 1:
                 Basicattack(Fieldid);
@@ -40,7 +46,20 @@ public class Skill : MonoBehaviour
             case 4:
                 Flash();
                 break;
+            case 5:
+                Newmoon(Fieldid);
+                break;
+            case 6:
+                Quartermoon(Fieldid);
+                break;
+            case 7:
+                Fullmoon(Fieldid);
+                break;
+            case 8:
+                Bell(Fieldid);
+                break;
         }
+
         if(ValueData.Instance.PassiveSkills[21]) //天賦21的效果
         {
             foreach (SkillTagType tag in ValueData.Instance.SkillTag[Skillid])
@@ -53,11 +72,13 @@ public class Skill : MonoBehaviour
                         if (_tag == SkillTagType.Movement)
                             return;
                     }
-                    //Debug.Log(ValueData.Instance.SkillField[Fieldid].ID + " / " + Fieldid);
-                    UseSkill(ValueData.Instance.SkillField[0].ID, Fieldid);
+                    UseSkill(ValueData.Instance.SkillField[0].ID, 0);
                 }
             }
-            
+        }
+        if (ValueData.Instance.WeaponField[Fieldid].ID == 6 && usedTime <= 2) //武器6效果
+        {
+            StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
         }
     }
 
@@ -67,7 +88,7 @@ public class Skill : MonoBehaviour
         GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
-        a.transform.localScale = new Vector3(_size, 1, _size);
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
     }
 
     void Dash(int Weaponid)  //閃避
@@ -104,6 +125,59 @@ public class Skill : MonoBehaviour
             Vector3 targetPos = floorhit.point;
             PlayerCtrl.Instance.gameObject.transform.position = new Vector3(targetPos.x, PlayerCtrl.Instance.gameObject.transform.position.y, targetPos.z);
         }
+    }
+
+    void Newmoon(int Fieldid)
+    {
+        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
+        if (ValueData.Instance.SkillField[Fieldid].ID == 5)
+        {
+            UICtrl.Instance.ChangeSkill_ID = 6;
+            UICtrl.Instance.SelectSkillChangeField(Fieldid);
+            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
+        }
+    }
+    void Quartermoon(int Fieldid)
+    {
+        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
+        if (ValueData.Instance.SkillField[Fieldid].ID == 6)
+        {
+            UICtrl.Instance.ChangeSkill_ID = 7;
+            UICtrl.Instance.SelectSkillChangeField(Fieldid);
+            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
+        }
+    }
+    void Fullmoon(int Fieldid)
+    {
+        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
+        if (ValueData.Instance.SkillField[Fieldid].ID == 7)
+        {
+            UICtrl.Instance.ChangeSkill_ID = 5;
+            UICtrl.Instance.SelectSkillChangeField(Fieldid);
+            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
+        }
+    }
+
+    IEnumerator doubleSkill(int Skillid, int Fieldid, int usedTime) 
+    {
+        yield return new WaitForSeconds(0.2f);
+        UseSkill(Skillid, Fieldid, usedTime+1);
+    }
+
+    void Bell(int Fieldid) 
+    {
+        Vector3 newPosition = ValueData.Instance.Player.transform.position + ValueData.Instance.Player.transform.forward * 1.5f;
+        GameObject a = Instantiate(Skill_Bell, newPosition, ValueData.Instance.Player.transform.rotation);
+        a.GetComponent<PlayerAttack>().fidleid = Fieldid;
     }
 
 }

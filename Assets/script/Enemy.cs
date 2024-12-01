@@ -14,7 +14,6 @@ public class Enemy : MonoBehaviour
     public float AttackCD;//攻擊間隔
     public int[] money = new int[2];//死亡掉落的金幣 浮動值
 
-    public GameObject moneyPrefab;
     public GameObject Mesh;
     private Color C;
     public bool canBeHit;//受擊時短暫無敵，避免重複判定
@@ -25,12 +24,14 @@ public class Enemy : MonoBehaviour
     private GameObject AttackCollider;
     public bool canAttack;
     public bool canMove;
+    private float bellCD; //bell觸發的冷卻
 
     private void OnEnable(){
         m_Animator = GetComponent<Animator>();
         Hp = maxHp;
         canBeHit = true;
-        if (gameObject.tag == "Barrel"){
+        if (gameObject.tag == "Barrel" || gameObject.tag == "Bell")
+        {
             C = Mesh.transform.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
         }
         else if (gameObject.tag == "Enemy") {
@@ -64,7 +65,18 @@ public class Enemy : MonoBehaviour
             Hp = 0;
             Die();
         }
-            
+        if(gameObject.tag == "Bell" && bellCD == 0)
+        {
+            GameObject a = Instantiate(Skill.Instance.Skill_Bellattack, gameObject.transform.position, gameObject.transform.rotation);
+            int id = gameObject.GetComponent<PlayerAttack>().fidleid;
+            float size = ValueData.Instance.SkillField[id].Size;
+            a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
+            PlayerAttack atk = a.GetComponent<PlayerAttack>();
+            atk.dmg = Dmg * 3;
+            atk.passTarget = new GameObject[1] { this.gameObject }; //防止重複打到自己
+            bellCD = 0.1f;
+            StartCoroutine(BellCD());
+        }
     }
 
     public void Die() {
@@ -77,7 +89,8 @@ public class Enemy : MonoBehaviour
         {
             Vector3 offset = new Vector3(Random.Range(-rng, rng), 0, Random.Range(-rng, rng));
             Vector3 pos = transform.position + offset;
-            Instantiate(moneyPrefab, pos, moneyPrefab.transform.rotation);
+            GameObject money = ValueData.Instance.moneyPrefab;
+            Instantiate(money, pos, money.transform.rotation);
         }
         Destroy(transform.gameObject);
     }
@@ -90,7 +103,7 @@ public class Enemy : MonoBehaviour
 
     IEnumerator beAttackEffect() {
         //桶子是用MeshRenderer，怪物是用SkinnedMeshRenderer
-        if (gameObject.tag == "Barrel")
+        if (gameObject.tag == "Barrel" || gameObject.tag == "Bell")
         {
             //canBeHit = false;
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.188f, 0.188f, 0.188f));
@@ -157,6 +170,23 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(AttackCD);
         canAttack = true;
+    }
+
+    IEnumerator BellCD()
+    {
+        while(bellCD > 0)
+        {
+            if (bellCD <= 0.1f)
+            {
+                yield return new WaitForSeconds(bellCD);
+                bellCD = 0;
+            }
+            else
+            {
+                yield return new WaitForSeconds(0.1f);
+                bellCD -= 0.1f;
+            }
+        }
     }
 
 }

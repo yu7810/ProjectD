@@ -11,22 +11,30 @@ public class PlayerAttack : MonoBehaviour
     private SkillFieldBase thisSkill;
     private int _fidleid = -1;
     private WeaponFieldBase thisWeapon;
+    public float dmg;
+    float crit;
+    public GameObject[] passTarget;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.transform.tag == "Barrel" || other.transform.tag == "Enemy")
+        if (other.transform.tag == "Barrel" || other.transform.tag == "Enemy" || other.transform.tag == "Bell")
         {
             //黏刀，改時間效果不明顯，且會影響到粒子表現
             /*if (!HitSlowMotion) {
                 StartCoroutine(SlowMotion(0.05f));
             }*/
+            for(int i=0; i< passTarget.Length; i++)
+            {
+                if (passTarget[i] == other.gameObject)
+                    return;
+            }
+
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
 
-            float dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
             //暴擊
             float randomvalue = Random.Range(0.01f, 1f);
-            if (thisSkill.Crit >= randomvalue) {
+            if (crit >= randomvalue) {
                 dmg *= ValueData.Instance.CritDmg;
                 UICtrl.Instance.ShowDamage(dmg, other.transform.position, true);
                 //裝備5能力
@@ -35,12 +43,19 @@ public class PlayerAttack : MonoBehaviour
                     float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
                     ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
                 }
-                    
+                //天賦16能力
+                if (ValueData.Instance.PassiveSkills[16])
+                {
+                    for (int i = 0; i < 3; i++)
+                    {
+                        if (i != _fidleid)
+                            ValueData.Instance.doCooldown(ValueData.Instance.SkillField[i], 1f);
+                    }
+                }
             }
             else
                 UICtrl.Instance.ShowDamage(dmg, other.transform.position,false);
             other.transform.GetComponent<Enemy>().Hurt(dmg);
-            
 
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);
@@ -55,6 +70,7 @@ public class PlayerAttack : MonoBehaviour
         
     }
 
+
     public int fidleid
     {
         get { return _fidleid; }
@@ -67,6 +83,8 @@ public class PlayerAttack : MonoBehaviour
                 _fidleid = value;
                 thisWeapon = ValueData.Instance.WeaponField[fidleid];
                 thisSkill = ValueData.Instance.SkillField[fidleid];
+                dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
+                crit = thisSkill.Crit;
             }
         }
     }

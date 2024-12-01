@@ -12,6 +12,7 @@ public class ValueData : MonoBehaviour
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
     public bool isUIopen;//開關UI
     public CinemachineVirtualCamera virtualCamera;//鏡頭
+    public GameObject moneyPrefab;
 
     //基底數值
     public int money;//身上持有的金幣數量
@@ -78,10 +79,14 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
-        new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0f),//基礎攻擊
-        new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//基礎閃避 size=位移距離
+        new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0.05f),
+        new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//size=位移距離
         new SkillBase(3,10,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,0,"閃現",10f,1f,1f,1,1,0.55f),
+        new SkillBase(4,10,"閃現",6f,0f,1f,1,2,0f),
+        new SkillBase(5,0,"新月斬",2f,10,0.8f,1,1,0f),
+        new SkillBase(6,0,"弦月斬",2f,30,1.1f,1,1,0f),
+        new SkillBase(7,0,"明月斬",2f,100,1.4f,1,1,0f),
+        new SkillBase(8,0,"The喪鐘",20f,0,1f,1,0,0f),
     };
     //技能介紹
     [NonSerialized]
@@ -90,7 +95,11 @@ public class ValueData : MonoBehaviour
         "技能1說明文",
         "技能2說明文",
         "技能3說明文",
-        "技能4說明文",
+        "閃限至滑鼠位置，沒有距離限制",
+        "技能5說明文",
+        "技能6說明文",
+        "技能7說明文",
+        "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大3倍後，被喪鐘以圓形造成範圍傷害",
     };
     //技能標籤
     [NonSerialized]
@@ -101,13 +110,17 @@ public class ValueData : MonoBehaviour
         new SkillTagType[]{ SkillTagType.Movement } , //技能2
         new SkillTagType[]{ SkillTagType.Spell } , //技能3
         new SkillTagType[]{ SkillTagType.Movement, SkillTagType.Spell } , //技能4
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能5
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能6
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能7
+        new SkillTagType[]{ SkillTagType.Spell } , //技能8
     };
 
     //已裝備技能欄位
     public SkillFieldBase[] SkillField = new SkillFieldBase[] {
-        new SkillFieldBase(0,"-",1f,1,1,1,1,0,0),//滑鼠L
-        new SkillFieldBase(0,"-",1f,1,1,1,1,0,0),//滑鼠R
-        new SkillFieldBase(0,"-",1f,1,1,1,1,0,0),//空白鍵
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0),//滑鼠L
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0),//滑鼠R
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0),//空白鍵
     };
 
     //裝備總表
@@ -118,8 +131,8 @@ public class ValueData : MonoBehaviour
         new WeaponBase(2,RarityType.Normal,10,"鐵弓", 1f, 0.7f, 1f , 1.5f, 1f, 0f),
         new WeaponBase(3,RarityType.Normal,10,"鐵斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
         new WeaponBase(4,RarityType.Magic,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,10,"迅刃", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
-        new WeaponBase(6,RarityType.Unique,999,"傳奇測試", 1f, 1f, 1f, 1f, 1f, 0),
+        new WeaponBase(5,RarityType.Rare,10,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,10,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.05f),
     };
     //裝備介紹
     [NonSerialized]
@@ -130,7 +143,7 @@ public class ValueData : MonoBehaviour
         "裝備3說明文",
         "身上每1金幣提供1%傷害增幅",
         "欄位技能暴擊時將冷卻降為0.3s",
-        "這是個傳奇裝",
+        "欄位技能重複2次",
     };
 
     //已裝備裝備
@@ -278,9 +291,10 @@ public class ValueData : MonoBehaviour
 
     public void GetMoney(int value) 
     { 
-        if(value > 0)
+        if(value != 0)
         {
             money += value;
+            UICtrl.Instance.UpdateMoneyUI();
         }
         //裝備4的特殊能力
         for(int i=0;i< WeaponField.Length;i++)
@@ -291,7 +305,6 @@ public class ValueData : MonoBehaviour
                 SkillFieldValueUpdate();
                 UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Costdown, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
             }
-                
         }
     }
 
