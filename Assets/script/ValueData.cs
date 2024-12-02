@@ -79,27 +79,29 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
-        new SkillBase(1,0,"基礎攻擊",1f,10,1f,1,1,0.05f),
-        new SkillBase(2,1,"基礎閃避",3f,0,11f,1,0,0),//size=位移距離
-        new SkillBase(3,10,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,10,"閃現",6f,0f,1f,1,2,0f),
-        new SkillBase(5,0,"新月斬",2f,10,0.8f,1,1,0f),
-        new SkillBase(6,0,"弦月斬",2f,30,1.1f,1,1,0f),
-        new SkillBase(7,0,"明月斬",2f,100,1.4f,1,1,0f),
-        new SkillBase(8,0,"The喪鐘",20f,0,1f,1,0,0f),
+        new SkillBase(1,0,"劈砍",1f,10,1f,1,2,0.1f),
+        new SkillBase(2,10,"衝刺",5f,0,1f,1,0,0),//size=位移距離
+        new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
+        new SkillBase(4,10,"閃現",3f,0f,1f,1,3,0f),
+        new SkillBase(5,30,"新月斬",2f,10,0.8f,1,2,0.1f),
+        new SkillBase(6,0,"弦月斬",2f,30,1.1f,1,2,0.1f),
+        new SkillBase(7,0,"明月斬",2f,100,1.4f,1,2,0.1f),
+        new SkillBase(8,30,"The喪鐘",20f,0,1f,1,0,0f),
+        new SkillBase(9,0,"飛箭",0.6f,5,1f,1,0.5f,0f),
     };
     //技能介紹
     [NonSerialized]
     public string[] SkillIntro = new string[] {
         "-",
         "技能1說明文",
-        "技能2說明文",
+        "衝刺一小段距離，並恢復一半失去的魔力<BR>(速度會影響衝刺距離)",
         "技能3說明文",
         "閃限至滑鼠位置，沒有距離限制",
-        "技能5說明文",
-        "技能6說明文",
-        "技能7說明文",
+        "會以 新月斬→弦月斬→明月斬 順序輪替",
+        "會以 新月斬→弦月斬→明月斬 順序輪替",
+        "會以 新月斬→弦月斬→明月斬 順序輪替",
         "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大3倍後，被喪鐘以圓形造成範圍傷害",
+        "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
     };
     //技能標籤
     [NonSerialized]
@@ -114,6 +116,7 @@ public class ValueData : MonoBehaviour
         new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能6
         new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能7
         new SkillTagType[]{ SkillTagType.Spell } , //技能8
+        new SkillTagType[]{ SkillTagType.Projectile, SkillTagType.Physical } , //技能9
     };
 
     //已裝備技能欄位
@@ -127,12 +130,13 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,RarityType.Normal,10,"鐵劍", 1.2f, 0.85f, 1f, 1f, 0.85f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,10,"鐵弓", 1f, 0.7f, 1f , 1.5f, 1f, 0f),
-        new WeaponBase(3,RarityType.Normal,10,"鐵斧", 2.4f, 1.3f, 1.5f, 1f, 1f, 0.1f),
-        new WeaponBase(4,RarityType.Magic,10,"黃金槌", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,10,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,10,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.05f),
+        new WeaponBase(1,RarityType.Normal,20,"鐵劍", 1.2f, 0.85f, 1f, 1f, 0.9f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1.2f, 1f, 1f , 1.6f, 0.85f, 0f),
+        new WeaponBase(3,RarityType.Normal,20,"鐵斧", 2.4f, 1.3f, 1.5f, 0.8f, 1f, 0.1f),
+        new WeaponBase(4,RarityType.Magic,30,"倉鼠槌", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(5,RarityType.Rare,50,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,50,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.05f),
+        new WeaponBase(7,RarityType.Rare,50,"流光", 1f, 0.5f, 0.1f, 2f, 0.5f, 0f),
     };
     //裝備介紹
     [NonSerialized]
@@ -142,8 +146,9 @@ public class ValueData : MonoBehaviour
         "裝備2說明文",
         "裝備3說明文",
         "身上每1金幣提供1%傷害增幅",
-        "欄位技能暴擊時將冷卻降為0.3s",
-        "欄位技能重複2次",
+        "技能暴擊時將冷卻降為0.3s",
+        "技能重複2次",
+        "使用位移技能時觸發L上的非位移技能",
     };
 
     //已裝備裝備
@@ -318,6 +323,26 @@ public class ValueData : MonoBehaviour
         else
             field.nowCD -= reduce;
         UICtrl.Instance.UpdateSkillCD();
+    }
+
+    public void GetAp(float value)
+    {
+        if (value == 0)
+            return;
+        else if(value > 0)
+        {
+            if (maxAP > AP + value)
+                AP += value;
+            else
+                AP = maxAP;
+        }
+        else
+        {
+            if (AP > value)
+                AP += value;
+            else
+                AP = 0;
+        }
     }
 
 }

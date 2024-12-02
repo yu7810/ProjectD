@@ -9,6 +9,7 @@ public class Skill : MonoBehaviour
     public GameObject Skill_A;
     public GameObject Skill_Bell;
     public GameObject Skill_Bellattack;
+    public GameObject Skill_Magicarrow;
     public ParticleSystem SmokeTrail;
     LayerMask maskFloor = (1 << 6);
 
@@ -58,9 +59,12 @@ public class Skill : MonoBehaviour
             case 8:
                 Bell(Fieldid);
                 break;
+            case 9:
+                Magicarrow(Fieldid);
+                break;
         }
 
-        if(ValueData.Instance.PassiveSkills[21]) //天賦21的效果
+        if(ValueData.Instance.WeaponField[Fieldid].ID == 7) //武器7的效果
         {
             foreach (SkillTagType tag in ValueData.Instance.SkillTag[Skillid])
             {
@@ -82,6 +86,12 @@ public class Skill : MonoBehaviour
         }
     }
 
+    //技能發射點
+    Vector3 attackPoint(float distance = 1f)
+    {
+        Vector3 newPosition = ValueData.Instance.Player.transform.position + ValueData.Instance.Player.transform.forward * distance;
+        return newPosition;
+    }
 
     void Basicattack(int Fieldid)
     {
@@ -91,30 +101,30 @@ public class Skill : MonoBehaviour
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
     }
 
-    void Dash(int Weaponid)  //閃避
+    void Dash(int Fieldid)  //閃避
     {
-        StartCoroutine(dash());
+        StartCoroutine(dash(Fieldid));
     }
-    IEnumerator dash()
+    IEnumerator dash(int Fieldid)
     {
-        ValueData.Instance.canBehurt = false;
-        SmokeTrail.Play();
-        /*if (UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[11].Lv > 0)
-        {
-            Health(0.5f);
-        }*/
+        //ValueData.Instance.canBehurt = false;
+        //SmokeTrail.Play();
+        PlayerCtrl.Instance.canMove = false;
         Vector3 m_Input;
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
             m_Input = ValueData.Instance.Player.transform.forward;
-        for (int i = 0; i < 20; i++)
+        for(int i =0;i<6;i++)
         {
-            m_Rigidbody.MovePosition(ValueData.Instance.Player.transform.position + m_Input * Time.deltaTime * ValueData.Instance.Skill[2].Size);
+            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 25);
+            m_Rigidbody.MovePosition(m);
             yield return new WaitForSeconds(0.01f);
         }
-        SmokeTrail.Stop();
-        ValueData.Instance.canBehurt = true;
+        ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
+        PlayerCtrl.Instance.canMove = true;
+        //SmokeTrail.Stop();
+        //ValueData.Instance.canBehurt = true;
     }
 
     void Flash()
@@ -175,9 +185,14 @@ public class Skill : MonoBehaviour
 
     void Bell(int Fieldid) 
     {
-        Vector3 newPosition = ValueData.Instance.Player.transform.position + ValueData.Instance.Player.transform.forward * 1.5f;
-        GameObject a = Instantiate(Skill_Bell, newPosition, ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_Bell, attackPoint(1.5f), ValueData.Instance.Player.transform.rotation);
         a.GetComponent<PlayerAttack>().fidleid = Fieldid;
     }
-
+    void Magicarrow(int Fieldid)
+    {
+        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), ValueData.Instance.Player.transform.rotation);
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
+    }
 }

@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 1158928806510588019}
   - component: {fileID: 7324210919969998267}
   m_Layer: 0
-  m_Name: Bellattack
+  m_Name: Skill  Bellattack
   m_TagString: PlayerAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

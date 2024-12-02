@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class PlayerAttack : MonoBehaviour
 {
-
     //public bool HitSlowMotion;
     public GameObject AttackParticle;
     private SkillFieldBase thisSkill;
@@ -14,6 +13,17 @@ public class PlayerAttack : MonoBehaviour
     public float dmg;
     float crit;
     public GameObject[] passTarget;
+    public bool isBullet; //投射物，會往前飛
+    private Vector3 startPos;//投射物用，紀錄發射位置
+
+    private void Start()
+    {
+        if (isBullet)
+        {
+            startPos = transform.position;
+            StartCoroutine(Bullet());
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -31,6 +41,15 @@ public class PlayerAttack : MonoBehaviour
 
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
+
+            if(isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
+            {
+                if (startPos != Vector3.zero)
+                {
+                    float distance = Vector3.Distance(startPos, transform.position);
+                    dmg += distance;
+                }
+            }
 
             //暴擊
             float randomvalue = Random.Range(0.01f, 1f);
@@ -59,6 +78,8 @@ public class PlayerAttack : MonoBehaviour
 
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             Destroy(P, 1f);
+            if (isBullet)
+                Destroy(this.gameObject);
         }
         if (other.transform.tag == "EnemyAttack") {
             /*if (_UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[4].Lv >= 1) {
@@ -88,6 +109,17 @@ public class PlayerAttack : MonoBehaviour
             }
         }
     }
+
+    IEnumerator Bullet()
+    {
+        float speed = 0.12f * thisSkill.Speed;
+        while(this.gameObject)
+        {
+            yield return new WaitForSeconds(0.01f);
+            transform.localPosition += new Vector3(0, 0, speed);
+        }
+    }
+
 
     /*
     IEnumerator SlowMotion(float time) {

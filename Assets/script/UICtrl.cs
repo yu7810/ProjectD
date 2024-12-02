@@ -369,7 +369,7 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.SkillFieldValueUpdate();
         if (ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
         {
-            ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeSkill_ID].Price);
+            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID].Price);
         }
         ChangeSkill_ID = -1;
     }

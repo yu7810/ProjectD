@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 6242047514530728460}
   - component: {fileID: 1312489791538179749}
   m_Layer: 0
-  m_Name: Bell
+  m_Name: Skill Bell
   m_TagString: Bell
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
