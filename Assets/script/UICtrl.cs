@@ -68,6 +68,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Crit_text;
     public TextMeshProUGUI CritDmg_text;
     public TextMeshProUGUI Damagereduction_text;
+    public TextMeshProUGUI Bulletspeed_text;
 
     public GameObject Tip_tag;//Tip上的Tag欄相關
     public TextMeshProUGUI tagAttack;
@@ -467,6 +468,7 @@ public class UICtrl : MonoBehaviour
         Crit_text.text = (ValueData.Instance.Crit * 100).ToString();
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
+        Bulletspeed_text.text = (ValueData.Instance.BulletSpeed * 100).ToString("0");
     }
 
     //開啟技能商店

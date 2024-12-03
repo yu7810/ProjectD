@@ -30,6 +30,7 @@ public class ValueData : MonoBehaviour
     public float base_RestoreAP = 1f;//AP每秒自然恢復
     public float base_Damagereduction;//傷害減免
     public float base_Vision;
+    public float base_BulletSpeed;
 
     //天賦數值
     public int passiveskillPoint = 0;//天賦點數
@@ -47,6 +48,7 @@ public class ValueData : MonoBehaviour
     public float add_RestoreAP;
     public float add_Damagereduction;
     public float add_Vision;
+    public float add_BulletSpeed;
 
     //局外數值(預留)
 
@@ -71,6 +73,7 @@ public class ValueData : MonoBehaviour
     public float RestoreAP;
     public float Damagereduction;//傷害減免%
     public float Vision;//視野範圍(FOV)
+    public float BulletSpeed;//投射物飛行速度%
 
     public Sprite[] SkillIcon;//技能icon
     public Sprite[] WeaponIcon;//武器icon
@@ -131,12 +134,12 @@ public class ValueData : MonoBehaviour
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
         new WeaponBase(1,RarityType.Normal,20,"鐵劍", 1.2f, 0.85f, 1f, 1f, 0.9f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1.2f, 1f, 1f , 1.6f, 0.85f, 0f),
+        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1.2f, 1f, 1f , 1.4f, 0.85f, 0f),
         new WeaponBase(3,RarityType.Normal,20,"鐵斧", 2.4f, 1.3f, 1.5f, 0.8f, 1f, 0.1f),
         new WeaponBase(4,RarityType.Magic,30,"倉鼠槌", 1, 1f, 1f, 1f, 1f, 0.05f),
         new WeaponBase(5,RarityType.Rare,50,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
         new WeaponBase(6,RarityType.Rare,50,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.05f),
-        new WeaponBase(7,RarityType.Rare,50,"流光", 1f, 0.5f, 0.1f, 2f, 0.5f, 0f),
+        new WeaponBase(7,RarityType.Rare,50,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
     };
     //裝備介紹
     [NonSerialized]
@@ -176,6 +179,7 @@ public class ValueData : MonoBehaviour
         add_RestoreAP = 0;
         add_Damagereduction = 0;
         add_Vision = 0;
+        add_BulletSpeed = 0;
         //天賦數值
         for (int i = 0; i < PassiveSkills.Length; i++) {
             if (PassiveSkills[i])
@@ -196,6 +200,7 @@ public class ValueData : MonoBehaviour
         RestoreAP = base_RestoreAP + add_RestoreAP;
         Damagereduction = base_Damagereduction + add_Damagereduction;
         Vision = base_Vision + add_Vision;
+        BulletSpeed = base_BulletSpeed + add_BulletSpeed;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
         virtualCamera.m_Lens.FieldOfView = Vision;
@@ -290,6 +295,30 @@ public class ValueData : MonoBehaviour
                 break;
             case 20:
                 add_Vision += 5f;
+                break;
+            case 22:
+                add_BulletSpeed += 0.2f;
+                break;
+            case 23:
+                add_BulletSpeed += 0.2f;
+                break;
+            case 24:
+                add_BulletSpeed += 0.2f;
+                break;
+            case 26:
+                add_maxAp += 2f;
+                break;
+            case 27:
+                add_maxAp += 2f;
+                break;
+            case 28:
+                add_maxAp += 2f;
+                break;
+            case 29:
+                add_maxAp += 2f;
+                break;
+            case 30:
+                add_maxAp += 2f;
                 break;
         }
     }

@@ -13,6 +13,7 @@ public class PlayerAttack : MonoBehaviour
     public float dmg;
     float crit;
     public GameObject[] passTarget;
+
     public bool isBullet; //投射物，會往前飛
     private Vector3 startPos;//投射物用，紀錄發射位置
 
@@ -33,7 +34,7 @@ public class PlayerAttack : MonoBehaviour
             /*if (!HitSlowMotion) {
                 StartCoroutine(SlowMotion(0.05f));
             }*/
-            for(int i=0; i< passTarget.Length; i++)
+            for (int i = 0; i < passTarget.Length; i++)
             {
                 if (passTarget[i] == other.gameObject)
                     return;
@@ -42,7 +43,7 @@ public class PlayerAttack : MonoBehaviour
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
 
-            if(isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
+            if (isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
             {
                 if (startPos != Vector3.zero)
                 {
@@ -53,7 +54,8 @@ public class PlayerAttack : MonoBehaviour
 
             //暴擊
             float randomvalue = Random.Range(0.01f, 1f);
-            if (crit >= randomvalue) {
+            if (crit >= randomvalue)
+            {
                 dmg *= ValueData.Instance.CritDmg;
                 UICtrl.Instance.ShowDamage(dmg, other.transform.position, true);
                 //裝備5能力
@@ -73,20 +75,39 @@ public class PlayerAttack : MonoBehaviour
                 }
             }
             else
-                UICtrl.Instance.ShowDamage(dmg, other.transform.position,false);
+                UICtrl.Instance.ShowDamage(dmg, other.transform.position, false);
             other.transform.GetComponent<Enemy>().Hurt(dmg);
 
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
-            Destroy(P, 1f);
             if (isBullet)
                 Destroy(this.gameObject);
         }
-        if (other.transform.tag == "EnemyAttack") {
-            /*if (_UpgradeSystem.GetComponent<UpgradeSystem>().UpgradeList[4].Lv >= 1) {
-                GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
-                Destroy(P, 1f);
-                Destroy(other.gameObject);
-            }*/
+        else if (other.transform.tag == "Wall" && isBullet)
+        {
+            if (ValueData.Instance.PassiveSkills[25])
+            {
+                Vector3 direction = transform.forward;
+
+                // 計算碰撞法線
+                Vector3 collisionPoint = transform.position; // 子彈當前位置
+                Vector3 normal = other.ClosestPoint(collisionPoint) - collisionPoint;
+                normal = normal.normalized;
+
+                if (normal == Vector3.zero)
+                    Debug.Log("zero");
+
+                // 計算反射方向
+                direction = Vector3.Reflect(direction, normal);
+
+                // 更新子彈朝向
+                transform.forward = direction;
+            }
+            else
+            {
+                GameObject P = Instantiate(AttackParticle, transform.position, AttackParticle.transform.rotation);
+                P.transform.localScale = new Vector3(P.transform.localScale.x * thisSkill.Size, P.transform.localScale.y * thisSkill.Size, P.transform.localScale.z * thisSkill.Size);
+                Destroy(gameObject);
+            }
         }
         
     }
@@ -112,11 +133,11 @@ public class PlayerAttack : MonoBehaviour
 
     IEnumerator Bullet()
     {
-        float speed = 0.12f * thisSkill.Speed;
+        float speed = 10f * thisSkill.Speed * ValueData.Instance.BulletSpeed;
         while(this.gameObject)
         {
             yield return new WaitForSeconds(0.01f);
-            transform.localPosition += new Vector3(0, 0, speed);
+            transform.position += transform.forward * speed * Time.deltaTime;
         }
     }
 

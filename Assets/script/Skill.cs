@@ -186,13 +186,14 @@ public class Skill : MonoBehaviour
     void Bell(int Fieldid) 
     {
         GameObject a = Instantiate(Skill_Bell, attackPoint(1.5f), ValueData.Instance.Player.transform.rotation);
-        a.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
     }
     void Magicarrow(int Fieldid)
     {
         GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), ValueData.Instance.Player.transform.rotation);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
+        b.fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
-        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
+        b.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
     }
 }
