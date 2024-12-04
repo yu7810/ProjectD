@@ -134,7 +134,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7678599151917694543}
   - component: {fileID: 277073673307497593}
-  - component: {fileID: 2803905462616793789}
   - component: {fileID: 6556137973244480266}
   - component: {fileID: 6693154059207574988}
   - component: {fileID: 1506558362988327125}
@@ -184,21 +183,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &2803905462616793789
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2188601237718043392}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6198d6bcbd0463c42b833f8319ddd159, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  AttackCD: 1
-  canAttack: 0
 --- !u!195 &6556137973244480266
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -281,12 +265,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f245ca8ad3844a8adcf6dae69566e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 0
+  immortal: 0
   Hp: 10
   maxHp: 50
   Attack: 2
   EXP: 50
+  AttackCD: 0
+  money: 0000000000000000
   Mesh: {fileID: 2997438311810027837}
+  hpUI: {fileID: 0}
   canBeHit: 0
+  canAttack: 0
+  canMove: 0
 --- !u!1 &2997438311810027837
 GameObject:
   m_ObjectHideFlags: 0

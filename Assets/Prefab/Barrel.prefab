@@ -69,14 +69,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f245ca8ad3844a8adcf6dae69566e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 2
+  immortal: 1
   Hp: 30
-  maxHp: 30
+  maxHp: 9999999
   Attack: 0
   EXP: 0
   AttackCD: 0
+  money: 0000000000000000
   Mesh: {fileID: 505971442272338187}
+  hpUI: {fileID: 0}
   canBeHit: 0
-  target: {fileID: 0}
   canAttack: 0
   canMove: 0
 --- !u!1 &505971442272338187

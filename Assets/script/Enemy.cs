@@ -3,20 +3,25 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
-    public bool immortal;//不死的
+    public EnemyType enemyType;
+    public bool immortal; // 不死的
     public float Hp;
     public float maxHp;
     public float Attack;
-    public float EXP;//怪物提供的經驗值
-    public float AttackCD;//攻擊間隔
-    public int[] money = new int[2];//死亡掉落的金幣 浮動值
+    public float EXP; // 怪物提供的經驗值
+    public float AttackCD; // 攻擊間隔
+    public float AttackRange; // 攻擊範圍
+    public int[] money = new int[2]; // 死亡掉落的金幣 浮動值
 
     public GameObject Mesh;
+    public Slider hpUI;
+    public GameObject Bullet; // 遠程用的子彈
     private Color C;
-    public bool canBeHit;//受擊時短暫無敵，避免重複判定
+    public bool canBeHit; //受擊時短暫無敵，避免重複判定
     Animator m_Animator;
 
     private Transform target;
@@ -24,7 +29,7 @@ public class Enemy : MonoBehaviour
     private GameObject AttackCollider;
     public bool canAttack;
     public bool canMove;
-    private float bellCD; //bell觸發的冷卻
+    private float bellCD; // bell觸發的冷卻
 
     private void OnEnable(){
         m_Animator = GetComponent<Animator>();
@@ -45,10 +50,26 @@ public class Enemy : MonoBehaviour
         target = ValueData.Instance.Player.transform;
         agent = GetComponent<NavMeshAgent>();
         canAttack = true;
-        if (tag == "Enemy") {
+        if (enemyType == EnemyType.Melee )
+        {
             AttackCollider = transform.Find("AttackCollider").gameObject;
             canMove = true;
             StartCoroutine(_Move());
+        }
+        else if(enemyType == EnemyType.Ranged)
+        {
+            canMove = true;
+            StartCoroutine(_Move());
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (hpUI != null && Camera.main != null)
+        {
+            if (!hpUI.gameObject.activeSelf)
+                return;
+            hpUI.transform.rotation = UICtrl.Instance.canvas.transform.rotation;
         }
     }
 
@@ -59,10 +80,12 @@ public class Enemy : MonoBehaviour
         else if (Hp > Dmg)
         {
             Hp -= Dmg;
+            hpUI.value = Hp / maxHp;
             beAttack();
         }
         else {
             Hp = 0;
+            hpUI.transform.parent.gameObject.SetActive(false);
             Die();
         }
         if(gameObject.tag == "Bell" && bellCD == 0)
@@ -96,8 +119,6 @@ public class Enemy : MonoBehaviour
     }
 
     public void beAttack() {
-        if (gameObject.tag == "Enemy")
-            m_Animator.SetBool("BeHit", true);
         StartCoroutine(beAttackEffect());
     }
 
@@ -105,22 +126,18 @@ public class Enemy : MonoBehaviour
         //桶子是用MeshRenderer，怪物是用SkinnedMeshRenderer
         if (gameObject.tag == "Barrel" || gameObject.tag == "Bell")
         {
-            //canBeHit = false;
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", new Color(0.188f, 0.188f, 0.188f));
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", C);
-            //canBeHit = true;
         }
         else if (gameObject.tag == "Enemy"){
-            canBeHit = false;
             canMove = false;
             agent.isStopped = true;
-            m_Animator.SetBool("BeHit", true);
+            //m_Animator.SetBool("BeHit", true);
             Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-            yield return new WaitForSeconds(0.2f);
-            canBeHit = true;
+            yield return new WaitForSeconds(0.1f);
             canMove = true;
             agent.isStopped = false;
             StartCoroutine(_Move());
@@ -134,7 +151,7 @@ public class Enemy : MonoBehaviour
         else
             yield break;
         yield return new WaitForSeconds(0.05f);//放這裡的原因是SetDestination後remainingDistance不會馬上更新，等待後再抓
-        if (agent.remainingDistance <= agent.stoppingDistance)
+        if (agent.remainingDistance <= AttackRange) // agent.stoppingDistance
         {
             //攻擊行為
             if (canAttack)
@@ -150,17 +167,23 @@ public class Enemy : MonoBehaviour
     //動畫事件
     public void StartAttack()
     {
-        AttackCollider.SetActive(true);
+        if (enemyType == EnemyType.Melee)
+            AttackCollider.SetActive(true);
+        else if (enemyType == EnemyType.Ranged)
+        {
+            Instantiate(Bullet, transform.position, transform.rotation);
+        }
         canAttack = false;
         m_Animator.SetBool("Attack", false);
-        StartCoroutine(_AttackCD());
     }
     public void EndAttack()
     {
-        AttackCollider.SetActive(false);
+        if (enemyType == EnemyType.Melee)
+            AttackCollider.SetActive(false);
         canMove = true;
         agent.isStopped = false;
         StartCoroutine(_Move());
+        StartCoroutine(_AttackCD());
     }
     public void EndBehit() {
         m_Animator.SetBool("BeHit", false);
@@ -189,4 +212,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
+}
+
+public enum EnemyType 
+{
+    Melee, // 近戰
+    Ranged, // 遠程
+    Barrel, // 桶子
+    Minion, // 招喚物
 }

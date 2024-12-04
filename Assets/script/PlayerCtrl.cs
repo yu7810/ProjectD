@@ -185,10 +185,12 @@ public class PlayerCtrl : MonoBehaviour
             return;
         if (other.tag == "EnemyAttack")
         {
-            BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
-            if (other.tag == "EnemyAttack")
+            //BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
+            EnemyAttack enemyattack = other.transform.GetComponent<EnemyAttack>();
+            BeHurt(enemyattack.dmg, true);
+            if (enemyattack.enemyType == EnemyType.Ranged)
             {
-                //Destroy(other.gameObject); //要思考子彈怎處理
+                Destroy(other.gameObject);
             }
 
         }

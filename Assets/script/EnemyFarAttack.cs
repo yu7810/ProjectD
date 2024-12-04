@@ -12,8 +12,11 @@ public class EnemyFarAttack : MonoBehaviour
 
     IEnumerator FarAttack()
     {
-        yield return new WaitForSeconds(3f);
-        Instantiate(Bullet, transform.position, transform.rotation);
-        StartCoroutine(FarAttack());
+        while(this.gameObject)
+        {
+            yield return new WaitForSeconds(3f);
+            Instantiate(Bullet, transform.position, transform.rotation);
+        }
+        
     }
 }

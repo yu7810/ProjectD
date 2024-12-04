@@ -36,6 +36,7 @@ public class LevelCtrl : MonoBehaviour
             case PrizeBase.PassivePoin:
                 Debug.Log("天賦點");
                 ValueData.Instance.passiveskillPoint += 1;
+                UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
                 return;
             case PrizeBase.Skill:
                 Debug.Log("技能商店");
