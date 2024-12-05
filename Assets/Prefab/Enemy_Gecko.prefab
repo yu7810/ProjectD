@@ -904,6 +904,7 @@ MonoBehaviour:
   EXP: 1
   AttackCD: 2
   AttackRange: 2
+  rotationSpeed: 0.8
   money: 0100000005000000
   Mesh: {fileID: 9218854589415559279}
   hpUI: {fileID: 1591893874202063537}

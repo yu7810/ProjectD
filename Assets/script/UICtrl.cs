@@ -41,7 +41,6 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI maxhpUI;
     public TextMeshProUGUI nowapUI;
     public TextMeshProUGUI maxapUI;
-    public TextMeshProUGUI touchTargetUI;
 
     public GameObject Tip_skill;//說明窗相關
     public GameObject Tip_passiveskill;//天賦專用
@@ -288,6 +287,7 @@ public class UICtrl : MonoBehaviour
     }
 
     public void gameover() {
+        UIUpdate();
         Time.timeScale = 0;
         GameOverUI.SetActive(true);
     }
@@ -295,7 +295,9 @@ public class UICtrl : MonoBehaviour
     public void retry_Event() {
         Time.timeScale = 1;
         GameOverUI.SetActive(false);
-        SceneManager.LoadScene(0);
+        LevelCtrl.Instance.Enemys.SetActive(false);
+        LevelCtrl.Instance.NextLevel(0);
+        ValueData.Instance.Health(ValueData.Instance.maxHP);
     }
 
     public void ExitGame() {
@@ -616,12 +618,6 @@ public class UICtrl : MonoBehaviour
 
     public void UpdateMoneyUI() {
         MoneyValue.text = ValueData.Instance.money.ToString();
-    }
-
-    public void showTouchtargetName(bool toggle , string name = "")
-    {
-        touchTargetUI.gameObject.SetActive(toggle);
-        touchTargetUI.text = name;
     }
 
 }

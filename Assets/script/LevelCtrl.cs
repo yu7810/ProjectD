@@ -8,7 +8,7 @@ public class LevelCtrl : MonoBehaviour
     private static LevelCtrl instance;
     public int nowLevel = 0;//當前關卡編號
     public PrizeBase nowPrize;//當前關卡通關後會獲得的獎勵
-    GameObject Enemys;
+    public GameObject Enemys;
     GameObject ExitDoors;
     public int leftEnemy;//剩餘敵人數量
 
@@ -35,7 +35,7 @@ public class LevelCtrl : MonoBehaviour
                 return;
             case PrizeBase.PassivePoin:
                 Debug.Log("天賦點");
-                ValueData.Instance.passiveskillPoint += 1;
+                ValueData.Instance.passiveskillPoint += 3;
                 UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
                 return;
             case PrizeBase.Skill:
@@ -74,8 +74,12 @@ public class LevelCtrl : MonoBehaviour
         // 加載完成後執行某些操作
         Debug.Log("場景加載完成！");
         ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
-        Enemys = GameObject.Find("Enemys");
-        leftEnemy = Enemys.transform.childCount;
+        if (level != 0) // 戰鬥關卡抓取敵人
+        {
+            Enemys = GameObject.Find("Enemys");
+            leftEnemy = Enemys.transform.childCount;
+        }
+        
     }
 
     //單例實體

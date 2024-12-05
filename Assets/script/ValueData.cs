@@ -82,24 +82,24 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
-        new SkillBase(1,0,"劈砍",1f,10,1f,1,2,0.1f),
+        new SkillBase(1,0,"劈砍",1f,10,1f,1,1f,0.25f),
         new SkillBase(2,10,"衝刺",5f,0,1f,1,0,0),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,10,"閃現",3f,0f,1f,1,3,0f),
-        new SkillBase(5,30,"新月斬",2f,10,0.8f,1,2,0.1f),
-        new SkillBase(6,0,"弦月斬",2f,30,1.1f,1,2,0.1f),
-        new SkillBase(7,0,"明月斬",2f,100,1.4f,1,2,0.1f),
-        new SkillBase(8,30,"The喪鐘",20f,0,1f,1,0,0f),
-        new SkillBase(9,0,"飛箭",0.6f,5,1f,1,0.5f,0f),
+        new SkillBase(4,10,"閃現",3.4f,0f,1f,1,1,0f),
+        new SkillBase(5,20,"新月斬",2f,10,0.8f,1,1,0.1f),
+        new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,2,0.1f),
+        new SkillBase(7,0,"明月斬",2f,40,1.4f,1,2,0.1f),
+        new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
+        new SkillBase(9,0,"飛箭",0.3f,6,1f,1,0.6f,0f),
     };
     //技能介紹
     [NonSerialized]
     public string[] SkillIntro = new string[] {
         "-",
         "技能1說明文",
-        "衝刺一小段距離，並恢復一半失去的魔力<BR>(速度會影響衝刺距離)",
+        "衝刺一段距離，並恢復50%失去的魔力<BR>(速度會影響衝刺距離)",
         "技能3說明文",
-        "閃限至滑鼠位置，沒有距離限制",
+        "閃現至滑鼠位置，沒有距離限制",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
@@ -133,13 +133,13 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,RarityType.Normal,20,"鐵劍", 1.2f, 0.85f, 1f, 1f, 0.9f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1.2f, 1f, 1f , 1.4f, 0.85f, 0f),
-        new WeaponBase(3,RarityType.Normal,20,"鐵斧", 2.4f, 1.3f, 1.5f, 0.8f, 1f, 0.1f),
-        new WeaponBase(4,RarityType.Magic,30,"倉鼠槌", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,50,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,50,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.05f),
-        new WeaponBase(7,RarityType.Rare,50,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
+        new WeaponBase(1,RarityType.Normal,15,"鐵劍", 1.5f, 0.85f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,15,"鐵弓", 1.2f, 1f, 1f , 1.4f, 0.85f, 0f),
+        new WeaponBase(3,RarityType.Normal,15,"鐵斧", 1.2f, 1.5f, 1.5f, 0.8f, 1.2f, 0.2f),
+        new WeaponBase(4,RarityType.Magic,15,"倉鼠槌", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(5,RarityType.Rare,30,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,30,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
+        new WeaponBase(7,RarityType.Rare,30,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
     };
     //裝備介紹
     [NonSerialized]
@@ -272,20 +272,20 @@ public class ValueData : MonoBehaviour
             case 10:
                 add_maxHp += 5f;
                 break;
-            case 11:
-                add_maxHp += 5f;
-                break;
             case 12:
-                add_Crit += 0.05f;
+                add_Crit += 0.1f;
                 break;
             case 13:
-                add_Crit += 0.05f;
+                add_Crit += 0.1f;
                 break;
             case 14:
-                add_Crit += 0.05f;
+                add_Crit += 0.1f;
                 break;
             case 15:
-                add_Crit += 0.05f;
+                add_Crit += 0.1f;
+                break;
+            case 16:
+                add_Crit += 0.15f;
                 break;
             case 18:
                 add_Vision += 5f;
@@ -306,19 +306,19 @@ public class ValueData : MonoBehaviour
                 add_BulletSpeed += 0.2f;
                 break;
             case 26:
-                add_maxAp += 2f;
+                add_maxAp += 3f;
                 break;
             case 27:
-                add_maxAp += 2f;
+                add_maxAp += 3f;
                 break;
             case 28:
-                add_maxAp += 2f;
+                add_maxAp += 3f;
                 break;
             case 29:
-                add_maxAp += 2f;
+                add_maxAp += 3f;
                 break;
             case 30:
-                add_maxAp += 2f;
+                add_RestoreAP += 0.5f;
                 break;
         }
     }
@@ -352,6 +352,15 @@ public class ValueData : MonoBehaviour
         else
             field.nowCD -= reduce;
         UICtrl.Instance.UpdateSkillCD();
+    }
+
+    //回復生命通用
+    public void Health(float value)
+    {
+        if (HP < maxHP - value)
+            HP += value;
+        else
+            HP = maxHP;
     }
 
     public void GetAp(float value)

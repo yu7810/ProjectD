@@ -138,14 +138,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 222f245ca8ad3844a8adcf6dae69566e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyType: 3
   immortal: 1
   Hp: 0
   maxHp: 0
   Attack: 0
   EXP: 0
   AttackCD: 0
+  AttackRange: 0
+  rotationSpeed: 0
   money: 0000000000000000
   Mesh: {fileID: 1940010075036936795}
+  hpUI: {fileID: 0}
+  Bullet: {fileID: 0}
   canBeHit: 0
   canAttack: 0
   canMove: 0

@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     public float EXP; // 怪物提供的經驗值
     public float AttackCD; // 攻擊間隔
     public float AttackRange; // 攻擊範圍
+    public float rotationSpeed;
     public int[] money = new int[2]; // 死亡掉落的金幣 浮動值
 
     public GameObject Mesh;
@@ -49,15 +50,17 @@ public class Enemy : MonoBehaviour
     {
         target = ValueData.Instance.Player.transform;
         agent = GetComponent<NavMeshAgent>();
-        canAttack = true;
         if (enemyType == EnemyType.Melee )
         {
             AttackCollider = transform.Find("AttackCollider").gameObject;
+            canAttack = true;
             canMove = true;
             StartCoroutine(_Move());
         }
         else if(enemyType == EnemyType.Ranged)
         {
+            canAttack = false;
+            StartCoroutine(_AttackCD());
             canMove = true;
             StartCoroutine(_Move());
         }
@@ -115,6 +118,8 @@ public class Enemy : MonoBehaviour
             GameObject money = ValueData.Instance.moneyPrefab;
             Instantiate(money, pos, money.transform.rotation);
         }
+        if (ValueData.Instance.PassiveSkills[11])
+            ValueData.Instance.Health(1);
         Destroy(transform.gameObject);
     }
 
@@ -146,21 +151,40 @@ public class Enemy : MonoBehaviour
 
     IEnumerator _Move()
     {
-        if (canMove)
+        if (canMove) {
             agent.SetDestination(target.position);
+            yield return new WaitForSeconds(0.05f);//放這裡的原因是SetDestination後remainingDistance不會馬上更新，等待後再抓
+        }
         else
             yield break;
-        yield return new WaitForSeconds(0.05f);//放這裡的原因是SetDestination後remainingDistance不會馬上更新，等待後再抓
-        if (agent.remainingDistance <= AttackRange) // agent.stoppingDistance
+        //玩家進到攻擊範圍
+        while (agent.remainingDistance <= AttackRange)
         {
+            if(canMove) // 持續轉向玩家
+            {
+                agent.isStopped = true;
+
+                // 計算目標方向
+                Vector3 direction = (target.position - transform.position);
+                direction.y = 0; // 忽略垂直方向的差異
+
+                // 旋轉角色面向目標
+                Quaternion lookRotation = Quaternion.LookRotation(direction);
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+            }
+
             //攻擊行為
             if (canAttack)
             {
                 canMove = false;
-                agent.isStopped = true;
                 m_Animator.SetBool("Attack", true);
             }
+
+            yield return new WaitForSeconds(0.02f);
         }
+        
+        agent.isStopped = false;
+        yield return new WaitForSeconds(0.05f);
         StartCoroutine(_Move());
     }
 

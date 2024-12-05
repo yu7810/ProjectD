@@ -9,12 +9,11 @@ using UnityEngine.UI;
 
 public class PlayerCtrl : MonoBehaviour
 {
-    Rigidbody m_Rigidbody;
+    public Rigidbody m_Rigidbody;
     Animator m_Animator;
     bool Move;
     LayerMask mask = (1 << 7);//角色旋轉用
     public bool canMove;
-    public bool canAttack02;
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
@@ -52,10 +51,8 @@ public class PlayerCtrl : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
         canMove = true;
-        canAttack02 = false;
         valuedata.canBehurt = true;
         StartCoroutine(RestoreAP());
-        valuedata.GetMoney(1000);
     }
 
     void FixedUpdate()
@@ -151,7 +148,6 @@ public class PlayerCtrl : MonoBehaviour
         if (other.tag == "NPC")
         {
             other.GetComponent<Npc>().doNpc(true);
-            UICtrl.Instance.showTouchtargetName(true, other.GetComponent<Npc>().Name);
         }
         else if (other.tag == "Door")
         {
@@ -169,8 +165,6 @@ public class PlayerCtrl : MonoBehaviour
         {
             other.GetComponent<Npc>().doNpc(false);
             ontriggerTarget = null;
-            if(UICtrl.Instance.touchTargetUI.text == other.GetComponent<Npc>().Name)
-                UICtrl.Instance.showTouchtargetName(false);
         }
         else if (other.tag == "Door")
         {
@@ -228,15 +222,6 @@ public class PlayerCtrl : MonoBehaviour
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
         yield return new WaitForSeconds(0.2f);
         valuedata.canBehurt = true;
-    }
-
-    //回復生命
-    public void Health(float value)
-    {
-        if (valuedata.HP < valuedata.maxHP - value)
-            valuedata.HP += value;
-        else
-            valuedata.HP = valuedata.maxHP;
     }
 
     //自動回魔

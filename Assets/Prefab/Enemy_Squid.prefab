@@ -303,7 +303,6 @@ GameObject:
   - component: {fileID: 8857568675121368764}
   - component: {fileID: 4383478581725442115}
   - component: {fileID: 4146876082952837424}
-  - component: {fileID: 4592468049663113049}
   m_Layer: 0
   m_Name: Enemy_Squid
   m_TagString: Enemy
@@ -434,32 +433,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyType: 1
   immortal: 0
-  Hp: 50
-  maxHp: 50
+  Hp: 30
+  maxHp: 30
   Attack: 1
   EXP: 5
   AttackCD: 1.5
-  AttackRange: 10
-  money: 0200000003000000
+  AttackRange: 7
+  rotationSpeed: 1
+  money: 0200000005000000
   Mesh: {fileID: 2216843740710908176}
   hpUI: {fileID: 918749404404996826}
   Bullet: {fileID: 1727009018326101683, guid: 59a252423576f1f4eb81451a24a0de4f, type: 3}
   canBeHit: 0
   canAttack: 0
   canMove: 0
---- !u!114 &4592468049663113049
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2235472707788944096}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 323979e037e40614c94079d6eccc3d93, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Bullet: {fileID: 1727009018326101683, guid: 59a252423576f1f4eb81451a24a0de4f, type: 3}
 --- !u!1 &2791632732421033068
 GameObject:
   m_ObjectHideFlags: 0

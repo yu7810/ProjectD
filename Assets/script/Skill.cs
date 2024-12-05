@@ -110,19 +110,21 @@ public class Skill : MonoBehaviour
         //ValueData.Instance.canBehurt = false;
         //SmokeTrail.Play();
         PlayerCtrl.Instance.canMove = false;
+        ValueData.Instance.canBehurt = false;
         Vector3 m_Input;
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
             m_Input = ValueData.Instance.Player.transform.forward;
-        for(int i =0;i<6;i++)
+        for(int i =0;i<10;i++)
         {
-            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 25);
+            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 22);
             m_Rigidbody.MovePosition(m);
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSeconds(0.005f);
         }
         ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
         PlayerCtrl.Instance.canMove = true;
+        ValueData.Instance.canBehurt = true;
         //SmokeTrail.Stop();
         //ValueData.Instance.canBehurt = true;
     }

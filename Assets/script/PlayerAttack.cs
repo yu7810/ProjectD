@@ -43,12 +43,14 @@ public class PlayerAttack : MonoBehaviour
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
 
+            float _dmg = dmg; // 多一層，避免傷害疊加
+
             if (isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
             {
                 if (startPos != Vector3.zero)
                 {
                     float distance = Vector3.Distance(startPos, transform.position);
-                    dmg += distance;
+                    _dmg += distance;
                 }
             }
 
@@ -56,8 +58,8 @@ public class PlayerAttack : MonoBehaviour
             float randomvalue = Random.Range(0.01f, 1f);
             if (crit >= randomvalue)
             {
-                dmg *= ValueData.Instance.CritDmg;
-                UICtrl.Instance.ShowDamage(dmg, other.transform.position, true);
+                _dmg *= ValueData.Instance.CritDmg;
+                UICtrl.Instance.ShowDamage(_dmg, other.transform.position, true);
                 //裝備5能力
                 if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
                 {
@@ -75,8 +77,8 @@ public class PlayerAttack : MonoBehaviour
                 }
             }
             else
-                UICtrl.Instance.ShowDamage(dmg, other.transform.position, false);
-            other.transform.GetComponent<Enemy>().Hurt(dmg);
+                UICtrl.Instance.ShowDamage(_dmg, other.transform.position, false);
+            other.transform.GetComponent<Enemy>().Hurt(_dmg);
 
             GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
             if (isBullet)
@@ -91,7 +93,7 @@ public class PlayerAttack : MonoBehaviour
                 // 計算碰撞法線
                 Vector3 collisionPoint = transform.position; // 子彈當前位置
                 Vector3 normal = other.ClosestPoint(collisionPoint) - collisionPoint;
-                normal = normal.normalized;
+                //normal = normal.normalized;
 
                 if (normal == Vector3.zero)
                     Debug.Log("zero");
