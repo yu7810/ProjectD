@@ -79,7 +79,12 @@ public class LevelCtrl : MonoBehaviour
             Enemys = GameObject.Find("Enemys");
             leftEnemy = Enemys.transform.childCount;
         }
-        
+        else
+        {
+            if (ValueData.Instance.HP <= 0)
+                ValueData.Instance.GetHp(ValueData.Instance.maxHP);
+        }
+        ValueData.Instance.GetAp(ValueData.Instance.maxAP);
     }
 
     //³æ¨Ò¹êÅé

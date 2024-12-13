@@ -182,40 +182,16 @@ public class PlayerCtrl : MonoBehaviour
         {
             //BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
             EnemyAttack enemyattack = other.transform.GetComponent<EnemyAttack>();
-            BeHurt(enemyattack.dmg, true);
+            ValueData.Instance.GetHp(-enemyattack.dmg, true);
             if (enemyattack.enemyType == EnemyType.Ranged)
             {
                 Destroy(other.gameObject);
             }
-
-        }
-    }
-
-    /// <summary>
-    /// 扣血通用含式
-    /// </summary>
-    /// <param name="Value"></param>
-    /// <param name="useBehurtTimer">是否進無敵幀</param>
-    public void BeHurt(float Value, bool useBehurtTimer)
-    {
-        Value *= (1 - valuedata.Damagereduction);
-        if (valuedata.HP > Value)
-        {
-            valuedata.HP -= Value;
-            if (useBehurtTimer == true)
-                StartCoroutine(BehurtTimer());
-        }
-        else
-        {
-            //失敗
-            valuedata.HP = 0;
-            UICtrl.Instance.gameover();
-
         }
     }
 
     //受傷無敵幀
-    IEnumerator BehurtTimer()
+    public IEnumerator BehurtTimer()
     {
         valuedata.canBehurt = false;
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));

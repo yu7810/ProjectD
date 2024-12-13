@@ -91,7 +91,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(7,0,"明月斬",2f,40,1.4f,1,2,0.1f),
         new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
         new SkillBase(9,0,"飛箭",0.3f,5,1f,1,0.6f,0f),
-        new SkillBase(10,0,"水曝",0.2f,0f,1f,1,1f,0f),
+        new SkillBase(10,30,"水曝",1f,0f,1f,1,0f,0f),
     };
     //技能介紹
     [NonSerialized]
@@ -106,7 +106,7 @@ public class ValueData : MonoBehaviour
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大3倍後，被喪鐘以圓形造成範圍傷害",
         "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
-        "在滑鼠位置生成一個水球，一段時間後爆炸並造成範圍傷害",
+        "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×5)傷害",
     };
     //技能標籤
     [NonSerialized]
@@ -358,12 +358,32 @@ public class ValueData : MonoBehaviour
     }
 
     //加減生命通用
-    public void GetHp(float value)
+    public void GetHp(float value, bool useBehurtTimer = false)
     {
-        if (HP < maxHP - value)
-            HP += value;
+        if (value == 0)
+            return;
+        else if (value > 0) 
+        {
+            if (HP < maxHP - value)
+                HP += value;
+            else
+                HP = maxHP;
+        }
         else
-            HP = maxHP;
+        {
+            value *= (1 - Damagereduction);
+            if (HP > -value)
+            {
+                HP += value;
+                if (useBehurtTimer == true)
+                    StartCoroutine(PlayerCtrl.Instance.BehurtTimer());
+            }
+            else
+            {
+                HP = 0;
+                UICtrl.Instance.gameover();
+            }
+        }
     }
     //加減魔力通用
     public void GetAp(float value)

@@ -195,7 +195,9 @@ public class Skill : MonoBehaviour
 
     void Bell(int Fieldid) 
     {
-        GameObject a = Instantiate(Skill_Bell, attackPoint(1.5f), ValueData.Instance.Player.transform.rotation);
+        Vector3 targetpos = attackPoint(1.5f);
+        targetpos.y = 0;
+        GameObject a = Instantiate(Skill_Bell, targetpos, Skill_Bell.transform.rotation);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
     }
     void Magicarrow(int Fieldid)
@@ -210,7 +212,7 @@ public class Skill : MonoBehaviour
     {
         float _cost = ValueData.Instance.AP/2;
         ValueData.Instance.GetAp(-_cost);
-        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 2;
+        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 5;
         StartCoroutine(waterball(Fieldid, _cost));
     }
     IEnumerator waterball(int Fieldid, float _dmg)
@@ -220,7 +222,7 @@ public class Skill : MonoBehaviour
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
             targetPos = floorhit.point;
-            targetPos.y = 1f;
+            targetPos.y = 0.5f;
         }
         GameObject a = Instantiate(Skill_Waterball_1, targetPos, Skill_Waterball_1.transform.rotation);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;

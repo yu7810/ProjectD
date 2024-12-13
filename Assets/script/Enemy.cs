@@ -64,6 +64,11 @@ public class Enemy : MonoBehaviour
             canMove = true;
             StartCoroutine(_Move());
         }
+        else if (enemyType == EnemyType.Minion)
+        {
+            float time = transform.parent.GetComponent<DestroyThis>().LifeTime;
+            StartCoroutine(MiniontimeCD(time));
+        }
     }
 
     void LateUpdate()
@@ -234,6 +239,22 @@ public class Enemy : MonoBehaviour
                 bellCD -= 0.1f;
             }
         }
+    }
+
+    IEnumerator MiniontimeCD(float time)
+    {
+        if (time <= 0)
+            yield return 0;
+        float nowtime = time;
+        while(nowtime > 0.1f)
+        {
+            hpUI.value = nowtime / time;
+            nowtime -= 0.1f;
+            yield return new WaitForSeconds(0.1f);
+        }
+        if(nowtime > 0)
+            yield return new WaitForSeconds(nowtime);
+        hpUI.transform.parent.gameObject.SetActive(false);
     }
 
 }

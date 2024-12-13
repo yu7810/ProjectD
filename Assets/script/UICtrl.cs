@@ -299,7 +299,6 @@ public class UICtrl : MonoBehaviour
         GameOverUI.SetActive(false);
         LevelCtrl.Instance.Enemys.SetActive(false);
         LevelCtrl.Instance.NextLevel(0);
-        ValueData.Instance.GetHp(ValueData.Instance.maxHP);
     }
 
     public void ExitGame() {
