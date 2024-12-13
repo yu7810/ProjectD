@@ -68,6 +68,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI CritDmg_text;
     public TextMeshProUGUI Damagereduction_text;
     public TextMeshProUGUI Bulletspeed_text;
+    public TextMeshProUGUI RestoreAP_text;
 
     public GameObject Tip_tag;//Tip上的Tag欄相關
     public TextMeshProUGUI tagAttack;
@@ -83,6 +84,7 @@ public class UICtrl : MonoBehaviour
     public int[] UpgradeBtn;
     public int ChangeSkill_ID;//更換技能的ID暫存
     int ChangeWeapon_ID;//更換裝備的ID暫存
+    public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
     public Image[] WeaponFieldIcon = new Image[3];//已裝備技能icon
@@ -297,7 +299,7 @@ public class UICtrl : MonoBehaviour
         GameOverUI.SetActive(false);
         LevelCtrl.Instance.Enemys.SetActive(false);
         LevelCtrl.Instance.NextLevel(0);
-        ValueData.Instance.Health(ValueData.Instance.maxHP);
+        ValueData.Instance.GetHp(ValueData.Instance.maxHP);
     }
 
     public void ExitGame() {
@@ -351,6 +353,7 @@ public class UICtrl : MonoBehaviour
         }
         else {
             ChangeSkill_ID = target;
+            isSpendmoney = true;
             SkillFieldSelectUI.SetActive(true);
         }
     }
@@ -370,7 +373,7 @@ public class UICtrl : MonoBehaviour
         else
             SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
-        if (ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
+        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID].Price);
         }
@@ -390,10 +393,12 @@ public class UICtrl : MonoBehaviour
         }
         else {
             ChangeWeapon_ID = target;
+            isSpendmoney = true;
             WeaponFieldSelectUI.SetActive(true);
         }
     }
-    public void SelectWeaponChangeField(int Field){
+    public void SelectWeaponChangeField(int Field)
+    {
         WeaponFieldSelectUI.SetActive(false);
         ValueData.Instance.WeaponField[Field].ID = ValueData.Instance.Weapon[ChangeWeapon_ID].ID;
         ValueData.Instance.WeaponField[Field].Name = ValueData.Instance.Weapon[ChangeWeapon_ID].Name;
@@ -407,7 +412,7 @@ public class UICtrl : MonoBehaviour
         WeaponFieldIcon[Field].tag = "UI";
         WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
-        if (ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
+        if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
         }
@@ -471,6 +476,7 @@ public class UICtrl : MonoBehaviour
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
         Bulletspeed_text.text = (ValueData.Instance.BulletSpeed * 100).ToString("0");
+        RestoreAP_text.text = ValueData.Instance.RestoreAP.ToString("0.0");
     }
 
     //開啟技能商店

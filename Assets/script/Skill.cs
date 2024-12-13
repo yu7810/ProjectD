@@ -10,8 +10,10 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Bell;
     public GameObject Skill_Bellattack;
     public GameObject Skill_Magicarrow;
+    public GameObject Skill_Waterball_1;
+    public GameObject Skill_Waterball_2;
     public ParticleSystem SmokeTrail;
-    LayerMask maskFloor = (1 << 6);
+    LayerMask maskFloor = (1 << 7);
 
     void Awake()
     {
@@ -61,6 +63,9 @@ public class Skill : MonoBehaviour
                 break;
             case 9:
                 Magicarrow(Fieldid);
+                break;
+            case 10:
+                Waterball(Fieldid);
                 break;
         }
 
@@ -148,6 +153,7 @@ public class Skill : MonoBehaviour
         if (ValueData.Instance.SkillField[Fieldid].ID == 5)
         {
             UICtrl.Instance.ChangeSkill_ID = 6;
+            UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -161,6 +167,7 @@ public class Skill : MonoBehaviour
         if (ValueData.Instance.SkillField[Fieldid].ID == 6)
         {
             UICtrl.Instance.ChangeSkill_ID = 7;
+            UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -174,6 +181,7 @@ public class Skill : MonoBehaviour
         if (ValueData.Instance.SkillField[Fieldid].ID == 7)
         {
             UICtrl.Instance.ChangeSkill_ID = 5;
+            UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -197,5 +205,31 @@ public class Skill : MonoBehaviour
         b.fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         b.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
+    }
+    void Waterball(int Fieldid)
+    {
+        float _cost = ValueData.Instance.AP/2;
+        ValueData.Instance.GetAp(-_cost);
+        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 2;
+        StartCoroutine(waterball(Fieldid, _cost));
+    }
+    IEnumerator waterball(int Fieldid, float _dmg)
+    {
+        Vector3 targetPos = ValueData.Instance.Player.transform.position;
+        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
+        {
+            targetPos = floorhit.point;
+            targetPos.y = 1f;
+        }
+        GameObject a = Instantiate(Skill_Waterball_1, targetPos, Skill_Waterball_1.transform.rotation);
+        float _size = ValueData.Instance.SkillField[Fieldid].Size;
+        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
+        Destroy(a, 1f);
+        yield return new WaitForSeconds(0.7f);
+        GameObject b = Instantiate(Skill_Waterball_2, targetPos, Skill_Waterball_2.transform.rotation);
+        b.transform.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        b.transform.localScale = new Vector3(b.transform.localScale.x * _size, b.transform.localScale.y * _size, b.transform.localScale.z * _size);
+        Destroy(b, 1f);
     }
 }

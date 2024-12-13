@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Animations;
+//using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -18,7 +18,8 @@ public class PlayerCtrl : MonoBehaviour
     public ValueData valuedata;
     public Skill skill;
     GameObject ontriggerTarget;//放碰到的物體
-    public RaycastHit floorhit;//滑鼠指到的目標
+    RaycastHit floorhit;
+    public Vector3 playerToMouse;//滑鼠指到的座標
 
     // 靜態實例，用於存儲唯一的實例
     private static PlayerCtrl instance;
@@ -81,7 +82,7 @@ public class PlayerCtrl : MonoBehaviour
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out floorhit, 30f, mask))
         {
-            Vector3 playerToMouse = floorhit.point - transform.position;
+            playerToMouse = floorhit.point - transform.position;
             playerToMouse.y = 0;
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);

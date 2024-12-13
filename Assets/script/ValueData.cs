@@ -90,21 +90,23 @@ public class ValueData : MonoBehaviour
         new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,2,0.1f),
         new SkillBase(7,0,"明月斬",2f,40,1.4f,1,2,0.1f),
         new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
-        new SkillBase(9,0,"飛箭",0.3f,6,1f,1,0.6f,0f),
+        new SkillBase(9,0,"飛箭",0.3f,5,1f,1,0.6f,0f),
+        new SkillBase(10,0,"水曝",0.2f,0f,1f,1,1f,0f),
     };
     //技能介紹
     [NonSerialized]
     public string[] SkillIntro = new string[] {
         "-",
-        "技能1說明文",
+        "對前方半圓形範圍內所有敵人造成傷害",
         "衝刺一段距離，並恢復50%失去的魔力<BR>(速度會影響衝刺距離)",
-        "技能3說明文",
+        "",
         "閃現至滑鼠位置，沒有距離限制",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大3倍後，被喪鐘以圓形造成範圍傷害",
         "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
+        "在滑鼠位置生成一個水球，一段時間後爆炸並造成範圍傷害",
     };
     //技能標籤
     [NonSerialized]
@@ -120,6 +122,7 @@ public class ValueData : MonoBehaviour
         new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能7
         new SkillTagType[]{ SkillTagType.Spell } , //技能8
         new SkillTagType[]{ SkillTagType.Projectile, SkillTagType.Physical } , //技能9
+        new SkillTagType[]{ SkillTagType.Spell } , //技能10
     };
 
     //已裝備技能欄位
@@ -145,9 +148,9 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public string[] WeaponIntro = new string[] {
         "-",
-        "裝備1說明文",
-        "裝備2說明文",
-        "裝備3說明文",
+        "",
+        "",
+        "",
         "身上每1金幣提供1%傷害增幅",
         "技能暴擊時將冷卻降為0.3s",
         "技能重複2次",
@@ -354,15 +357,15 @@ public class ValueData : MonoBehaviour
         UICtrl.Instance.UpdateSkillCD();
     }
 
-    //回復生命通用
-    public void Health(float value)
+    //加減生命通用
+    public void GetHp(float value)
     {
         if (HP < maxHP - value)
             HP += value;
         else
             HP = maxHP;
     }
-
+    //加減魔力通用
     public void GetAp(float value)
     {
         if (value == 0)

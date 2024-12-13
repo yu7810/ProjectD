@@ -50,7 +50,7 @@ public class PlayerAttack : MonoBehaviour
                 if (startPos != Vector3.zero)
                 {
                     float distance = Vector3.Distance(startPos, transform.position);
-                    _dmg += distance;
+                    _dmg += distance * 2;
                 }
             }
 
@@ -93,10 +93,7 @@ public class PlayerAttack : MonoBehaviour
                 // 計算碰撞法線
                 Vector3 collisionPoint = transform.position; // 子彈當前位置
                 Vector3 normal = other.ClosestPoint(collisionPoint) - collisionPoint;
-                //normal = normal.normalized;
-
-                if (normal == Vector3.zero)
-                    Debug.Log("zero");
+                normal = normal.normalized;
 
                 // 計算反射方向
                 direction = Vector3.Reflect(direction, normal);

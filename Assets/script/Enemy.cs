@@ -119,7 +119,7 @@ public class Enemy : MonoBehaviour
             Instantiate(money, pos, money.transform.rotation);
         }
         if (ValueData.Instance.PassiveSkills[11])
-            ValueData.Instance.Health(1);
+            ValueData.Instance.GetHp(1);
         Destroy(transform.gameObject);
     }
 
