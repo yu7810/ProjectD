@@ -104,7 +104,7 @@ public class Enemy : MonoBehaviour
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();
             atk.dmg = Dmg * 3;
-            atk.passTarget = new GameObject[1] { this.gameObject }; //防止重複打到自己
+            atk.passTarget.Add(this.gameObject);
             bellCD = 0.1f;
             StartCoroutine(BellCD());
         }

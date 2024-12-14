@@ -80,6 +80,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI tagPhysical;
     public TextMeshProUGUI tagProjectile;
     public TextMeshProUGUI tagSpell;
+    public TextMeshProUGUI tagRange;
 
     public int[] UpgradeBtn;
     public int ChangeSkill_ID;//更換技能的ID暫存

@@ -2,17 +2,18 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
 
 public class PlayerAttack : MonoBehaviour
 {
-    //public bool HitSlowMotion;
     public GameObject AttackParticle;
     private SkillFieldBase thisSkill;
     private int _fidleid = -1;
     private WeaponFieldBase thisWeapon;
     public float dmg;
     float crit;
-    public GameObject[] passTarget;
+    public List<GameObject> passTarget = new List<GameObject>();
+    public List<GameObject> Target = new List<GameObject>();
 
     public bool isBullet; //投射物，會往前飛
     private Vector3 startPos;//投射物用，紀錄發射位置
@@ -24,65 +25,26 @@ public class PlayerAttack : MonoBehaviour
             startPos = transform.position;
             StartCoroutine(Bullet());
         }
+        if(ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Range))
+        {
+            StartCoroutine(Range());
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.transform.tag == "Barrel" || other.transform.tag == "Enemy" || other.transform.tag == "Bell")
         {
-            //黏刀，改時間效果不明顯，且會影響到粒子表現
-            /*if (!HitSlowMotion) {
-                StartCoroutine(SlowMotion(0.05f));
-            }*/
-            for (int i = 0; i < passTarget.Length; i++)
-            {
-                if (passTarget[i] == other.gameObject)
-                    return;
-            }
+            if (passTarget.Contains(other.gameObject)) // 要無視的目標
+                return;
 
             if (!other.transform.GetComponent<Enemy>().canBeHit)
                 return;
 
-            float _dmg = dmg; // 多一層，避免傷害疊加
-
-            if (isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
-            {
-                if (startPos != Vector3.zero)
-                {
-                    float distance = Vector3.Distance(startPos, transform.position);
-                    _dmg += distance * 2;
-                }
-            }
-
-            //暴擊
-            float randomvalue = Random.Range(0.01f, 1f);
-            if (crit >= randomvalue)
-            {
-                _dmg *= ValueData.Instance.CritDmg;
-                UICtrl.Instance.ShowDamage(_dmg, other.transform.position, true);
-                //裝備5能力
-                if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
-                {
-                    float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
-                    ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
-                }
-                //天賦16能力
-                if (ValueData.Instance.PassiveSkills[16])
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        if (i != _fidleid)
-                            ValueData.Instance.doCooldown(ValueData.Instance.SkillField[i], 1f);
-                    }
-                }
-            }
+            if (ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Range))
+                Target.Add(other.gameObject);
             else
-                UICtrl.Instance.ShowDamage(_dmg, other.transform.position, false);
-            other.transform.GetComponent<Enemy>().Hurt(_dmg);
-
-            GameObject P = Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
-            if (isBullet)
-                Destroy(this.gameObject);
+                doDamage(other.gameObject);
         }
         else if (other.transform.tag == "Wall" && isBullet)
         {
@@ -111,6 +73,54 @@ public class PlayerAttack : MonoBehaviour
         
     }
 
+    void doDamage(GameObject target)
+    {
+        float _dmg = dmg; // 多一層，避免傷害疊加
+
+        if (isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
+        {
+            if (startPos != Vector3.zero)
+            {
+                float distance = Vector3.Distance(startPos, transform.position);
+                _dmg += distance * 2;
+            }
+        }
+        if(thisWeapon.ID == 8)
+        {
+            if (ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Cold))
+                _dmg *= 1 + (Target.Count * 0.2f);
+        }
+
+        //暴擊
+        float randomvalue = Random.Range(0.01f, 1f);
+        if (crit >= randomvalue)
+        {
+            _dmg *= ValueData.Instance.CritDmg;
+            UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
+            //裝備5能力
+            if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
+            {
+                float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
+                ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
+            }
+            //天賦16能力
+            if (ValueData.Instance.PassiveSkills[16])
+            {
+                for (int i = 0; i < 3; i++)
+                {
+                    if (i != _fidleid)
+                        ValueData.Instance.doCooldown(ValueData.Instance.SkillField[i], 1f);
+                }
+            }
+        }
+        else
+            UICtrl.Instance.ShowDamage(_dmg, target.transform.position, false);
+        target.transform.GetComponent<Enemy>().Hurt(_dmg);
+
+        GameObject P = Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
+        if (isBullet)
+            Destroy(this.gameObject);
+    }
 
     public int fidleid
     {
@@ -139,15 +149,15 @@ public class PlayerAttack : MonoBehaviour
             transform.position += transform.forward * speed * Time.deltaTime;
         }
     }
-
-
-    /*
-    IEnumerator SlowMotion(float time) {
-        HitSlowMotion = true;
-        Time.timeScale = 0.55f;
-        yield return new WaitForSeconds(time);
-        Time.timeScale = 1;
-        HitSlowMotion = false;
-    }*/
-
+    IEnumerator Range()
+    {
+        yield return new WaitForFixedUpdate();
+        if (Target.Count > 0)
+        { 
+            foreach(GameObject target in Target)
+            {
+                doDamage(target);
+            }
+        }
+    }
 }

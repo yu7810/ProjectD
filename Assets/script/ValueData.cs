@@ -113,16 +113,16 @@ public class ValueData : MonoBehaviour
     public SkillTagType[][] SkillTag = new SkillTagType[][]
     {
         new SkillTagType[]{ } ,
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能1
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能1
         new SkillTagType[]{ SkillTagType.Movement } , //技能2
         new SkillTagType[]{ SkillTagType.Spell } , //技能3
         new SkillTagType[]{ SkillTagType.Movement, SkillTagType.Spell } , //技能4
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能5
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能6
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical } , //技能7
-        new SkillTagType[]{ SkillTagType.Spell } , //技能8
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能5
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能6
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能7
+        new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range } , //技能8
         new SkillTagType[]{ SkillTagType.Projectile, SkillTagType.Physical } , //技能9
-        new SkillTagType[]{ SkillTagType.Spell } , //技能10
+        new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range, SkillTagType.Cold } , //技能10
     };
 
     //已裝備技能欄位
@@ -139,10 +139,11 @@ public class ValueData : MonoBehaviour
         new WeaponBase(1,RarityType.Normal,15,"鐵劍", 1.5f, 0.85f, 1f, 1f, 1f, 0.1f),
         new WeaponBase(2,RarityType.Normal,15,"鐵弓", 1.2f, 1f, 1f , 1.4f, 0.85f, 0f),
         new WeaponBase(3,RarityType.Normal,15,"鐵斧", 1.2f, 1.5f, 1.5f, 0.8f, 1.2f, 0.2f),
-        new WeaponBase(4,RarityType.Magic,15,"倉鼠槌", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(4,RarityType.Magic,15,"聚寶", 1, 1f, 1f, 1f, 1f, 0.05f),
         new WeaponBase(5,RarityType.Rare,30,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
         new WeaponBase(6,RarityType.Rare,30,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
         new WeaponBase(7,RarityType.Rare,30,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
+        new WeaponBase(8,RarityType.Rare,0,"碧浪", 1f, 1f, 2f, 1f, 1f, 0),
     };
     //裝備介紹
     [NonSerialized]
@@ -155,6 +156,7 @@ public class ValueData : MonoBehaviour
         "技能暴擊時將冷卻降為0.3s",
         "技能重複2次",
         "使用位移技能時觸發L上的非位移技能",
+        "冰冷技能同時命中複數目標時，每個目標使傷害提升20%",
     };
 
     //已裝備裝備
@@ -422,6 +424,7 @@ public enum SkillTagType
     Attack,//攻擊
     Spell,//法術
     Movement,//位移
+    Range,//範圍
     Projectile,//投射物
     Physical,//物理
     Fire,//火

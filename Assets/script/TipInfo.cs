@@ -59,6 +59,8 @@ public class TipInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                     UICtrl.Instance.tagProjectile.gameObject.SetActive(true);
                 else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Spell)
                     UICtrl.Instance.tagSpell.gameObject.SetActive(true);
+                else if (ValueData.Instance.SkillTag[Id][i] == SkillTagType.Range)
+                    UICtrl.Instance.tagRange.gameObject.SetActive(true);
             }
         }
         else if (Type == TipType.Weapon) //¸Ë³Æ
