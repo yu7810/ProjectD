@@ -82,7 +82,7 @@ public class Enemy : MonoBehaviour
     }
 
     //受到傷害時使用
-    public void Hurt(float Dmg) {
+    public void Hurt(float Dmg , int Filed = -1) {
         if(immortal)
             beAttack();
         else if (Hp > Dmg)
@@ -94,7 +94,7 @@ public class Enemy : MonoBehaviour
         else {
             Hp = 0;
             hpUI.transform.parent.gameObject.SetActive(false);
-            Die();
+            Die(Filed);
         }
         if(gameObject.tag == "Bell" && bellCD == 0)
         {
@@ -110,21 +110,30 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public void Die() {
+    public void Die(int Filed = -1) {
         //UICtrl.Instance.GetEXP(EXP);
         LevelCtrl.Instance.leftEnemy -= 1;
         LevelCtrl.Instance.enemycheck();
         float rng = 0.5f;
         int _money = Random.Range(money[0], money[1]);
-        for(int i=0;i<_money;i++)
+        if (Filed != -1)
+        {
+            if (ValueData.Instance.WeaponField[Filed].ID == 9) //裝備9能力
+            {
+                int moneyadd = Random.Range(0, 4);
+                _money *= moneyadd;
+            }
+        }
+        for (int i=0;i<_money;i++)
         {
             Vector3 offset = new Vector3(Random.Range(-rng, rng), 0, Random.Range(-rng, rng));
             Vector3 pos = transform.position + offset;
             GameObject money = ValueData.Instance.moneyPrefab;
             Instantiate(money, pos, money.transform.rotation);
         }
-        if (ValueData.Instance.PassiveSkills[11])
+        if (ValueData.Instance.PassiveSkills[11] && ValueData.Instance.HP < 5)
             ValueData.Instance.GetHp(1);
+        StopAllCoroutines();
         Destroy(transform.gameObject);
     }
 

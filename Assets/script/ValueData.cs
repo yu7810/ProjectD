@@ -144,6 +144,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(6,RarityType.Rare,30,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
         new WeaponBase(7,RarityType.Rare,30,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
         new WeaponBase(8,RarityType.Rare,0,"碧浪", 1f, 1f, 2f, 1f, 1f, 0),
+        new WeaponBase(9,RarityType.Magic,15,"招財", 1, 1f, 1f, 1f, 1f, 0f),
     };
     //裝備介紹
     [NonSerialized]
@@ -157,6 +158,7 @@ public class ValueData : MonoBehaviour
         "技能重複2次",
         "使用位移技能時觸發L上的非位移技能",
         "冰冷技能同時命中複數目標時，每個目標使傷害提升20%",
+        "擊殺敵人掉落的金幣為0~3倍",
     };
 
     //已裝備裝備

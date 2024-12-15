@@ -115,7 +115,7 @@ public class PlayerAttack : MonoBehaviour
         }
         else
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, false);
-        target.transform.GetComponent<Enemy>().Hurt(_dmg);
+        target.transform.GetComponent<Enemy>().Hurt(_dmg, _fidleid);
 
         GameObject P = Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
         if (isBullet)
