@@ -100,6 +100,7 @@ public class Enemy : MonoBehaviour
         {
             GameObject a = Instantiate(Skill.Instance.Skill_Bellattack, gameObject.transform.position, gameObject.transform.rotation);
             int id = gameObject.GetComponent<PlayerAttack>().fidleid;
+            a.transform.gameObject.GetComponent<PlayerAttack>().fidleid = id;
             float size = ValueData.Instance.SkillField[id].Size;
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();

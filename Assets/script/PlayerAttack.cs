@@ -16,6 +16,7 @@ public class PlayerAttack : MonoBehaviour
     public List<GameObject> Target = new List<GameObject>();
 
     public bool isBullet; //投射物，會往前飛
+    public bool canSplit = true; // 投射物可以分裂
     private Vector3 startPos;//投射物用，紀錄發射位置
 
     private void Start()
@@ -45,6 +46,7 @@ public class PlayerAttack : MonoBehaviour
                 Target.Add(other.gameObject);
             else
                 doDamage(other.gameObject);
+            
         }
         else if (other.transform.tag == "Wall" && isBullet)
         {
@@ -117,9 +119,25 @@ public class PlayerAttack : MonoBehaviour
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, false);
         target.transform.GetComponent<Enemy>().Hurt(_dmg, _fidleid);
 
-        GameObject P = Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
+        Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
+
         if (isBullet)
+        {
+            if(ValueData.Instance.PassiveSkills[17] && canSplit) // 天賦17 (投射物分裂)
+            {
+                Quaternion forward = transform.rotation;
+                Quaternion leftDirection = Quaternion.Euler(0, -30, 0) * forward;
+                Quaternion rightDirection = Quaternion.Euler(0, 30, 0) * forward;
+                Vector3 pos = transform.position;
+                pos += ValueData.Instance.Player.transform.forward * 0.7f;
+                pos.y = 0;
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, leftDirection, 1);
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, rightDirection, 1);
+            }
+
             Destroy(this.gameObject);
+        }
+            
     }
 
     public int fidleid

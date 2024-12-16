@@ -14,6 +14,9 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Waterball_2;
     public ParticleSystem SmokeTrail;
     LayerMask maskFloor = (1 << 7);
+    Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
+    Quaternion startRot = new Quaternion(0, 0, 0,0);
+    int UsedTime = 0; // 紀錄技能連續使用次數
 
     void Awake()
     {
@@ -38,7 +41,20 @@ public class Skill : MonoBehaviour
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
     }
 
-    public void UseSkill(int Skillid, int Fieldid, int usedTime = 1) {
+    public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
+        UsedTime = usedTime;
+
+        if (Startpos == Vector3.zero)
+            startPos = ValueData.Instance.Player.transform.position;
+        else
+            startPos = Startpos;
+
+        if (Startrot.eulerAngles == new Vector3(0,0,0))
+            startRot = ValueData.Instance.Player.transform.rotation;
+        else
+            startRot = Startrot;
+
+
         switch (Skillid) {
             case 1:
                 Basicattack(Fieldid);
@@ -81,7 +97,7 @@ public class Skill : MonoBehaviour
                         if (_tag == SkillTagType.Movement)
                             return;
                     }
-                    UseSkill(ValueData.Instance.SkillField[0].ID, 0);
+                    UseSkill(ValueData.Instance.SkillField[0].ID, 0, startPos, startRot);
                 }
             }
         }
@@ -94,13 +110,13 @@ public class Skill : MonoBehaviour
     //技能發射點
     Vector3 attackPoint(float distance = 1f)
     {
-        Vector3 newPosition = ValueData.Instance.Player.transform.position + ValueData.Instance.Player.transform.forward * distance;
+        Vector3 newPosition = startPos + ValueData.Instance.Player.transform.forward * distance;
         return newPosition;
     }
 
     void Basicattack(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_A, startPos, startRot);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
@@ -146,7 +162,7 @@ public class Skill : MonoBehaviour
 
     void Newmoon(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_A, startPos, startRot);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
@@ -160,7 +176,7 @@ public class Skill : MonoBehaviour
     }
     void Quartermoon(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_A, startPos, startRot);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
@@ -174,7 +190,7 @@ public class Skill : MonoBehaviour
     }
     void Fullmoon(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_A, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_A, startPos, startRot);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
@@ -190,7 +206,7 @@ public class Skill : MonoBehaviour
     IEnumerator doubleSkill(int Skillid, int Fieldid, int usedTime) 
     {
         yield return new WaitForSeconds(0.2f);
-        UseSkill(Skillid, Fieldid, usedTime+1);
+        UseSkill(Skillid, Fieldid, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation, usedTime + 1);
     }
 
     void Bell(int Fieldid) 
@@ -202,11 +218,13 @@ public class Skill : MonoBehaviour
     }
     void Magicarrow(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), ValueData.Instance.Player.transform.rotation);
+        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), startRot);
         PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
         b.fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         b.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
+        if (UsedTime > 0)
+            b.canSplit = false;
     }
     void Waterball(int Fieldid)
     {
