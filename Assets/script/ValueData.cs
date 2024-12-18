@@ -82,7 +82,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
-        new SkillBase(1,0,"劈砍",1f,10,1f,1,1f,0.25f),
+        new SkillBase(1,0,"劈砍",2f,10,1f,1,0.2f,0.25f),
         new SkillBase(2,10,"衝刺",5f,0,1f,1,0,0),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
         new SkillBase(4,10,"閃現",3.4f,0f,1f,1,1,0f),
@@ -90,7 +90,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,2,0.1f),
         new SkillBase(7,0,"明月斬",2f,40,1.4f,1,2,0.1f),
         new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
-        new SkillBase(9,0,"飛箭",0.3f,5,1f,1,0.6f,0f),
+        new SkillBase(9,0,"飛箭",0.3f,3,1f,1,0.6f,0f),
         new SkillBase(10,30,"水曝",1f,0f,1f,1,0f,0f),
     };
     //技能介紹
@@ -166,6 +166,17 @@ public class ValueData : MonoBehaviour
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//滑鼠L
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//滑鼠R
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0),//空白鍵
+    };
+
+    //技能商店池
+    public List<int> skillstorePool = new List<int>()
+    {
+        2,4,5,8,10
+    };
+    //裝備商店池
+    public List<int> weaponstorePool = new List<int>()
+    {
+        1,2,3,4,5,6,7,8,9
     };
 
     //每次加減天賦時呼叫，更新所有數值
@@ -421,6 +432,7 @@ public enum RarityType
     Unique
 }
 
+//技能標籤
 public enum SkillTagType
 {
     Attack,//攻擊

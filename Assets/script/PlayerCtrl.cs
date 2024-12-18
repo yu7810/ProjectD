@@ -54,6 +54,10 @@ public class PlayerCtrl : MonoBehaviour
         canMove = true;
         valuedata.canBehurt = true;
         StartCoroutine(RestoreAP());
+        UICtrl.Instance.ChangeSkill_ID = 1;
+        UICtrl.Instance.SelectSkillChangeField(0);
+        UICtrl.Instance.ChangeSkill_ID = 9;
+        UICtrl.Instance.SelectSkillChangeField(1);
     }
 
     void FixedUpdate()

@@ -25,12 +25,15 @@ public class Enemy : MonoBehaviour
     public bool canBeHit; //受擊時短暫無敵，避免重複判定
     Animator m_Animator;
 
-    private Transform target;
-    private NavMeshAgent agent;
-    private GameObject AttackCollider;
+    Transform target;
+    NavMeshAgent agent;
+    GameObject AttackCollider;
     public bool canAttack;
     public bool canMove;
-    private float bellCD; // bell觸發的冷卻
+    float bellCD; // bell觸發的冷卻
+    GameObject NoticeRange;
+    public float noticeDistance; // 視野射線距離
+    LayerMask mask = (1 << 8) | (1 << 9); // 視線，判斷玩家用
 
     private void OnEnable(){
         m_Animator = GetComponent<Animator>();
@@ -53,22 +56,23 @@ public class Enemy : MonoBehaviour
         if (enemyType == EnemyType.Melee )
         {
             AttackCollider = transform.Find("AttackCollider").gameObject;
+            NoticeRange = transform.Find("NoticeRange").gameObject;
             canAttack = true;
             canMove = true;
-            StartCoroutine(_Move());
         }
         else if(enemyType == EnemyType.Ranged)
         {
-            canAttack = false;
-            StartCoroutine(_AttackCD());
+            NoticeRange = transform.Find("NoticeRange").gameObject;
+            canAttack = true;
             canMove = true;
-            StartCoroutine(_Move());
         }
         else if (enemyType == EnemyType.Minion)
         {
             float time = transform.parent.GetComponent<DestroyThis>().LifeTime;
             StartCoroutine(MiniontimeCD(time));
         }
+        if (NoticeRange)
+            noticeDistance = NoticeRange.GetComponent<SphereCollider>().radius;
     }
 
     void LateUpdate()
@@ -83,7 +87,9 @@ public class Enemy : MonoBehaviour
 
     //受到傷害時使用
     public void Hurt(float Dmg , int Filed = -1) {
-        if(immortal)
+        if (NoticeRange)
+            StartAction();
+        if (immortal)
             beAttack();
         else if (Hp > Dmg)
         {
@@ -115,27 +121,42 @@ public class Enemy : MonoBehaviour
         //UICtrl.Instance.GetEXP(EXP);
         LevelCtrl.Instance.leftEnemy -= 1;
         LevelCtrl.Instance.enemycheck();
-        float rng = 0.5f;
-        int _money = Random.Range(money[0], money[1]);
         if (Filed != -1)
         {
             if (ValueData.Instance.WeaponField[Filed].ID == 9) //裝備9能力
             {
                 int moneyadd = Random.Range(0, 4);
-                _money *= moneyadd;
+                money[0] *= moneyadd;
+                money[1] *= moneyadd;
             }
         }
-        for (int i=0;i<_money;i++)
-        {
-            Vector3 offset = new Vector3(Random.Range(-rng, rng), 0, Random.Range(-rng, rng));
-            Vector3 pos = transform.position + offset;
-            GameObject money = ValueData.Instance.moneyPrefab;
-            Instantiate(money, pos, money.transform.rotation);
-        }
+        LevelCtrl.Instance.DropMoney(money[0], money[1], transform.position, 0.5f);
         if (ValueData.Instance.PassiveSkills[11] && ValueData.Instance.HP < 5)
             ValueData.Instance.GetHp(1);
         StopAllCoroutines();
         Destroy(transform.gameObject);
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if(other.tag == "Player")
+        {
+            Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, directionToPlayer, out hit, noticeDistance, mask))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    StartAction();
+                }
+            }
+        }
+    }
+
+    void StartAction()
+    {
+        NoticeRange.SetActive(false);
+        StartCoroutine(_Move());
     }
 
     public void beAttack() {
