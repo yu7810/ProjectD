@@ -134,11 +134,12 @@ public class LevelCtrl : MonoBehaviour
     IEnumerator dropMoney(int min, int max, Vector3 pos, float offset)
     {
         int _money = Random.Range(min, max);
+        GameObject money = ValueData.Instance.moneyPrefab;
         for (int i = 0; i < _money; i++)
         {
             Vector3 _offset = new Vector3(Random.Range(-offset, offset), 0, Random.Range(-offset, offset));
             Vector3 _pos = pos + _offset;
-            GameObject money = ValueData.Instance.moneyPrefab;
+            _pos.y = 0;
             Instantiate(money, _pos, money.transform.rotation);
             yield return new WaitForSeconds(0.1f);
         }

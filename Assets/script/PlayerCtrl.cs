@@ -160,7 +160,7 @@ public class PlayerCtrl : MonoBehaviour
         }
         else if(other.tag == "Money")
         {
-            Destroy(other.gameObject);
+            Destroy(other.transform.parent.gameObject);
             ValueData.Instance.GetMoney(1);
         }
     }

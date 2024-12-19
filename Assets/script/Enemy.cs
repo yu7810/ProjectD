@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     public float AttackCD; // 攻擊間隔
     public float AttackRange; // 攻擊範圍
     public float rotationSpeed;
+    [Range(0, 2)]
+    public int idleAnimation; // 待機動畫
     public int[] money = new int[2]; // 死亡掉落的金幣 浮動值
 
     public GameObject Mesh;
@@ -45,6 +47,7 @@ public class Enemy : MonoBehaviour
         }
         else if (gameObject.tag == "Enemy") {
             C = Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.GetColor("_EmissionColor");
+            m_Animator.SetInteger("IdleAnimation", idleAnimation);
         }
         
     }
@@ -87,7 +90,7 @@ public class Enemy : MonoBehaviour
 
     //受到傷害時使用
     public void Hurt(float Dmg , int Filed = -1) {
-        if (NoticeRange)
+        if (NoticeRange && NoticeRange.activeSelf)
             StartAction();
         if (immortal)
             beAttack();
@@ -131,7 +134,7 @@ public class Enemy : MonoBehaviour
             }
         }
         LevelCtrl.Instance.DropMoney(money[0], money[1], transform.position, 0.5f);
-        if (ValueData.Instance.PassiveSkills[11] && ValueData.Instance.HP < 5)
+        if (ValueData.Instance.PassiveSkills[11] && ValueData.Instance.HP < 3)
             ValueData.Instance.GetHp(1);
         StopAllCoroutines();
         Destroy(transform.gameObject);
@@ -145,7 +148,7 @@ public class Enemy : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, noticeDistance, mask))
             {
-                if (hit.collider.CompareTag("Player"))
+                if (hit.collider.CompareTag("Player") && NoticeRange && NoticeRange.activeSelf)
                 {
                     StartAction();
                 }
@@ -156,6 +159,8 @@ public class Enemy : MonoBehaviour
     void StartAction()
     {
         NoticeRange.SetActive(false);
+        m_Animator.SetBool("isMoving",true);
+        m_Animator.SetInteger("IdleAnimation", 0);
         StartCoroutine(_Move());
     }
 
@@ -181,24 +186,26 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(0.1f);
             canMove = true;
             agent.isStopped = false;
-            StartCoroutine(_Move());
         }
     }
 
     IEnumerator _Move()
     {
-        if (canMove) {
-            agent.SetDestination(target.position);
-            yield return new WaitForSeconds(0.05f);//放這裡的原因是SetDestination後remainingDistance不會馬上更新，等待後再抓
+        while (!canMove) {
+            m_Animator.SetBool("isMoving", false);
+            yield return new WaitForFixedUpdate();
         }
-        else
-            yield break;
-        //玩家進到攻擊範圍
-        while (agent.remainingDistance <= AttackRange)
+
+        Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
+        RaycastHit hit;
+
+        if(Physics.Raycast(transform.position, directionToPlayer, out hit, AttackRange, mask))
         {
-            if(canMove) // 持續轉向玩家
+            if(hit.collider.CompareTag("Player")) // 若玩家進到攻擊範圍且在視野內
             {
+                // 停下並轉向玩家
                 agent.isStopped = true;
+                m_Animator.SetBool("isMoving", false);
 
                 // 計算目標方向
                 Vector3 direction = (target.position - transform.position);
@@ -206,22 +213,35 @@ public class Enemy : MonoBehaviour
 
                 // 旋轉角色面向目標
                 Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
-            }
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
 
-            //攻擊行為
-            if (canAttack)
+                // 攻擊行為
+                if (canAttack)
+                {
+                    canMove = false;
+                    m_Animator.SetBool("Attack", true);
+                    yield break;
+                }
+            }
+            else  // 若看不到玩家
             {
-                canMove = false;
-                m_Animator.SetBool("Attack", true);
+                m_Animator.SetBool("isMoving", true);
+                agent.isStopped = false;
+                agent.angularSpeed = rotationSpeed;
+                agent.SetDestination(target.position);
             }
-
-            yield return new WaitForSeconds(0.02f);
         }
-        
-        agent.isStopped = false;
-        yield return new WaitForSeconds(0.05f);
+        else // 若玩家在視野外
+        {
+            m_Animator.SetBool("isMoving", true);
+            agent.isStopped = false;
+            agent.angularSpeed = rotationSpeed;
+            agent.SetDestination(target.position);
+        }
+
+        yield return new WaitForNextFrameUnit();
         StartCoroutine(_Move());
+
     }
 
     //動畫事件
