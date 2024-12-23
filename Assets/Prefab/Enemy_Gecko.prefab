@@ -988,7 +988,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.46, y: 1, z: 0.46}
+  m_Size: {x: 0.46, y: 1, z: 1.12}
   m_Center: {x: 0, y: 0.56, z: 0}
 --- !u!114 &3508461409054855995
 MonoBehaviour:
@@ -1005,7 +1005,7 @@ MonoBehaviour:
   enemyType: 0
   immortal: 0
   Hp: 0
-  maxHp: 35
+  maxHp: 30
   Attack: 1
   EXP: 1
   AttackCD: 2

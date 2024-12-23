@@ -83,15 +83,15 @@ public class ValueData : MonoBehaviour
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//µL
         new SkillBase(1,0,"¼A¬å",2f,10,1f,1,0.2f,0.25f),
-        new SkillBase(2,10,"½Ä¨ë",5f,0,1f,1,0,0),//size=¦ì²¾¶ZÂ÷
+        new SkillBase(2,30,"½Ä¨ë",5f,0,1f,1,0,0),//size=¦ì²¾¶ZÂ÷
         new SkillBase(3,0,"­µ²Å",1f,10,1f,1,0,0),
-        new SkillBase(4,10,"°{²{",3.4f,0f,1f,1,1,0f),
-        new SkillBase(5,20,"·s¤ë±Ù",2f,10,0.8f,1,1,0.1f),
+        new SkillBase(4,30,"°{²{",3.4f,0f,1f,1,1,0f),
+        new SkillBase(5,50,"·s¤ë±Ù",2f,10,0.8f,1,1,0.1f),
         new SkillBase(6,0,"©¶¤ë±Ù",2f,20,1.1f,1,2,0.1f),
         new SkillBase(7,0,"©ú¤ë±Ù",2f,40,1.4f,1,2,0.1f),
-        new SkillBase(8,20,"The³àÄÁ",20f,0,1f,1,0,0f),
+        new SkillBase(8,30,"The³àÄÁ",20f,0,1f,1,0,0f),
         new SkillBase(9,0,"­¸½b",0.3f,3,1f,1,0.6f,0f),
-        new SkillBase(10,30,"¤ôÃn",1f,0f,1f,1,0f,0f),
+        new SkillBase(10,60,"¤ôÃn",1f,0f,1f,1,0f,0f),
     };
     //§Þ¯à¤¶²Ð
     [NonSerialized]
@@ -136,15 +136,15 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"ªÅ¤â", 1f, 1f, 1f, 1f, 1f, 0),//Dmg¡BCD¡BSize¡BSpeed¡BCost¬Ò¬O­¿²v¡A1f=100%
-        new WeaponBase(1,RarityType.Normal,15,"ÅK¼C", 1.5f, 0.85f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,15,"ÅK¤}", 1.2f, 1f, 1f , 1.4f, 0.85f, 0f),
-        new WeaponBase(3,RarityType.Normal,15,"ÅK©ò", 1.2f, 1.5f, 1.5f, 0.8f, 1.2f, 0.2f),
-        new WeaponBase(4,RarityType.Magic,15,"»EÄ_", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,30,"¯}¾å", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,30,"³v¼v", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
-        new WeaponBase(7,RarityType.Rare,30,"ÁÉ³Õ¸qªÏ", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
-        new WeaponBase(8,RarityType.Rare,0,"ºÑ®ö", 1f, 1f, 2f, 1f, 1f, 0),
-        new WeaponBase(9,RarityType.Magic,15,"©Û°]", 1, 1f, 1f, 1f, 1f, 0f),
+        new WeaponBase(1,RarityType.Normal,30,"ÅK¼C", 1.5f, 0.85f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,30,"ÅK¤}", 1.2f, 1f, 1f , 1.6f, 0.85f, 0f),
+        new WeaponBase(3,RarityType.Normal,30,"ÅK©ò", 1.5f, 1.2f, 1.5f, 0.8f, 1.4f, 0.2f),
+        new WeaponBase(4,RarityType.Magic,30,"»EÄ_", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(5,RarityType.Rare,80,"¯}¾å", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,80,"³v¼v", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
+        new WeaponBase(7,RarityType.Rare,80,"ÁÉ³Õ¸qªÏ", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
+        new WeaponBase(8,RarityType.Rare,80,"ºÑ®ö", 1f, 1f, 2f, 1f, 1f, 0),
+        new WeaponBase(9,RarityType.Magic,30,"©Û°]", 1, 1f, 1f, 1f, 1f, 0f),
     };
     //¸Ë³Æ¤¶²Ð
     [NonSerialized]

@@ -21,6 +21,12 @@ public class PlayerCtrl : MonoBehaviour
     RaycastHit floorhit;
     public Vector3 playerToMouse;//滑鼠指到的座標
 
+    //角色漂浮效果
+    private float amplitude = 0.15f;  // 漂浮的幅度
+    private float frequency = 0.8f;   // 漂浮的頻率
+    private Vector3 startPosition; // 初始位置
+    public GameObject Character;
+
     // 靜態實例，用於存儲唯一的實例
     private static PlayerCtrl instance;
     public static PlayerCtrl Instance
@@ -58,6 +64,7 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.SelectSkillChangeField(0);
         UICtrl.Instance.ChangeSkill_ID = 9;
         UICtrl.Instance.SelectSkillChangeField(1);
+        startPosition = Character.transform.localPosition;
     }
 
     void FixedUpdate()
@@ -146,6 +153,11 @@ public class PlayerCtrl : MonoBehaviour
                 LevelCtrl.Instance.NextLevel(nextLevel);
             }
         }
+
+        //漂浮
+        float newY = startPosition.y + Mathf.Sin(Time.time * frequency) * amplitude;
+        Character.transform.localPosition = new Vector3(startPosition.x, newY, startPosition.z);
+
     }
 
     private void OnTriggerEnter(Collider other)

@@ -418,8 +418,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.6, y: 1, z: 0.6}
-  m_Center: {x: 0, y: 0.56, z: 0}
+  m_Size: {x: 0.6, y: 1.42, z: 0.6}
+  m_Center: {x: 0, y: 0.77, z: 0}
 --- !u!114 &4146876082952837424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -441,6 +441,7 @@ MonoBehaviour:
   AttackCD: 1.5
   AttackRange: 8
   rotationSpeed: 120
+  idleAnimation: 0
   money: 0100000005000000
   Mesh: {fileID: 2216843740710908176}
   hpUI: {fileID: 918749404404996826}

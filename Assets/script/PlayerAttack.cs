@@ -160,7 +160,7 @@ public class PlayerAttack : MonoBehaviour
 
     IEnumerator Bullet()
     {
-        float speed = 10f * thisSkill.Speed * ValueData.Instance.BulletSpeed;
+        float speed = 4f * thisSkill.Speed * ValueData.Instance.BulletSpeed;
         while(this.gameObject)
         {
             yield return new WaitForSeconds(0.01f);

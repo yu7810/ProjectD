@@ -44,8 +44,10 @@ public class Skill : MonoBehaviour
     public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
         UsedTime = usedTime;
 
-        if (Startpos == Vector3.zero)
+        if (Startpos == Vector3.zero) {
             startPos = ValueData.Instance.Player.transform.position;
+            startPos.y = 0.3f;
+        }
         else
             startPos = Startpos;
 
@@ -111,6 +113,7 @@ public class Skill : MonoBehaviour
     Vector3 attackPoint(float distance = 1f)
     {
         Vector3 newPosition = startPos + ValueData.Instance.Player.transform.forward * distance;
+        newPosition.y = 0.5f;
         return newPosition;
     }
 

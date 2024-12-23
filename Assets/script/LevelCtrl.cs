@@ -39,6 +39,9 @@ public class LevelCtrl : MonoBehaviour
 
     //領獎
     public void getPrize() {
+
+        Vector3 p = ValueData.Instance.Player.transform.position;
+
         switch (nowPrize) {
             case PrizeBase.None:
                 Debug.Log("未設定獎勵");
@@ -50,38 +53,18 @@ public class LevelCtrl : MonoBehaviour
                 return;
             case PrizeBase.Skill:
                 Debug.Log("技能商店");
-                GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(0, skillstorePrefab.transform.position.y, 2.5f), skillstorePrefab.transform.rotation);
-                List<int> _skillpool = new List<int>();//所有商品池
-                _skillpool.AddRange(ValueData.Instance.skillstorePool);
-                List<int> _skillitem = new List<int>();//存放取出的商品
-                for (int i = 0; i < 3; i++)
-                {
-                    int randomIndex = Random.Range(0, _skillpool.Count);
-                    _skillitem.Add(_skillpool[randomIndex]);
-                    _skillpool.RemoveAt(randomIndex);
-                }
-                skillstore.GetComponent<Npc>().item.Clear();
-                skillstore.GetComponent<Npc>().item.AddRange(_skillitem);
+                GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(p.x, skillstorePrefab.transform.position.y, p.z), skillstorePrefab.transform.rotation);
+                skillstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Weapon:
                 Debug.Log("武器商店");
-                GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(0, weaponstorePrefab.transform.position.y, 2.5f), weaponstorePrefab.transform.rotation);
-                List<int> _weaponpool = new List<int>();//所有商品池
-                _weaponpool.AddRange(ValueData.Instance.weaponstorePool);
-                List<int> _weaponitem = new List<int>();//存放取出的商品
-                for (int i = 0; i < 5; i++)
-                {
-                    int randomIndex = Random.Range(0, _weaponpool.Count);
-                    _weaponitem.Add(_weaponpool[randomIndex]);
-                    _weaponpool.RemoveAt(randomIndex);
-                }
-                weaponstore.GetComponent<Npc>().item.Clear();
-                weaponstore.GetComponent<Npc>().item.AddRange(_weaponitem);
+                GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(p.x, weaponstorePrefab.transform.position.y, p.z), weaponstorePrefab.transform.rotation);
+                weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
                 int min = 10 * nowLevel;
                 int max = 5 + 11 * nowLevel;
-                DropMoney(min,max, ValueData.Instance.Player.transform.position, 1f);
+                DropMoney(min,max, p, 1f);
                 break;
         }
     }
