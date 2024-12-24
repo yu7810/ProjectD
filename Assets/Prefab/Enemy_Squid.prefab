@@ -442,7 +442,7 @@ MonoBehaviour:
   AttackRange: 8
   rotationSpeed: 120
   idleAnimation: 0
-  money: 0100000005000000
+  money: 0300000005000000
   Mesh: {fileID: 2216843740710908176}
   hpUI: {fileID: 918749404404996826}
   Bullet: {fileID: 1727009018326101683, guid: 59a252423576f1f4eb81451a24a0de4f, type: 3}

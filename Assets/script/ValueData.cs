@@ -83,15 +83,15 @@ public class ValueData : MonoBehaviour
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
         new SkillBase(1,0,"劈砍",2f,10,1f,1,0.2f,0.25f),
-        new SkillBase(2,30,"衝刺",5f,0,1f,1,0,0),//size=位移距離
+        new SkillBase(2,20,"衝刺",5f,0,1f,1,0,0),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,30,"閃現",3.4f,0f,1f,1,1,0f),
-        new SkillBase(5,50,"新月斬",2f,10,0.8f,1,1,0.1f),
-        new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,2,0.1f),
-        new SkillBase(7,0,"明月斬",2f,40,1.4f,1,2,0.1f),
-        new SkillBase(8,30,"The喪鐘",20f,0,1f,1,0,0f),
+        new SkillBase(4,20,"閃現",3.4f,0f,1f,1,1,0f),
+        new SkillBase(5,40,"新月斬",2f,10,0.8f,1,0.2f,0.1f),
+        new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,0.5f,0.1f),
+        new SkillBase(7,0,"明月斬",2f,40,1.4f,1,1f,0.1f),
+        new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
         new SkillBase(9,0,"飛箭",0.3f,3,1f,1,0.6f,0f),
-        new SkillBase(10,60,"水曝",1f,0f,1f,1,0f,0f),
+        new SkillBase(10,40,"水曝",1f,0f,1f,1,0f,0f),
     };
     //技能介紹
     [NonSerialized]
@@ -136,15 +136,15 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 1f, 1f, 1f, 1f, 1f, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,RarityType.Normal,30,"鐵劍", 1.5f, 0.85f, 1f, 1f, 1f, 0.1f),
-        new WeaponBase(2,RarityType.Normal,30,"鐵弓", 1.2f, 1f, 1f , 1.6f, 0.85f, 0f),
-        new WeaponBase(3,RarityType.Normal,30,"鐵斧", 1.5f, 1.2f, 1.5f, 0.8f, 1.4f, 0.2f),
-        new WeaponBase(4,RarityType.Magic,30,"聚寶", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,80,"破曉", 0.5f, 1f, 1f, 0.8f, 0.8f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,80,"逐影", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
-        new WeaponBase(7,RarityType.Rare,80,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
-        new WeaponBase(8,RarityType.Rare,80,"碧浪", 1f, 1f, 2f, 1f, 1f, 0),
-        new WeaponBase(9,RarityType.Magic,30,"招財", 1, 1f, 1f, 1f, 1f, 0f),
+        new WeaponBase(1,RarityType.Normal,20,"鐵劍", 1.4f, 0.85f, 1f, 1f, 1f, 0.1f),
+        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1f, 1f, 1f , 1.6f, 0.8f, 0f),
+        new WeaponBase(3,RarityType.Normal,20,"鐵斧", 1.6f, 1.2f, 1.5f, 0.8f, 1.4f, 0f),
+        new WeaponBase(4,RarityType.Magic,20,"守財犬", 1, 1f, 1f, 1f, 1f, 0.05f),
+        new WeaponBase(5,RarityType.Rare,60,"無盡", 3f, 1f, 1f, 1f, 2f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,60,"風暴", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
+        new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
+        new WeaponBase(8,RarityType.Rare,60,"漩渦", 1f, 1f, 2f, 1f, 1f, 0),
+        new WeaponBase(9,RarityType.Magic,20,"招財貓", 1, 1f, 1f, 1f, 1f, 0f),
     };
     //裝備介紹
     [NonSerialized]
@@ -154,10 +154,10 @@ public class ValueData : MonoBehaviour
         "",
         "",
         "身上每1金幣提供1%傷害增幅",
-        "技能暴擊時將冷卻降為0.3s",
-        "技能重複2次",
-        "使用位移技能時觸發L上的非位移技能",
-        "冰冷技能同時命中複數目標時，每個目標使傷害提升20%",
+        "「大力點，一下搞定」",
+        "技能額外重複2次",
+        "使用位移技能時觸發L欄位上的非位移技能",
+        "冰冷技能命中複數目標時，每個目標使傷害提升30%",
         "擊殺敵人掉落的金幣為0~3倍",
     };
 
@@ -317,13 +317,13 @@ public class ValueData : MonoBehaviour
                 add_Vision += 5f;
                 break;
             case 22:
-                add_BulletSpeed += 0.2f;
+                add_BulletSpeed += 0.25f;
                 break;
             case 23:
-                add_BulletSpeed += 0.2f;
+                add_BulletSpeed += 0.25f;
                 break;
             case 24:
-                add_BulletSpeed += 0.2f;
+                add_BulletSpeed += 0.25f;
                 break;
             case 26:
                 add_maxAp += 3f;
@@ -339,6 +339,9 @@ public class ValueData : MonoBehaviour
                 break;
             case 30:
                 add_RestoreAP += 0.5f;
+                break;
+            case 31:
+                add_BulletSpeed += 0.6f;
                 break;
         }
     }

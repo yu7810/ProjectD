@@ -41,6 +41,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI maxhpUI;
     public TextMeshProUGUI nowapUI;
     public TextMeshProUGUI maxapUI;
+    public Image ScreenMask;
 
     public GameObject Tip_skill;//說明窗相關
     public GameObject Tip_passiveskill;//天賦專用

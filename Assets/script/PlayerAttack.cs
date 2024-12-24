@@ -87,10 +87,10 @@ public class PlayerAttack : MonoBehaviour
                 _dmg += distance * 2;
             }
         }
-        if(thisWeapon.ID == 8)
+        if(thisWeapon.ID == 8) // 武器8
         {
             if (ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Cold))
-                _dmg *= 1 + (Target.Count * 0.2f);
+                _dmg *= 1 + (Target.Count * 0.3f);
         }
 
         //暴擊
@@ -99,12 +99,14 @@ public class PlayerAttack : MonoBehaviour
         {
             _dmg *= ValueData.Instance.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
+
             //裝備5能力
-            if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
-            {
-                float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
-                ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
-            }
+            //if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
+            //{
+            //    float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
+            //    ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
+            //}
+
             //天賦16能力
             if (ValueData.Instance.PassiveSkills[16])
             {

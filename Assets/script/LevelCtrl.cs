@@ -62,8 +62,8 @@ public class LevelCtrl : MonoBehaviour
                 weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
-                int min = 10 * nowLevel;
-                int max = 5 + 11 * nowLevel;
+                int min = 10 + 10 * nowLevel;
+                int max = 15 + 10 * nowLevel;
                 DropMoney(min,max, p, 1f);
                 break;
         }
@@ -75,6 +75,19 @@ public class LevelCtrl : MonoBehaviour
 
     IEnumerator LoadSceneWithProgress(int level)
     {
+        PlayerCtrl.Instance.canMove = false;
+
+        //畫面淡出
+        Color c = UICtrl.Instance.ScreenMask.color;
+        for (float i=0;i<1;i+=0.05f)
+        {
+            c.a = i;
+            UICtrl.Instance.ScreenMask.color = c;
+            yield return new WaitForSeconds(0.01f);
+        }
+        c.a = 1;
+        UICtrl.Instance.ScreenMask.color = c;
+
         ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
 
         // 從關卡池抽關卡
@@ -106,7 +119,19 @@ public class LevelCtrl : MonoBehaviour
             if (ValueData.Instance.HP <= 0)
                 ValueData.Instance.GetHp(ValueData.Instance.maxHP);
         }
+        //每次進關卡回滿魔力
         ValueData.Instance.GetAp(ValueData.Instance.maxAP);
+
+        //畫面淡入
+        for (float i = 1; i >= 0; i-=0.05f)
+        {
+            c.a = i;
+            UICtrl.Instance.ScreenMask.color = c;
+            yield return new WaitForSeconds(0.01f);
+        }
+        c.a = 0;
+        UICtrl.Instance.ScreenMask.color = c;
+        PlayerCtrl.Instance.canMove = true;
     }
 
     public void DropMoney(int min, int max, Vector3 pos, float offset)
@@ -124,7 +149,7 @@ public class LevelCtrl : MonoBehaviour
             Vector3 _pos = pos + _offset;
             _pos.y = 0;
             Instantiate(money, _pos, money.transform.rotation);
-            yield return new WaitForSeconds(0.1f);
+            yield return new WaitForSeconds(0.05f);
         }
     }
 

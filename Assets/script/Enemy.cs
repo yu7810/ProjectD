@@ -186,7 +186,7 @@ public class Enemy : MonoBehaviour
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
                 yield return new WaitForSeconds(0.2f);
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-                yield return new WaitForSeconds(0.1f);
+                //yield return new WaitForSeconds(0.1f);
                 canMove = true;
                 agent.isStopped = false;
             }
@@ -195,7 +195,7 @@ public class Enemy : MonoBehaviour
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
                 yield return new WaitForSeconds(0.2f);
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-                yield return new WaitForSeconds(0.1f);
+                //yield return new WaitForSeconds(0.1f);
             }
         }
     }
