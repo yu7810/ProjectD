@@ -360,7 +360,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1.2
+  m_Speed: 1.6
   m_Acceleration: 2
   avoidancePriority: 50
   m_AngularSpeed: 360
@@ -449,7 +449,6 @@ MonoBehaviour:
   canBeHit: 0
   canAttack: 0
   canMove: 0
-  noticeDistance: 0
 --- !u!1 &2309116580794629840
 GameObject:
   m_ObjectHideFlags: 0

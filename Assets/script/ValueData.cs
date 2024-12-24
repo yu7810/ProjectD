@@ -169,11 +169,13 @@ public class ValueData : MonoBehaviour
     };
 
     //技能商店池
+    [NonSerialized]
     public List<int> skillstorePool = new List<int>()
     {
         2,4,5,8,10
     };
     //裝備商店池
+    [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
         1,2,3,4,5,6,7,8,9

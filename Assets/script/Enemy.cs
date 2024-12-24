@@ -26,6 +26,7 @@ public class Enemy : MonoBehaviour
     private Color C;
     public bool canBeHit; //受擊時短暫無敵，避免重複判定
     Animator m_Animator;
+    Rigidbody rb;
 
     Transform target;
     NavMeshAgent agent;
@@ -34,10 +35,10 @@ public class Enemy : MonoBehaviour
     public bool canMove;
     float bellCD; // bell觸發的冷卻
     GameObject NoticeRange;
-    public float noticeDistance; // 視野射線距離
+    float noticeDistance; // 視野射線距離
     LayerMask mask = (1 << 8) | (1 << 9); // 視線，判斷玩家用
 
-    private void OnEnable(){
+    private void OnEnable() {
         m_Animator = GetComponent<Animator>();
         Hp = maxHp;
         canBeHit = true;
@@ -48,22 +49,23 @@ public class Enemy : MonoBehaviour
         else if (gameObject.tag == "Enemy") {
             C = Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.GetColor("_EmissionColor");
             m_Animator.SetInteger("IdleAnimation", idleAnimation);
+            rb = GetComponent<Rigidbody>();
         }
-        
+
     }
 
     void Start()
     {
         target = ValueData.Instance.Player.transform;
         agent = GetComponent<NavMeshAgent>();
-        if (enemyType == EnemyType.Melee )
+        if (enemyType == EnemyType.Melee || enemyType == EnemyType.Tank)
         {
             AttackCollider = transform.Find("AttackCollider").gameObject;
             NoticeRange = transform.Find("NoticeRange").gameObject;
             canAttack = true;
             canMove = true;
         }
-        else if(enemyType == EnemyType.Ranged)
+        else if (enemyType == EnemyType.Ranged)
         {
             NoticeRange = transform.Find("NoticeRange").gameObject;
             canAttack = true;
@@ -89,7 +91,7 @@ public class Enemy : MonoBehaviour
     }
 
     //受到傷害時使用
-    public void Hurt(float Dmg , int Filed = -1) {
+    public void Hurt(float Dmg, int Filed = -1) {
         if (NoticeRange && NoticeRange.activeSelf)
             StartAction();
         if (immortal)
@@ -105,7 +107,7 @@ public class Enemy : MonoBehaviour
             hpUI.transform.parent.gameObject.SetActive(false);
             Die(Filed);
         }
-        if(gameObject.tag == "Bell" && bellCD == 0)
+        if (gameObject.tag == "Bell" && bellCD == 0)
         {
             GameObject a = Instantiate(Skill.Instance.Skill_Bellattack, gameObject.transform.position, gameObject.transform.rotation);
             int id = gameObject.GetComponent<PlayerAttack>().fidleid;
@@ -142,7 +144,7 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerStay(Collider other)
     {
-        if(other.tag == "Player")
+        if (other.tag == "Player")
         {
             Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
             RaycastHit hit;
@@ -159,7 +161,7 @@ public class Enemy : MonoBehaviour
     void StartAction()
     {
         NoticeRange.SetActive(false);
-        m_Animator.SetBool("isMoving",true);
+        m_Animator.SetBool("isMoving", true);
         m_Animator.SetInteger("IdleAnimation", 0);
         StartCoroutine(_Move());
     }
@@ -176,16 +178,25 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(0.2f);
             Mesh.transform.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", C);
         }
-        else if (gameObject.tag == "Enemy"){
-            canMove = false;
-            agent.isStopped = true;
-            //m_Animator.SetBool("BeHit", true);
-            Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
-            yield return new WaitForSeconds(0.2f);
-            Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-            yield return new WaitForSeconds(0.1f);
-            canMove = true;
-            agent.isStopped = false;
+        else if (gameObject.tag == "Enemy") {
+            if(canMove)
+            {
+                canMove = false;
+                agent.isStopped = true;
+                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
+                yield return new WaitForSeconds(0.2f);
+                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
+                yield return new WaitForSeconds(0.1f);
+                canMove = true;
+                agent.isStopped = false;
+            }
+            else // 當下本來就不能移動時，不去動agent
+            {
+                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
+                yield return new WaitForSeconds(0.2f);
+                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
+                yield return new WaitForSeconds(0.1f);
+            }
         }
     }
 
@@ -199,9 +210,9 @@ public class Enemy : MonoBehaviour
         Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
         RaycastHit hit;
 
-        if(Physics.Raycast(transform.position, directionToPlayer, out hit, AttackRange, mask))
+        if (Physics.Raycast(transform.position, directionToPlayer, out hit, AttackRange, mask))
         {
-            if(hit.collider.CompareTag("Player")) // 若玩家進到攻擊範圍且在視野內
+            if (hit.collider.CompareTag("Player")) // 若玩家進到攻擊範圍且在視野內
             {
                 // 停下並轉向玩家
                 agent.isStopped = true;
@@ -248,18 +259,30 @@ public class Enemy : MonoBehaviour
     public void StartAttack()
     {
         if (enemyType == EnemyType.Melee)
+        {
             AttackCollider.SetActive(true);
+            m_Animator.SetBool("Attack", false);
+        }
         else if (enemyType == EnemyType.Ranged)
         {
             Instantiate(Bullet, transform.position, transform.rotation);
+            m_Animator.SetBool("Attack", false);
+        }
+        else if (enemyType == EnemyType.Tank)
+        {
+            StartCoroutine(Sprint());
         }
         canAttack = false;
-        m_Animator.SetBool("Attack", false);
     }
     public void EndAttack()
     {
         if (enemyType == EnemyType.Melee)
             AttackCollider.SetActive(false);
+        else if(enemyType == EnemyType.Tank)
+        {
+            AttackCollider.SetActive(false);
+            m_Animator.SetBool("Attack", false);
+        }
         canMove = true;
         agent.isStopped = false;
         StartCoroutine(_Move());
@@ -308,12 +331,29 @@ public class Enemy : MonoBehaviour
         hpUI.transform.parent.gameObject.SetActive(false);
     }
 
+    // 衝刺
+    IEnumerator Sprint()
+    {
+        yield return new WaitForSeconds(0.2f);
+        AttackCollider.SetActive(true);
+        float _time = 1;
+        while(Hp > 0 && _time > 0)
+        {
+            yield return new WaitForSeconds(Time.fixedDeltaTime);
+            rb.velocity = transform.forward * 6;
+            _time -= Time.fixedDeltaTime;
+        }
+        rb.velocity = Vector3.zero;
+        EndAttack();
+    }
+
 }
 
 public enum EnemyType 
 {
-    Melee, // 近戰
-    Ranged, // 遠程
+    Melee, // 近戰 蜥蜴
+    Ranged, // 遠程 魷魚
     Barrel, // 桶子
     Minion, // 招喚物
+    Tank, // 近戰 鯡魚
 }
