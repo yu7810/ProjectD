@@ -22,18 +22,26 @@ public class PassiveSkill : MonoBehaviour
         {
             for (int i = 0; i < down.Length; i++)
             {
-                if (down[i].top.Length <= 1 && ValueData.Instance.PassiveSkills[down[i].ID])//璝ヴ糷糷Τи玥ぃи
+                bool canRemove = false;
+                if (down[i].top.Length == 1 && ValueData.Instance.PassiveSkills[down[i].ID])//璝ヴ糷糷Τи玥ぃи
                 {
+                    Debug.Log(down[i].ID + "糷Τи");
                     return;
                 }
-                bool canRemove = false;
+                else if (down.Length == 1 && down[i].top.Length == 0) // 讽и糷Τ1癸よ琌﹍翴
+                    canRemove = true;
                 for (int x = 0; x< down[i].top.Length; x++) {
                     bool a = ValueData.Instance.PassiveSkills[down[i].top[x].ID];//и糷ヴ種糷ぱ结琌Τ翴
-                    if (down[i].top[x].ID != ID && a) //璝糷ヴ種糷埃иΤヴ翴ぱ结
+                    if(a)
+                        Debug.Log(down[i].top[x].ID + "ヴ種糷ぱ结Τ翴");
+                    if (down[i].top[x].ID != ID && a && top.Length>0) //璝糷ヴ種糷埃иΤヴ翴ぱ结иぃ﹍翴
                     {
                         canRemove = true;
+                        Debug.Log("can remove");
                     }
                 }
+                if (!canRemove && down[i].top.Length == 0) // 璝糷﹍翴
+                    canRemove = true;
                 if (!canRemove && ValueData.Instance.PassiveSkills[down[i].ID])
                     return;
             }

@@ -13,6 +13,8 @@ public class ValueData : MonoBehaviour
     public bool isUIopen;//開關UI
     public CinemachineVirtualCamera virtualCamera;//鏡頭
     public GameObject moneyPrefab;
+    private Coroutine _restoreAP; // 自然回魔
+    private Coroutine _reloadAP; // 天賦28
 
     //基底數值
     public int money;//身上持有的金幣數量
@@ -140,11 +142,11 @@ public class ValueData : MonoBehaviour
         new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1f, 1f, 1f , 1.6f, 0.8f, 0f),
         new WeaponBase(3,RarityType.Normal,20,"鐵斧", 1.6f, 1.2f, 1.5f, 0.8f, 1.4f, 0f),
         new WeaponBase(4,RarityType.Magic,20,"守財犬", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,60,"無盡", 3f, 1f, 1f, 1f, 2f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,60,"風暴", 2f, 1.8f, 0.75f, 1f, 1.6f, 0.15f),
+        new WeaponBase(5,RarityType.Rare,60,"無盡", 3f, 1.2f, 1f, 1f, 2f, 0.25f),
+        new WeaponBase(6,RarityType.Rare,60,"風暴", 2f, 1.8f, 0.75f, 1f, 1.6f, 0f),
         new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
         new WeaponBase(8,RarityType.Rare,60,"漩渦", 1f, 1f, 2f, 1f, 1f, 0),
-        new WeaponBase(9,RarityType.Magic,20,"招財貓", 1, 1f, 1f, 1f, 1f, 0f),
+        new WeaponBase(9,RarityType.Magic,20,"招財貓", 1, 1f, 1f, 1f, 1f, 0.05f),
     };
     //裝備介紹
     [NonSerialized]
@@ -224,6 +226,21 @@ public class ValueData : MonoBehaviour
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
         virtualCamera.m_Lens.FieldOfView = Vision;
+        //天賦28
+        if (PassiveSkills[28])
+        {
+            if (_restoreAP != null) 
+            {
+                StopCoroutine(_restoreAP);
+                _restoreAP = null;
+            }
+        }
+        else
+        {
+            if (_restoreAP == null)
+                _restoreAP = StartCoroutine(restoreAP());
+        }
+            
     }
 
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
@@ -254,6 +271,11 @@ public class ValueData : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
+    private void Start()
+    {
+        _restoreAP = StartCoroutine(restoreAP());
+        _reloadAP = null;
+    }
 
     //天賦數值計算
     public void PassiveSkillValueUpdate(int id) { 
@@ -269,28 +291,29 @@ public class ValueData : MonoBehaviour
                 add_Power += 0.1f;
                 break;
             case 3:
-                add_Cooldown += 0.05f;
+                add_Cooldown += 0.08f;
                 break;
             case 4:
-                add_Cooldown += 0.05f;
+                add_Cooldown += 0.08f;
                 break;
             case 5:
-                add_Cooldown += 0.05f;
+                add_Cooldown += 0.08f;
                 break;
             case 6:
-                add_Cooldown += 0.05f;
+                add_Cooldown += 0.08f;
                 break;
             case 7:
-                add_maxHp += 5f;
+                add_maxHp += 1f;
                 break;
             case 8:
-                add_maxHp += 5f;
+                add_maxHp += 1f;
                 break;
             case 9:
-                add_maxHp += 5f;
+                add_maxHp += 1f;
                 break;
             case 10:
-                add_maxHp += 5f;
+                add_CostDown -= 1f;
+                add_Damagereduction -= 1f;
                 break;
             case 12:
                 add_Crit += 0.1f;
@@ -326,22 +349,25 @@ public class ValueData : MonoBehaviour
                 add_BulletSpeed += 0.25f;
                 break;
             case 26:
-                add_maxAp += 3f;
+                add_maxAp += 1f;
                 break;
             case 27:
-                add_maxAp += 3f;
+                add_maxAp += 1f;
                 break;
             case 28:
-                add_maxAp += 3f;
+                
                 break;
             case 29:
-                add_maxAp += 3f;
+                add_maxAp += 1f;
                 break;
             case 30:
                 add_RestoreAP += 0.5f;
                 break;
             case 31:
                 add_BulletSpeed += 0.6f;
+                break;
+            case 32:
+                add_MoveSpeed += 0.2f;
                 break;
         }
     }
@@ -382,16 +408,29 @@ public class ValueData : MonoBehaviour
     {
         if (value == 0)
             return;
-        else if (value > 0) 
+        else if (value > 0) // 回血
         {
             if (HP < maxHP - value)
                 HP += value;
             else
                 HP = maxHP;
         }
-        else
+        else // 扣血
         {
             value *= (1 - Damagereduction);
+            if (PassiveSkills[10]) // 天賦10
+            {
+                if (AP >= -value)
+                {
+                    GetAp(value);
+                    value = 0;
+                }
+                else
+                {
+                    value += AP;
+                    GetAp(-AP);
+                }
+            }
             if (HP > -value)
             {
                 HP += value;
@@ -410,20 +449,66 @@ public class ValueData : MonoBehaviour
     {
         if (value == 0)
             return;
-        else if(value > 0)
+        else if(value > 0) // 回魔
         {
             if (maxAP > AP + value)
                 AP += value;
             else
                 AP = maxAP;
         }
-        else
+        else // 耗魔
         {
-            if (AP > value)
+            if (AP > -value)
                 AP += value;
             else
                 AP = 0;
+
+            if(PassiveSkills[28])
+            {
+                if (AP <= 1 && _reloadAP == null)
+                {
+                    _reloadAP = StartCoroutine(reloadAP());
+                }
+            }
         }
+    }
+
+    //自動回魔
+    IEnumerator restoreAP()
+    {
+        while(true)
+        {
+            float value = RestoreAP / 50;
+            if (AP >= maxAP - value)
+            {
+                AP = maxAP;
+            }
+            else
+            {
+                AP += value;
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+    }
+    //天賦28
+    IEnumerator reloadAP()
+    {
+        PlayerCtrl.Instance.canAttack = false;
+        while (AP < maxAP)
+        {
+            float value = RestoreAP / 50 * 3;
+            if (AP >= maxAP - value)
+            {
+                AP = maxAP;
+            }
+            else
+            {
+                AP += value;
+            }
+            yield return new WaitForSeconds(0.02f);
+        }
+        PlayerCtrl.Instance.canAttack = true;
+        _reloadAP = null;
     }
 
 }

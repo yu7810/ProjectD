@@ -231,9 +231,9 @@ public class Skill : MonoBehaviour
     }
     void Waterball(int Fieldid)
     {
-        float _cost = ValueData.Instance.AP/2;
+        float _cost = ValueData.Instance.AP/2 * ValueData.Instance.CostDown;
         ValueData.Instance.GetAp(-_cost);
-        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 5;
+        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * ValueData.Instance.Power;
         StartCoroutine(waterball(Fieldid, _cost));
     }
     IEnumerator waterball(int Fieldid, float _dmg)

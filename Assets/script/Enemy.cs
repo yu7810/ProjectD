@@ -146,7 +146,9 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == "Player")
         {
-            Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
+            Vector3 playerpos = ValueData.Instance.Player.transform.position;
+            playerpos.y = 0.5f;
+            Vector3 directionToPlayer = (playerpos - transform.position).normalized;
             RaycastHit hit;
             if (Physics.Raycast(transform.position, directionToPlayer, out hit, noticeDistance, mask))
             {
@@ -207,7 +209,9 @@ public class Enemy : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
-        Vector3 directionToPlayer = (ValueData.Instance.Player.transform.position - transform.position).normalized;
+        Vector3 playerpos = ValueData.Instance.Player.transform.position;
+        playerpos.y = 0.5f;
+        Vector3 directionToPlayer = (playerpos - transform.position).normalized;
         RaycastHit hit;
 
         if (Physics.Raycast(transform.position, directionToPlayer, out hit, AttackRange, mask))

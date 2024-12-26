@@ -439,7 +439,7 @@ MonoBehaviour:
   Attack: 1
   EXP: 5
   AttackCD: 1.5
-  AttackRange: 8
+  AttackRange: 10
   rotationSpeed: 120
   idleAnimation: 0
   money: 0300000005000000
@@ -552,7 +552,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 10
+  m_Radius: 12
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2791632732421033068
 GameObject:

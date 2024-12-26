@@ -4851,7 +4851,7 @@ GameObject:
   - component: {fileID: 8838184383981005472}
   - component: {fileID: 202596171093075390}
   - component: {fileID: 3239469403415348694}
-  - component: {fileID: 3982174364916577215}
+  - component: {fileID: 6222693374950188822}
   - component: {fileID: 989012726913296001}
   m_Layer: 0
   m_Name: Skill Store
@@ -4945,8 +4945,8 @@ CapsuleCollider:
   m_Height: 1.8093371
   m_Direction: 1
   m_Center: {x: 0, y: 0.90466857, z: 0}
---- !u!65 &3982174364916577215
-BoxCollider:
+--- !u!135 &6222693374950188822
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -4964,8 +4964,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5, y: 1, z: 2.5}
-  m_Center: {x: 0, y: 0.99, z: 0}
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &989012726913296001
 MonoBehaviour:
   m_ObjectHideFlags: 0

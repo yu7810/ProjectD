@@ -14,6 +14,7 @@ public class PlayerCtrl : MonoBehaviour
     bool Move;
     LayerMask mask = (1 << 7);//角色旋轉用
     public bool canMove;
+    public bool canAttack;
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
@@ -58,8 +59,8 @@ public class PlayerCtrl : MonoBehaviour
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
         canMove = true;
+        canAttack = true;
         valuedata.canBehurt = true;
-        StartCoroutine(RestoreAP());
         UICtrl.Instance.ChangeSkill_ID = 1;
         UICtrl.Instance.SelectSkillChangeField(0);
         UICtrl.Instance.ChangeSkill_ID = 9;
@@ -77,7 +78,7 @@ public class PlayerCtrl : MonoBehaviour
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
-            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3;
+            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 2.5f;
             m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
         }
         else
@@ -104,9 +105,9 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (valuedata.SkillField[0].ID == 0 || UICtrl.Instance.IsPointerOverUI(out GameObject uiElement))
                 return;
-            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost)
+            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost && canAttack)
             {
-                valuedata.AP -= valuedata.SkillField[0].Cost;
+                valuedata.GetAp(-valuedata.SkillField[0].Cost);
                 valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
@@ -118,9 +119,9 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (valuedata.SkillField[1].ID == 0)
                 return;
-            if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost)
+            if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost && canAttack)
             {
-                valuedata.AP -= valuedata.SkillField[1].Cost;
+                valuedata.GetAp(-valuedata.SkillField[1].Cost);
                 valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
                 StartCoroutine(UICtrl.Instance.SkillCD(1));
@@ -132,9 +133,9 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (valuedata.SkillField[2].ID == 0)
                 return;
-            if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost)
+            if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost && canAttack)
             {
-                valuedata.AP -= valuedata.SkillField[2].Cost;
+                valuedata.GetAp(-valuedata.SkillField[2].Cost);
                 valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
                 UICtrl.Instance.UpdateSkillCD();
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
@@ -215,22 +216,6 @@ public class PlayerCtrl : MonoBehaviour
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
         yield return new WaitForSeconds(0.2f);
         valuedata.canBehurt = true;
-    }
-
-    //自動回魔
-    IEnumerator RestoreAP() 
-    {
-        float value = valuedata.RestoreAP / 50;
-        if (valuedata.AP >= valuedata.maxAP - value)
-        {
-            valuedata.AP = valuedata.maxAP;
-        }
-        else
-        {
-            valuedata.AP += value;
-        }
-        yield return new WaitForSeconds(0.02f);
-        StartCoroutine(RestoreAP());
     }
 
 }

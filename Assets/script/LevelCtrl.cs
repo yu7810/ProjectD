@@ -23,6 +23,7 @@ public class LevelCtrl : MonoBehaviour
         new int[]{ 2,},
         new int[]{ 3,},
         new int[]{ 4,},
+        new int[]{ 5,},
     };
 
     //確認剩餘敵人
@@ -101,13 +102,13 @@ public class LevelCtrl : MonoBehaviour
         while (!asyncLoad.isDone)
         {
             // 可以在這裡顯示加載進度，例如載入畫面
-            float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
-            Debug.Log("Loading progress: " + (progress * 100) + "%");
+            //float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
+            //Debug.Log("Loading progress: " + (progress * 100) + "%");
 
             yield return null;
         }
         // 加載完成後執行某些操作
-        Debug.Log("場景加載完成！");
+        //Debug.Log("場景加載完成！");
         nowLevel = level;
         if (level != 0) // 戰鬥關卡抓取敵人
         {

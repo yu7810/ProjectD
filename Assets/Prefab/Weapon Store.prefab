@@ -5303,7 +5303,7 @@ GameObject:
   - component: {fileID: 621091520214398503}
   - component: {fileID: 350135673721941084}
   - component: {fileID: 4285912670774072411}
-  - component: {fileID: 2027074573798474689}
+  - component: {fileID: 1862870894299683395}
   - component: {fileID: 3431709268284526465}
   m_Layer: 0
   m_Name: Weapon Store
@@ -5400,8 +5400,8 @@ CapsuleCollider:
   m_Height: 1.8093371
   m_Direction: 1
   m_Center: {x: 0, y: 0.90466857, z: 0}
---- !u!65 &2027074573798474689
-BoxCollider:
+--- !u!135 &1862870894299683395
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5419,8 +5419,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.5, y: 1, z: 2.5}
-  m_Center: {x: 0, y: 0.99, z: 0}
+  m_Radius: 2
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3431709268284526465
 MonoBehaviour:
   m_ObjectHideFlags: 0

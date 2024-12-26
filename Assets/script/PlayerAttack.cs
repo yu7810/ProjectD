@@ -50,7 +50,7 @@ public class PlayerAttack : MonoBehaviour
         }
         else if (other.transform.tag == "Wall" && isBullet)
         {
-            if (ValueData.Instance.PassiveSkills[25])
+            if (ValueData.Instance.PassiveSkills[25]) // 天賦25
             {
                 Vector3 direction = transform.forward;
 
@@ -72,7 +72,21 @@ public class PlayerAttack : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        
+        else if (other.transform.tag == "EnemyAttack")
+        {
+            if (ValueData.Instance.PassiveSkills[32]) // 天賦32
+            {
+                if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack))
+                    return;
+                if (other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged)
+                {
+                    Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
+                    Destroy(other.transform.parent.gameObject);
+                }
+            }
+        }
+
+
     }
 
     void doDamage(GameObject target)
