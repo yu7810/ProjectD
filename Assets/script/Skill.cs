@@ -99,11 +99,13 @@ public class Skill : MonoBehaviour
                         if (_tag == SkillTagType.Movement)
                             return;
                     }
+                    startPos = ValueData.Instance.Player.transform.position;
+                    startPos.y = 0.3f;
                     UseSkill(ValueData.Instance.SkillField[0].ID, 0, startPos, startRot);
                 }
             }
         }
-        if (ValueData.Instance.WeaponField[Fieldid].ID == 6 && usedTime <= 2) //武器6效果
+        if (ValueData.Instance.WeaponField[Fieldid].ID == 6 && usedTime < 2) //武器6效果
         {
             StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
         }
@@ -255,4 +257,5 @@ public class Skill : MonoBehaviour
         b.transform.localScale = new Vector3(b.transform.localScale.x * _size, b.transform.localScale.y * _size, b.transform.localScale.z * _size);
         Destroy(b, 1f);
     }
+
 }

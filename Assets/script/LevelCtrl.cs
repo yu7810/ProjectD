@@ -24,6 +24,8 @@ public class LevelCtrl : MonoBehaviour
         new int[]{ 3,},
         new int[]{ 4,},
         new int[]{ 5,},
+        new int[]{ 6,},
+        new int[]{ 7,},
     };
 
     //確認剩餘敵人
@@ -49,7 +51,7 @@ public class LevelCtrl : MonoBehaviour
                 return;
             case PrizeBase.PassivePoin:
                 Debug.Log("天賦點");
-                ValueData.Instance.passiveskillPoint += 3;
+                ValueData.Instance.passiveskillPoint += 4;
                 UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
                 return;
             case PrizeBase.Skill:
@@ -63,8 +65,8 @@ public class LevelCtrl : MonoBehaviour
                 weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
-                int min = 10 + 10 * nowLevel;
-                int max = 15 + 10 * nowLevel;
+                int min = 10 + 12 * nowLevel;
+                int max = 15 + 12 * nowLevel;
                 DropMoney(min,max, p, 1f);
                 break;
         }
@@ -115,13 +117,26 @@ public class LevelCtrl : MonoBehaviour
             Enemys = GameObject.Find("Enemys");
             leftEnemy = Enemys.transform.childCount;
         }
-        else
+        else // 回據點回滿生命
         {
-            if (ValueData.Instance.HP <= 0)
+            if (ValueData.Instance.HP != ValueData.Instance.maxHP)
                 ValueData.Instance.GetHp(ValueData.Instance.maxHP);
         }
-        //每次進關卡回滿魔力
+
+        // 每次進關卡回滿魔力
         ValueData.Instance.GetAp(ValueData.Instance.maxAP);
+
+        // 天賦11
+        if(ValueData.Instance.PassiveSkills[11])
+        {
+            if(ValueData.Instance.maxHP > ValueData.Instance.HP)
+            {
+                float value = ValueData.Instance.maxHP - ValueData.Instance.HP;
+                ValueData.Instance.GetHp(value);
+            }
+        }
+
+        PlayerCtrl.Instance.canMove = true;
 
         //畫面淡入
         for (float i = 1; i >= 0; i-=0.05f)
@@ -132,7 +147,6 @@ public class LevelCtrl : MonoBehaviour
         }
         c.a = 0;
         UICtrl.Instance.ScreenMask.color = c;
-        PlayerCtrl.Instance.canMove = true;
     }
 
     public void DropMoney(int min, int max, Vector3 pos, float offset)

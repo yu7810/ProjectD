@@ -6,7 +6,7 @@ public class Npc : MonoBehaviour
 {
     public NpcType npcType;
     public string Name;
-    public bool startRandom;
+    public bool startRandom; // 使否在生成時隨機商品
     public List<int> item = new List<int> { };
 
     private void OnEnable()
@@ -23,9 +23,11 @@ public class Npc : MonoBehaviour
                 return;
             case NpcType.Weaponstore:
                 UICtrl.Instance.showWeaponstore(Switch, item);
+                UICtrl.Instance.nowWeaponstore = this.gameObject.GetComponent<Npc>();
                 return;
             case NpcType.Skillstore:
                 UICtrl.Instance.showSkillstore(Switch, item);
+                UICtrl.Instance.nowSkillstore = this.gameObject.GetComponent<Npc>();
                 return;
         }
     }

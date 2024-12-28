@@ -104,7 +104,7 @@ public class PlayerAttack : MonoBehaviour
         if(thisWeapon.ID == 8) // 武器8
         {
             if (ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Cold))
-                _dmg *= 1 + (Target.Count * 0.3f);
+                _dmg *= 1 + ((Target.Count -1) * 0.2f);
         }
 
         //暴擊
@@ -176,7 +176,7 @@ public class PlayerAttack : MonoBehaviour
 
     IEnumerator Bullet()
     {
-        float speed = 4f * thisSkill.Speed * ValueData.Instance.BulletSpeed;
+        float speed = 5f * thisSkill.Speed * ValueData.Instance.BulletSpeed;
         while(this.gameObject)
         {
             yield return new WaitForSeconds(0.01f);

@@ -1005,7 +1005,7 @@ MonoBehaviour:
   enemyType: 0
   immortal: 0
   Hp: 0
-  maxHp: 30
+  maxHp: 15
   Attack: 1
   EXP: 0
   AttackCD: 2

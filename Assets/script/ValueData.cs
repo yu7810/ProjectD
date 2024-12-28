@@ -88,10 +88,10 @@ public class ValueData : MonoBehaviour
         new SkillBase(2,20,"衝刺",5f,0,1f,1,0,0),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
         new SkillBase(4,20,"閃現",3.4f,0f,1f,1,1,0f),
-        new SkillBase(5,40,"新月斬",2f,10,0.8f,1,0.2f,0.1f),
-        new SkillBase(6,0,"弦月斬",2f,20,1.1f,1,0.5f,0.1f),
-        new SkillBase(7,0,"明月斬",2f,40,1.4f,1,1f,0.1f),
-        new SkillBase(8,20,"The喪鐘",20f,0,1f,1,0,0f),
+        new SkillBase(5,40,"新月斬",2f,6,0.8f,1,1f,0.1f),
+        new SkillBase(6,0,"弦月斬",2f,12,1.1f,1,1f,0.1f),
+        new SkillBase(7,0,"明月斬",2f,20,1.4f,1,1f,0.1f),
+        new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f),
         new SkillBase(9,0,"飛箭",0.3f,3,1f,1,0.6f,0f),
         new SkillBase(10,40,"水曝",1f,0f,1f,1,0f,0f),
     };
@@ -106,9 +106,9 @@ public class ValueData : MonoBehaviour
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
         "會以 新月斬→弦月斬→明月斬 順序輪替",
-        "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大3倍後，被喪鐘以圓形造成範圍傷害",
+        "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大 20% 後，被喪鐘以圓形造成範圍傷害",
         "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
-        "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×5)傷害",
+        "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害",
     };
     //技能標籤
     [NonSerialized]
@@ -142,10 +142,10 @@ public class ValueData : MonoBehaviour
         new WeaponBase(2,RarityType.Normal,20,"鐵弓", 1f, 1f, 1f , 1.6f, 0.8f, 0f),
         new WeaponBase(3,RarityType.Normal,20,"鐵斧", 1.6f, 1.2f, 1.5f, 0.8f, 1.4f, 0f),
         new WeaponBase(4,RarityType.Magic,20,"守財犬", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,60,"無盡", 3f, 1.2f, 1f, 1f, 2f, 0.25f),
-        new WeaponBase(6,RarityType.Rare,60,"風暴", 2f, 1.8f, 0.75f, 1f, 1.6f, 0f),
-        new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 0.5f, 0.5f, 0.5f, 2f, 0.5f, 0f),
-        new WeaponBase(8,RarityType.Rare,60,"漩渦", 1f, 1f, 2f, 1f, 1f, 0),
+        new WeaponBase(5,RarityType.Rare,60,"無盡", 3f, 1.2f, 0.3f, 1f, 2f, 0.35f),
+        new WeaponBase(6,RarityType.Rare,60,"風暴", 2f, 1.8f, 0.75f, 0.6f, 1.7f, 0f),
+        new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 1f, 1f, 0.5f, 2f, 1.6f, 0f),
+        new WeaponBase(8,RarityType.Rare,60,"漩渦", 1f, 1.5f, 2f, 1f, 1f, 0),
         new WeaponBase(9,RarityType.Magic,20,"招財貓", 1, 1f, 1f, 1f, 1f, 0.05f),
     };
     //裝備介紹
@@ -159,7 +159,7 @@ public class ValueData : MonoBehaviour
         "「大力點，一下搞定」",
         "技能額外重複2次",
         "使用位移技能時觸發L欄位上的非位移技能",
-        "冰冷技能命中複數目標時，每個目標使傷害提升30%",
+        "冰冷技能命中複數目標時，每個額外目標使傷害提升20%",
         "擊殺敵人掉落的金幣為0~3倍",
     };
 
@@ -316,19 +316,19 @@ public class ValueData : MonoBehaviour
                 add_Damagereduction -= 1f;
                 break;
             case 12:
-                add_Crit += 0.1f;
+                add_Crit += 0.05f;
                 break;
             case 13:
-                add_Crit += 0.1f;
+                add_Crit += 0.05f;
                 break;
             case 14:
-                add_Crit += 0.1f;
+                add_Crit += 0.05f;
                 break;
             case 15:
-                add_Crit += 0.1f;
+                add_Crit += 0.05f;
                 break;
             case 16:
-                add_Crit += 0.15f;
+                
                 break;
             case 18:
                 add_Vision += 5f;
@@ -368,6 +368,10 @@ public class ValueData : MonoBehaviour
                 break;
             case 32:
                 add_MoveSpeed += 0.2f;
+                break;
+            case 33:
+                add_maxAp += 2;
+                add_maxHp += 2;
                 break;
         }
     }
@@ -418,7 +422,7 @@ public class ValueData : MonoBehaviour
         else // 扣血
         {
             value *= (1 - Damagereduction);
-            if (PassiveSkills[10]) // 天賦10
+            if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // 天賦10
             {
                 if (AP >= -value)
                 {
@@ -433,9 +437,16 @@ public class ValueData : MonoBehaviour
             }
             if (HP > -value)
             {
-                HP += value;
-                if (useBehurtTimer == true)
-                    StartCoroutine(PlayerCtrl.Instance.BehurtTimer());
+                if (value == 0)
+                {
+                    StartCoroutine(PlayerCtrl.Instance.BehurtTimer(false)); // 不扣血時不會觸發特效(傷害完全被擋掉)，僅觸發無敵幀
+                }
+                else 
+                {
+                    HP += value;
+                    if (useBehurtTimer == true)
+                        StartCoroutine(PlayerCtrl.Instance.BehurtTimer(true)); //扣血及特效
+                }
             }
             else
             {
@@ -463,7 +474,7 @@ public class ValueData : MonoBehaviour
             else
                 AP = 0;
 
-            if(PassiveSkills[28])
+            if(PassiveSkills[28]) // 天賦28
             {
                 if (AP <= 1 && _reloadAP == null)
                 {
@@ -494,6 +505,7 @@ public class ValueData : MonoBehaviour
     IEnumerator reloadAP()
     {
         PlayerCtrl.Instance.canAttack = false;
+        PlayerCtrl.Instance.isReload = true;
         while (AP < maxAP)
         {
             float value = RestoreAP / 50 * 3;
@@ -508,6 +520,7 @@ public class ValueData : MonoBehaviour
             yield return new WaitForSeconds(0.02f);
         }
         PlayerCtrl.Instance.canAttack = true;
+        PlayerCtrl.Instance.isReload = false;
         _reloadAP = null;
     }
 

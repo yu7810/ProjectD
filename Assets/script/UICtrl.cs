@@ -7,6 +7,8 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 public class UICtrl : MonoBehaviour
 {
@@ -100,9 +102,16 @@ public class UICtrl : MonoBehaviour
     public Color RarityColor_Magic;
     public Color RarityColor_Rare;
     public Color RarityColor_Unique;
+    public Color vignetteColor; // Global Volume裡vignette的初始顏色
+    public Color vignetteBehurtColor;
+    public Volume volume; // Global Volume
+    public Vignette vignette;
     public Line line;
     public Transform LineFather;
     public TextMeshProUGUI passiveskillPoint;//天賦點數
+    public Npc nowSkillstore; // 儲存現在開的商店，用於重骰等功能
+    public Npc nowWeaponstore;
+    public GameObject settingUI;
 
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
@@ -123,6 +132,10 @@ public class UICtrl : MonoBehaviour
         PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
         UpdateMoneyUI();
+        if (volume.profile.TryGet(out vignette))
+            Debug.Log("Global Volume 不存在 Vignette");
+        else
+            vignetteColor = vignette.color.value;
     }
 
     private void FixedUpdate()
@@ -156,6 +169,19 @@ public class UICtrl : MonoBehaviour
                 //UpdateLine();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
+            }
+        }
+        else if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (settingUI.activeSelf == false)
+            {
+                settingUI.SetActive(true);
+                Time.timeScale = 0;
+            }
+            else
+            {
+                settingUI.SetActive(false);
+                Time.timeScale = 1;
             }
         }
 
@@ -625,6 +651,60 @@ public class UICtrl : MonoBehaviour
 
     public void UpdateMoneyUI() {
         MoneyValue.text = ValueData.Instance.money.ToString();
+    }
+
+    public void resetlevel()
+    {
+        LevelCtrl.Instance.NextLevel(LevelCtrl.Instance.nowLevel);
+        settingUI.SetActive(false);
+        Time.timeScale = 1;
+    }
+
+    public void randomweaponstoreEvent()
+    {
+        if(ValueData.Instance.money < 5)
+            return;
+        if (!nowWeaponstore)
+            return;
+        if (!nowWeaponstore.startRandom)
+            return;
+        ValueData.Instance.money -= 5;
+        UpdateMoneyUI();
+        nowWeaponstore.RandomItem();
+        nowWeaponstore.doNpc(true);
+    }
+    public void randomskillstoreEvent()
+    {
+        if (ValueData.Instance.money < 5)
+            return;
+        if (!nowSkillstore)
+            return;
+        if (!nowSkillstore.startRandom)
+            return;
+        ValueData.Instance.money -= 5;
+        UpdateMoneyUI();
+        nowSkillstore.RandomItem();
+        nowSkillstore.doNpc(true);
+    }
+    public void Newplayer() // 展場用
+    {
+        LevelCtrl.Instance.NextLevel(0);
+        settingUI.SetActive(false);
+        Time.timeScale = 1;
+        for(int i=0;i< ValueData.Instance.PassiveSkills.Length;i++)
+        {
+            ValueData.Instance.PassiveSkills[i] = false;
+        }
+        ValueData.Instance.money = 0;
+        UpdateMoneyUI();
+        ValueData.Instance.passiveskillPoint = 0;
+        ValueData.Instance.PlayerValueUpdate();
+        PlayerCtrl.Instance.Start();
+        for(int x=0;x<3;x++)
+        {
+            ChangeWeapon_ID = 0;
+            SelectWeaponChangeField(x);
+        }
     }
 
 }

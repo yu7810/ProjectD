@@ -115,7 +115,7 @@ public class Enemy : MonoBehaviour
             float size = ValueData.Instance.SkillField[id].Size;
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();
-            atk.dmg = Dmg * 3;
+            atk.dmg = Dmg * 1.2f;
             atk.passTarget.Add(this.gameObject);
             bellCD = 0.1f;
             StartCoroutine(BellCD());
@@ -124,6 +124,7 @@ public class Enemy : MonoBehaviour
 
     public void Die(int Filed = -1) {
         //UICtrl.Instance.GetEXP(EXP);
+        Debug.Log(this.gameObject.name);
         LevelCtrl.Instance.leftEnemy -= 1;
         LevelCtrl.Instance.enemycheck();
         if (Filed != -1)
@@ -136,8 +137,7 @@ public class Enemy : MonoBehaviour
             }
         }
         LevelCtrl.Instance.DropMoney(money[0], money[1], transform.position, 0.5f);
-        if (ValueData.Instance.PassiveSkills[11] && ValueData.Instance.HP < 3)
-            ValueData.Instance.GetHp(1);
+
         StopAllCoroutines();
         Destroy(transform.gameObject);
     }

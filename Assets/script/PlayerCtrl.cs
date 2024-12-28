@@ -15,6 +15,7 @@ public class PlayerCtrl : MonoBehaviour
     LayerMask mask = (1 << 7);//角色旋轉用
     public bool canMove;
     public bool canAttack;
+    public bool isReload; // 正在reload魔力(天賦28)
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
@@ -52,19 +53,22 @@ public class PlayerCtrl : MonoBehaviour
         int L = UICtrl.Instance._passiveskill.transform.childCount;
         valuedata.PassiveSkills = new bool[L];
     }
-    void Start()
+    public void Start()
     {
-        
         Application.targetFrameRate = 60;
         m_Rigidbody = GetComponent<Rigidbody>();
         m_Animator = GetComponent<Animator>();
         canMove = true;
         canAttack = true;
+        isReload = false;
         valuedata.canBehurt = true;
+        //初始技能
         UICtrl.Instance.ChangeSkill_ID = 1;
         UICtrl.Instance.SelectSkillChangeField(0);
         UICtrl.Instance.ChangeSkill_ID = 9;
         UICtrl.Instance.SelectSkillChangeField(1);
+        UICtrl.Instance.ChangeSkill_ID = 0;
+        UICtrl.Instance.SelectSkillChangeField(2);
         startPosition = Character.transform.localPosition;
     }
 
@@ -145,12 +149,13 @@ public class PlayerCtrl : MonoBehaviour
         //互動鍵E
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!ontriggerTarget)
+            if (!ontriggerTarget || !canMove)
                 return;
             if (ontriggerTarget.tag == "Door")
             {
                 LevelCtrl.Instance.nowPrize = ontriggerTarget.GetComponent<ExitDoor>().Prize;
                 int nextLevel = ontriggerTarget.GetComponent<ExitDoor>().Level;
+                ontriggerTarget = null;
                 LevelCtrl.Instance.NextLevel(nextLevel);
             }
         }
@@ -182,12 +187,13 @@ public class PlayerCtrl : MonoBehaviour
         if (other.tag == "NPC")
         {
             other.GetComponent<Npc>().doNpc(false);
-            ontriggerTarget = null;
+            if (ontriggerTarget == other.gameObject)
+                ontriggerTarget = null;
         }
         else if (other.tag == "Door")
         {
-            
-            ontriggerTarget = null;
+            if(ontriggerTarget == other.gameObject)
+                ontriggerTarget = null;
         }
     }
 
@@ -208,13 +214,17 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     //受傷無敵幀
-    public IEnumerator BehurtTimer()
+    public IEnumerator BehurtTimer(bool isvignetteColor)
     {
         valuedata.canBehurt = false;
+        if (UICtrl.Instance.vignette != null && isvignetteColor)
+            UICtrl.Instance.vignette.color.value = UICtrl.Instance.vignetteBehurtColor;
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
-        yield return new WaitForSeconds(0.3f);
+        //yield return new WaitForSeconds(0.3f);
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.4f);
+        if (UICtrl.Instance.vignette != null && isvignetteColor)
+            UICtrl.Instance.vignette.color.value = UICtrl.Instance.vignetteColor;
         valuedata.canBehurt = true;
     }
 
