@@ -82,7 +82,7 @@ public class PlayerCtrl : MonoBehaviour
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
-            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 2.5f;
+            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 2.8f;
             m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
         }
         else
@@ -158,6 +158,10 @@ public class PlayerCtrl : MonoBehaviour
                 ontriggerTarget = null;
                 LevelCtrl.Instance.NextLevel(nextLevel);
             }
+            else if(ontriggerTarget.tag == "NPC")
+            {
+                ontriggerTarget.GetComponent<Npc>().doNpc(true);
+            }
         }
 
         //漂浮
@@ -170,7 +174,8 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (other.tag == "NPC")
         {
-            other.GetComponent<Npc>().doNpc(true);
+            ontriggerTarget = other.gameObject;
+            //other.GetComponent<Npc>().doNpc(true);
         }
         else if (other.tag == "Door")
         {

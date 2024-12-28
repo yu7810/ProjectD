@@ -104,6 +104,7 @@ public class Enemy : MonoBehaviour
         }
         else {
             Hp = 0;
+            immortal = true;
             hpUI.transform.parent.gameObject.SetActive(false);
             Die(Filed);
         }
@@ -124,7 +125,6 @@ public class Enemy : MonoBehaviour
 
     public void Die(int Filed = -1) {
         //UICtrl.Instance.GetEXP(EXP);
-        Debug.Log(this.gameObject.name);
         LevelCtrl.Instance.leftEnemy -= 1;
         LevelCtrl.Instance.enemycheck();
         if (Filed != -1)
@@ -136,7 +136,8 @@ public class Enemy : MonoBehaviour
                 money[1] *= moneyadd;
             }
         }
-        LevelCtrl.Instance.DropMoney(money[0], money[1], transform.position, 0.5f);
+        int _money = Random.Range(money[0], money[1]);
+        LevelCtrl.Instance.DropMoney(_money, transform.position, 0.5f);
 
         StopAllCoroutines();
         Destroy(transform.gameObject);

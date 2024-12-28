@@ -18,6 +18,7 @@ public class ValueData : MonoBehaviour
 
     //膀┏计
     public int money;//ōΤ刽计秖
+    public int passiveskillPoint = 0;//ぱ结翴计
     public float base_maxAp = 10;
     public float base_maxHp = 30;
     public float base_MoveSpeed = 3f;
@@ -35,7 +36,6 @@ public class ValueData : MonoBehaviour
     public float base_BulletSpeed;
 
     //ぱ结计
-    public int passiveskillPoint = 0;//ぱ结翴计
     public float add_maxAp;
     public float add_maxHp;
     public float add_MoveSpeed;
@@ -142,7 +142,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(2,RarityType.Normal,20,"臟", 1f, 1f, 1f , 1.6f, 0.8f, 0f),
         new WeaponBase(3,RarityType.Normal,20,"臟", 1.6f, 1.2f, 1.5f, 0.8f, 1.4f, 0f),
         new WeaponBase(4,RarityType.Magic,20,"癩", 1, 1f, 1f, 1f, 1f, 0.05f),
-        new WeaponBase(5,RarityType.Rare,60,"礚荷", 3f, 1.2f, 0.3f, 1f, 2f, 0.35f),
+        new WeaponBase(5,RarityType.Rare,60,"礚荷", 3f, 1.2f, 0.6f, 0.4f, 2f, 0.35f),
         new WeaponBase(6,RarityType.Rare,60,"忌", 2f, 1.8f, 0.75f, 0.6f, 1.7f, 0f),
         new WeaponBase(7,RarityType.Rare,60,"辽痴竡", 1f, 1f, 0.5f, 2f, 1.6f, 0f),
         new WeaponBase(8,RarityType.Rare,60,"簒歹", 1f, 1.5f, 2f, 1f, 1f, 0),

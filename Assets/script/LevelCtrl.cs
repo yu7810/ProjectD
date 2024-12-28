@@ -14,6 +14,8 @@ public class LevelCtrl : MonoBehaviour
 
     public GameObject skillstorePrefab;
     public GameObject weaponstorePrefab;
+    public GameObject itemMoney;
+    public GameObject itemPassivepoint;
 
     //關卡池
     public int[][] Level = new int[][] // [等級][關卡ID]
@@ -44,6 +46,7 @@ public class LevelCtrl : MonoBehaviour
     public void getPrize() {
 
         Vector3 p = ValueData.Instance.Player.transform.position;
+        p.y = 0;
 
         switch (nowPrize) {
             case PrizeBase.None:
@@ -51,8 +54,8 @@ public class LevelCtrl : MonoBehaviour
                 return;
             case PrizeBase.PassivePoin:
                 Debug.Log("天賦點");
-                ValueData.Instance.passiveskillPoint += 4;
-                UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
+                GameObject _itemPassivepoint = Instantiate(itemPassivepoint, p, itemPassivepoint.transform.rotation);
+                _itemPassivepoint.GetComponent<Npc>().passivepoint = 3;
                 return;
             case PrizeBase.Skill:
                 Debug.Log("技能商店");
@@ -65,9 +68,12 @@ public class LevelCtrl : MonoBehaviour
                 weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
+                Debug.Log("金幣");
                 int min = 10 + 12 * nowLevel;
                 int max = 15 + 12 * nowLevel;
-                DropMoney(min,max, p, 1f);
+                int _money = Random.Range(min, max);
+                GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
+                _itemMoney.GetComponent<Npc>().money = _money;
                 break;
         }
     }
@@ -149,16 +155,15 @@ public class LevelCtrl : MonoBehaviour
         UICtrl.Instance.ScreenMask.color = c;
     }
 
-    public void DropMoney(int min, int max, Vector3 pos, float offset)
+    public void DropMoney(int value, Vector3 pos, float offset)
     {
-        StartCoroutine(dropMoney(min, max+1, pos, offset));
+        StartCoroutine(dropMoney(value, pos, offset));
     }
 
-    IEnumerator dropMoney(int min, int max, Vector3 pos, float offset)
+    IEnumerator dropMoney(int value, Vector3 pos, float offset)
     {
-        int _money = Random.Range(min, max);
         GameObject money = ValueData.Instance.moneyPrefab;
-        for (int i = 0; i < _money; i++)
+        for (int i = 0; i < value; i++)
         {
             Vector3 _offset = new Vector3(Random.Range(-offset, offset), 0, Random.Range(-offset, offset));
             Vector3 _pos = pos + _offset;

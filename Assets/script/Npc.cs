@@ -7,6 +7,8 @@ public class Npc : MonoBehaviour
     public NpcType npcType;
     public string Name;
     public bool startRandom; // 使否在生成時隨機商品
+    public int money;
+    public int passivepoint;
     public List<int> item = new List<int> { };
 
     private void OnEnable()
@@ -20,15 +22,30 @@ public class Npc : MonoBehaviour
         {
             case NpcType.Talk:
                 Debug.Log(gameObject.name + " 在說話");
-                return;
+                break;
             case NpcType.Weaponstore:
                 UICtrl.Instance.showWeaponstore(Switch, item);
                 UICtrl.Instance.nowWeaponstore = this.gameObject.GetComponent<Npc>();
-                return;
+                break;
             case NpcType.Skillstore:
                 UICtrl.Instance.showSkillstore(Switch, item);
                 UICtrl.Instance.nowSkillstore = this.gameObject.GetComponent<Npc>();
-                return;
+                break;
+            case NpcType.Money:
+                if (Switch)
+                {
+                    LevelCtrl.Instance.DropMoney(money, transform.position, 1f);
+                    Destroy(gameObject);
+                }
+                break;
+            case NpcType.Passiveskill:
+                if (Switch)
+                {
+                    ValueData.Instance.passiveskillPoint += passivepoint;
+                    UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
+                    Destroy(gameObject);
+                }
+                break;
         }
     }
 
@@ -64,5 +81,7 @@ public class Npc : MonoBehaviour
 public enum NpcType{ 
     Talk,
     Weaponstore,
-    Skillstore
+    Skillstore,
+    Money,
+    Passiveskill,
 }

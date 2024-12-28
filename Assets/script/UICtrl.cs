@@ -133,9 +133,8 @@ public class UICtrl : MonoBehaviour
         ValueUI.SetActive(false);
         UpdateMoneyUI();
         if (volume.profile.TryGet(out vignette))
-            Debug.Log("Global Volume 不存在 Vignette");
-        else
             vignetteColor = vignette.color.value;
+            
     }
 
     private void FixedUpdate()
