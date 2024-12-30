@@ -144,7 +144,7 @@ public class Skill : MonoBehaviour
             m_Input = ValueData.Instance.Player.transform.forward;
         for(int i =0;i<10;i++)
         {
-            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 22);
+            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 15);
             m_Rigidbody.MovePosition(m);
             yield return new WaitForSeconds(0.005f);
         }

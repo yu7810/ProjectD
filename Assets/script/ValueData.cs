@@ -84,16 +84,16 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0),//無
-        new SkillBase(1,0,"劈砍",2f,10,1f,1,0.2f,0.25f),
-        new SkillBase(2,20,"衝刺",5f,0,1f,1,0,0),//size=位移距離
+        new SkillBase(1,0,"劈砍",1.4f,10,1f,1,0.2f,0.25f),
+        new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0),
-        new SkillBase(4,20,"閃現",3.4f,0f,1f,1,1,0f),
-        new SkillBase(5,40,"新月斬",2f,6,0.8f,1,1f,0.1f),
-        new SkillBase(6,0,"弦月斬",2f,12,1.1f,1,1f,0.1f),
-        new SkillBase(7,0,"明月斬",2f,20,1.4f,1,1f,0.1f),
+        new SkillBase(4,20,"閃現",1f,0f,1f,1,1f,0f),
+        new SkillBase(5,40,"新月斬",1.2f,6,0.8f,1,1f,0.1f),
+        new SkillBase(6,0,"弦月斬",1.2f,12,1.1f,1,1f,0.1f),
+        new SkillBase(7,0,"明月斬",1.2f,20,1.4f,1,1f,0.1f),
         new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f),
-        new SkillBase(9,0,"飛箭",0.3f,3,1f,1,0.6f,0f),
-        new SkillBase(10,40,"水曝",1f,0f,1f,1,0f,0f),
+        new SkillBase(9,0,"飛箭",0.2f,3,1f,1,0.6f,0f),
+        new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f),
     };
     //技能介紹
     [NonSerialized]

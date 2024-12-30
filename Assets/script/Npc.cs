@@ -6,10 +6,19 @@ public class Npc : MonoBehaviour
 {
     public NpcType npcType;
     public string Name;
-    public bool startRandom; // 使否在生成時隨機商品
+    public GameObject NameUI;
+
+    [Header("通關獎勵")] 
     public int money;
     public int passivepoint;
+
+    [Header("商店")]
+    public bool startRandom; // 使否在生成時隨機商品
     public List<int> item = new List<int> { };
+
+    [Header("門")]
+    public PrizeBase Prize;//獎勵類型
+    public int Level;//關卡編號
 
     private void OnEnable()
     {
@@ -20,8 +29,13 @@ public class Npc : MonoBehaviour
     public void doNpc(bool Switch) {
         switch (npcType) 
         {
-            case NpcType.Talk:
-                Debug.Log(gameObject.name + " 在說話");
+            case NpcType.Door:
+                if (Switch) 
+                {
+                    LevelCtrl.Instance.nowPrize = Prize;
+                    int nextLevel = Level;
+                    LevelCtrl.Instance.NextLevel(nextLevel);
+                }
                 break;
             case NpcType.Weaponstore:
                 UICtrl.Instance.showWeaponstore(Switch, item);
@@ -79,7 +93,7 @@ public class Npc : MonoBehaviour
 }
 
 public enum NpcType{ 
-    Talk,
+    Door,
     Weaponstore,
     Skillstore,
     Money,

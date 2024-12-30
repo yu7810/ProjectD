@@ -19,7 +19,8 @@ public class PlayerCtrl : MonoBehaviour
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
-    GameObject ontriggerTarget;//放碰到的物體
+    GameObject ontriggerTarget; // 放碰到的物體
+    GameObject openedTarget; // 已經互動的NPC，用來開關對應UI
     RaycastHit floorhit;
     public Vector3 playerToMouse;//滑鼠指到的座標
 
@@ -67,7 +68,7 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.SelectSkillChangeField(0);
         UICtrl.Instance.ChangeSkill_ID = 9;
         UICtrl.Instance.SelectSkillChangeField(1);
-        UICtrl.Instance.ChangeSkill_ID = 0;
+        UICtrl.Instance.ChangeSkill_ID = 2;
         UICtrl.Instance.SelectSkillChangeField(2);
         startPosition = Character.transform.localPosition;
     }
@@ -82,7 +83,7 @@ public class PlayerCtrl : MonoBehaviour
             Move = true;
             m_Animator.SetBool("Move", Move);
             Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
-            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 2.8f;
+            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3f;
             m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
         }
         else
@@ -103,7 +104,15 @@ public class PlayerCtrl : MonoBehaviour
             Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
             m_Rigidbody.MoveRotation(newRotation);
         }
-        
+
+        //漂浮
+        float newY = startPosition.y + Mathf.Sin(Time.time * frequency) * amplitude;
+        Character.transform.localPosition = new Vector3(startPosition.x, newY, startPosition.z);
+
+    }
+
+    private void Update()
+    {
         //滑鼠L
         if (Input.GetKey(KeyCode.Mouse0))
         {
@@ -151,35 +160,47 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (!ontriggerTarget || !canMove)
                 return;
-            if (ontriggerTarget.tag == "Door")
+            if (openedTarget != null && openedTarget == ontriggerTarget)
             {
-                LevelCtrl.Instance.nowPrize = ontriggerTarget.GetComponent<ExitDoor>().Prize;
-                int nextLevel = ontriggerTarget.GetComponent<ExitDoor>().Level;
-                ontriggerTarget = null;
-                LevelCtrl.Instance.NextLevel(nextLevel);
+                UICtrl.Instance.showWeaponstore(false);
+                UICtrl.Instance.showSkillstore(false);
+                openedTarget = null;
             }
-            else if(ontriggerTarget.tag == "NPC")
+            else if (ontriggerTarget.tag == "NPC")
             {
                 ontriggerTarget.GetComponent<Npc>().doNpc(true);
+                openedTarget = ontriggerTarget;
             }
         }
-
-        //漂浮
-        float newY = startPosition.y + Mathf.Sin(Time.time * frequency) * amplitude;
-        Character.transform.localPosition = new Vector3(startPosition.x, newY, startPosition.z);
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            UICtrl.Instance.showWeaponstore(false);
+            UICtrl.Instance.showSkillstore(false);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.tag == "NPC")
         {
+            if (ontriggerTarget) // 關閉上個NPC的名字
+            {
+                if (ontriggerTarget.TryGetComponent<Npc>(out Npc _npc))
+                {
+                    if (_npc.NameUI)
+                        _npc.NameUI.SetActive(false);
+                }
+            }
             ontriggerTarget = other.gameObject;
-            //other.GetComponent<Npc>().doNpc(true);
-        }
-        else if (other.tag == "Door")
-        {
-            ontriggerTarget = other.gameObject;
+            if(other.TryGetComponent<Npc>(out Npc npc))
+            {
+                if (npc.NameUI)
+                {
+                    npc.NameUI.SetActive(true);
+                    npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
+                }
+                    
+            }
         }
         else if(other.tag == "Money")
         {
@@ -192,8 +213,15 @@ public class PlayerCtrl : MonoBehaviour
         if (other.tag == "NPC")
         {
             other.GetComponent<Npc>().doNpc(false);
+            if (other.TryGetComponent<Npc>(out Npc npc))
+            {
+                if (npc.NameUI)
+                    npc.NameUI.SetActive(false);
+            }
             if (ontriggerTarget == other.gameObject)
                 ontriggerTarget = null;
+            if(openedTarget == other.gameObject)
+                openedTarget = null;
         }
         else if (other.tag == "Door")
         {

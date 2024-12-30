@@ -506,7 +506,7 @@ public class UICtrl : MonoBehaviour
     }
 
     //開啟技能商店
-    public void showSkillstore(bool Switch, List<int> itemID) 
+    public void showSkillstore(bool Switch, List<int> itemID = null) 
     {
         if (Switch)
         {
@@ -554,7 +554,7 @@ public class UICtrl : MonoBehaviour
     }
 
     //開啟武器商店
-    public void showWeaponstore(bool Switch , List<int> itemID) 
+    public void showWeaponstore(bool Switch , List<int> itemID = null) 
     {
         if (Switch)
         {
