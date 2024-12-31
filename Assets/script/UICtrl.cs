@@ -45,8 +45,9 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI maxapUI;
     public Image ScreenMask;
 
-    public GameObject Tip_skill;//說明窗相關
-    public GameObject Tip_passiveskill;//天賦專用
+    public GameObject Tip; // 說明窗相關
+    public GameObject Tip_line; // 美化UI用
+    public GameObject Tip_affix; // 數值欄位的父物件
     public TextMeshProUGUI Tip_Name;
     public TextMeshProUGUI Tip_Intro;
     public TextMeshProUGUI Tip_Cd;
@@ -55,7 +56,6 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Tip_Crit;
     public TextMeshProUGUI Tip_Size;
     public TextMeshProUGUI Tip_Speed;
-    public TextMeshProUGUI Tip_Passiveskillintro;
 
     public GameObject ValueUI;//數值欄相關
     public TextMeshProUGUI HP_text;
@@ -102,6 +102,9 @@ public class UICtrl : MonoBehaviour
     public Color RarityColor_Magic;
     public Color RarityColor_Rare;
     public Color RarityColor_Unique;
+    public Color valueColor_add;//數值為正時的顏色
+    public Color valueColor_reduce;//數值為負時的顏色
+    public Color valueColor_normal;//技能數值的顏色
     public Color vignetteColor; // Global Volume裡vignette的初始顏色
     public Color vignetteBehurtColor;
     public Volume volume; // Global Volume
@@ -187,36 +190,117 @@ public class UICtrl : MonoBehaviour
         //Tip彈窗
         if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
         {
+            Tip.SetActive(true);
             TipInfo _tipinfo = uiElement.GetComponent<TipInfo>();
+            Tip_Name.text = _tipinfo.Name;
+            Tip_Intro.text = _tipinfo.Intro;
             if (_tipinfo.Type == TipType.Passiveskill)
             {
-                Tip_skill.SetActive(false);
-                Tip_passiveskill.SetActive(true);
+                Tip_Name.color = RarityColor_Normal;//天賦名稱一律白色
                 Tip_tag.SetActive(false);
+                Tip_line.SetActive(false);
+                Tip_affix.SetActive(false);
             }
             else if (_tipinfo.Type == TipType.Skill)
             {
-                Tip_skill.SetActive(true);
-                Tip_passiveskill.SetActive(false);
-                if (ValueData.Instance.SkillTag[_tipinfo.Id].Length > 0)
-                    Tip_tag.SetActive(true);
-                else
-                    Tip_tag.SetActive(false);
-            }
-            else
-            {
-                Tip_skill.SetActive(true);
-                Tip_passiveskill.SetActive(false);
-                Tip_tag.SetActive(false);
-            }
+                Tip_Name.color = RarityColor_Normal;//技能名稱一律白色
+                Tip_tag.SetActive(true);
+                Tip_line.SetActive(true);
+                Tip_affix.SetActive(true);
+                //顯示tag
+                foreach(Transform child in Tip_tag.transform)
+                {
+                    child.gameObject.SetActive(false);
+                }
+                for (int i = 0; i < ValueData.Instance.SkillTag[_tipinfo.Id].Length; i++)
+                {
+                    if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Attack)
+                        tagAttack.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Chaos)
+                        tagChaos.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Cold)
+                        tagCold.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Fire)
+                        tagFire.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Lightning)
+                        tagLightning.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Movement)
+                        tagMovement.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Physical)
+                        tagPhysical.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Projectile)
+                        tagProjectile.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Spell)
+                        tagSpell.gameObject.SetActive(true);
+                    else if (ValueData.Instance.SkillTag[_tipinfo.Id][i] == SkillTagType.Range)
+                        tagRange.gameObject.SetActive(true);
+                }
+                //顯示數值
+                Tip_Cd.transform.parent.gameObject.SetActive(true);
+                Tip_Cost.transform.parent.gameObject.SetActive(true);
+                Tip_Dmg.transform.parent.gameObject.SetActive(true);
+                Tip_Size.transform.parent.gameObject.SetActive(true);
+                Tip_Speed.transform.parent.gameObject.SetActive(true);
+                Tip_Crit.transform.parent.gameObject.SetActive(true);
 
+                Tip_Cd.color = valueColor_normal;
+                Tip_Cost.color = valueColor_normal;
+                Tip_Dmg.color = valueColor_normal;
+                Tip_Size.color = valueColor_normal;
+                Tip_Speed.color = valueColor_normal;
+                Tip_Crit.color = valueColor_normal;
+
+                Tip_Cd.text = _tipinfo.Cd.ToString("0.0") + " s";
+                Tip_Cost.text = _tipinfo.Cost.ToString("0.0");
+                Tip_Dmg.text = _tipinfo.Dmg.ToString("0");
+                Tip_Size.text = _tipinfo.Size.ToString("0.0");
+                Tip_Speed.text = _tipinfo.Speed.ToString("0.0");
+                Tip_Crit.text = (_tipinfo.Crit * 100).ToString("0") + " %";
+                Tip_Intro.text = _tipinfo.Intro;
+            }
+            else if (_tipinfo.Type == TipType.Weapon)
+            {
+                Tip_tag.SetActive(false);
+                Tip_line.SetActive(false);
+                Tip_affix.SetActive(true);
+                toText(Tip_Cd, _tipinfo.Cd, "%");
+                toText(Tip_Cost, _tipinfo.Cost, "%");
+                toText(Tip_Dmg, _tipinfo.Dmg, "%");
+                toText(Tip_Size, _tipinfo.Size, "%");
+                toText(Tip_Speed, _tipinfo.Speed, "%");
+                toText(Tip_Crit, _tipinfo.Crit, "%");
+                //稀有度顏色
+                if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Normal)
+                    Tip_Name.color = RarityColor_Normal;
+                else if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Magic)
+                    Tip_Name.color = RarityColor_Magic;
+                else if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Rare)
+                    Tip_Name.color = RarityColor_Rare;
+                else if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Unique)
+                    Tip_Name.color = RarityColor_Unique;
+            }
         }
         else
         {
-            Tip_skill.SetActive(false);
-            Tip_passiveskill.SetActive(false);
+            Tip.SetActive(false);
         }
             
+    }
+
+    //武器tip用
+    private void toText(TextMeshProUGUI targetUI , float value = 0, string unit = "")
+    {
+        targetUI.text = (value * 100).ToString() + " " + unit;
+        if (value == 1)
+            targetUI.transform.parent.gameObject.SetActive(false);
+        else
+        { // 數值有加減時才顯示對應UI
+            targetUI.transform.parent.gameObject.SetActive(true);
+            if (value > 1)
+                targetUI.color = valueColor_add;
+            else if (value < 1)
+                targetUI.color = valueColor_reduce;
+        }
     }
 
     //單例實體
