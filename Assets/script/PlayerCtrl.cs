@@ -70,6 +70,13 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.SelectSkillChangeField(1);
         UICtrl.Instance.ChangeSkill_ID = 2;
         UICtrl.Instance.SelectSkillChangeField(2);
+        //初始武器
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(0);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(1);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(2);
         startPosition = Character.transform.localPosition;
     }
 

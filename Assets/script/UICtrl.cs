@@ -54,6 +54,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Tip_Cost;
     public TextMeshProUGUI Tip_Dmg;
     public TextMeshProUGUI Tip_Crit;
+    public TextMeshProUGUI Tip_CritDmg;
     public TextMeshProUGUI Tip_Size;
     public TextMeshProUGUI Tip_Speed;
 
@@ -87,7 +88,7 @@ public class UICtrl : MonoBehaviour
 
     public int[] UpgradeBtn;
     public int ChangeSkill_ID;//更換技能的ID暫存
-    int ChangeWeapon_ID;//更換裝備的ID暫存
+    public int ChangeWeapon_ID;//更換裝備的ID暫存
     public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
@@ -242,6 +243,7 @@ public class UICtrl : MonoBehaviour
                 Tip_Size.transform.parent.gameObject.SetActive(true);
                 Tip_Speed.transform.parent.gameObject.SetActive(true);
                 Tip_Crit.transform.parent.gameObject.SetActive(true);
+                Tip_CritDmg.transform.parent.gameObject.SetActive(true);
 
                 Tip_Cd.color = valueColor_normal;
                 Tip_Cost.color = valueColor_normal;
@@ -249,6 +251,7 @@ public class UICtrl : MonoBehaviour
                 Tip_Size.color = valueColor_normal;
                 Tip_Speed.color = valueColor_normal;
                 Tip_Crit.color = valueColor_normal;
+                Tip_CritDmg.color = valueColor_normal;
 
                 Tip_Cd.text = _tipinfo.Cd.ToString("0.0") + " s";
                 Tip_Cost.text = _tipinfo.Cost.ToString("0.0");
@@ -256,6 +259,7 @@ public class UICtrl : MonoBehaviour
                 Tip_Size.text = _tipinfo.Size.ToString("0.0");
                 Tip_Speed.text = _tipinfo.Speed.ToString("0.0");
                 Tip_Crit.text = (_tipinfo.Crit * 100).ToString("0") + " %";
+                Tip_CritDmg.text = (_tipinfo.CritDmg * 100).ToString("0") + " %";
                 Tip_Intro.text = _tipinfo.Intro;
             }
             else if (_tipinfo.Type == TipType.Weapon)
@@ -263,12 +267,13 @@ public class UICtrl : MonoBehaviour
                 Tip_tag.SetActive(false);
                 Tip_line.SetActive(false);
                 Tip_affix.SetActive(true);
-                toText(Tip_Cd, _tipinfo.Cd, "%");
-                toText(Tip_Cost, _tipinfo.Cost, "%");
+                toText(Tip_Cd, _tipinfo.Cd, "%", false);
+                toText(Tip_Cost, _tipinfo.Cost, "%", false);
                 toText(Tip_Dmg, _tipinfo.Dmg, "%");
                 toText(Tip_Size, _tipinfo.Size, "%");
                 toText(Tip_Speed, _tipinfo.Speed, "%");
                 toText(Tip_Crit, _tipinfo.Crit, "%");
+                toText(Tip_CritDmg, _tipinfo.CritDmg, "%");
                 //稀有度顏色
                 if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Normal)
                     Tip_Name.color = RarityColor_Normal;
@@ -288,18 +293,31 @@ public class UICtrl : MonoBehaviour
     }
 
     //武器tip用
-    private void toText(TextMeshProUGUI targetUI , float value = 0, string unit = "")
+    private void toText(TextMeshProUGUI targetUI , float value, string unit, bool trigger = true)
     {
-        targetUI.text = (value * 100).ToString() + " " + unit;
-        if (value == 1)
+        
+        if (value == 0)
             targetUI.transform.parent.gameObject.SetActive(false);
         else
         { // 數值有加減時才顯示對應UI
             targetUI.transform.parent.gameObject.SetActive(true);
-            if (value > 1)
-                targetUI.color = valueColor_add;
-            else if (value < 1)
-                targetUI.color = valueColor_reduce;
+            
+            if (value > 0)
+            {
+                targetUI.text = "+ " + (value * 100).ToString() + " " + unit;
+                if(trigger)
+                    targetUI.color = valueColor_add;
+                else
+                    targetUI.color = valueColor_reduce;
+            }
+            else if (value < 0)
+            {
+                targetUI.text = "-  " + (value * -100).ToString() + " " + unit;
+                if(trigger)
+                    targetUI.color = valueColor_reduce;
+                else
+                    targetUI.color = valueColor_add;
+            }
         }
     }
 
@@ -516,11 +534,12 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.WeaponField[Field].Cooldown = ValueData.Instance.Weapon[ChangeWeapon_ID].Cooldown;
         ValueData.Instance.WeaponField[Field].Size = ValueData.Instance.Weapon[ChangeWeapon_ID].Size;
         ValueData.Instance.WeaponField[Field].Speed = ValueData.Instance.Weapon[ChangeWeapon_ID].Speed;
-        ValueData.Instance.WeaponField[Field].Costdown = ValueData.Instance.Weapon[ChangeWeapon_ID].Costdown;
+        ValueData.Instance.WeaponField[Field].Cost = ValueData.Instance.Weapon[ChangeWeapon_ID].Cost;
         ValueData.Instance.WeaponField[Field].Crit = ValueData.Instance.Weapon[ChangeWeapon_ID].Crit;
+        ValueData.Instance.WeaponField[Field].CritDmg = ValueData.Instance.Weapon[ChangeWeapon_ID].CritDmg;
         WeaponFieldIcon[Field].sprite = ValueData.Instance.WeaponIcon[ChangeWeapon_ID];
         WeaponFieldIcon[Field].tag = "UI";
-        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Costdown, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
+        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
         if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
@@ -581,7 +600,7 @@ public class UICtrl : MonoBehaviour
         EnemyTimer_text.text = ValueData.Instance.EnemyTimer.ToString();
         AttackSize_text.text = (ValueData.Instance.AttackSize * 100).ToString();
         Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString();
-        Costdown_text.text = (ValueData.Instance.CostDown * 100).ToString();
+        Costdown_text.text = (ValueData.Instance.Cost * 100).ToString();
         Crit_text.text = (ValueData.Instance.Crit * 100).ToString();
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
@@ -617,7 +636,7 @@ public class UICtrl : MonoBehaviour
         for (int i = 0; i < itemID.Count; i++) {
             GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
             SkillBase skill = ValueData.Instance.Skill[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.CritDmg, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(skill.Price);
             if (ValueData.Instance.SkillIcon.Length > skill.ID)
             {
@@ -666,7 +685,7 @@ public class UICtrl : MonoBehaviour
         {
             GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponStoreContent);
             WeaponBase weapon = ValueData.Instance.Weapon[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Costdown, weapon.Damage, weapon.Crit, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Cost, weapon.Damage, weapon.Crit, weapon.CritDmg, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(weapon.Price);
             if (ValueData.Instance.WeaponIcon.Length > weapon.ID)
             {

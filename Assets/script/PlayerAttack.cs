@@ -111,7 +111,7 @@ public class PlayerAttack : MonoBehaviour
         float randomvalue = Random.Range(0.01f, 1f);
         if (crit >= randomvalue)
         {
-            _dmg *= ValueData.Instance.CritDmg;
+            _dmg *= thisSkill.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
 
             //裝備5能力
