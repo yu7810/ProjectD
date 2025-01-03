@@ -173,7 +173,8 @@ public class Skill : MonoBehaviour
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 5)
         {
-            UICtrl.Instance.ChangeSkill_ID = 6;
+            UICtrl.Instance.ChangeSkill_ID[0] = 6;
+            UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
@@ -187,7 +188,8 @@ public class Skill : MonoBehaviour
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 6)
         {
-            UICtrl.Instance.ChangeSkill_ID = 7;
+            UICtrl.Instance.ChangeSkill_ID[0] = 7;
+            UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
@@ -201,7 +203,8 @@ public class Skill : MonoBehaviour
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 7)
         {
-            UICtrl.Instance.ChangeSkill_ID = 5;
+            UICtrl.Instance.ChangeSkill_ID[0] = 5;
+            UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));

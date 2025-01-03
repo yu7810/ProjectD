@@ -9,6 +9,7 @@ using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System;
 
 public class UICtrl : MonoBehaviour
 {
@@ -57,6 +58,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Tip_CritDmg;
     public TextMeshProUGUI Tip_Size;
     public TextMeshProUGUI Tip_Speed;
+    public GameObject Tip_Level;
 
     public GameObject ValueUI;//數值欄相關
     public TextMeshProUGUI HP_text;
@@ -87,7 +89,8 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI tagRange;
 
     public int[] UpgradeBtn;
-    public int ChangeSkill_ID;//更換技能的ID暫存
+    [NonSerialized]
+    public int[] ChangeSkill_ID = new int[] {0,0};//更換技能的ID暫存 (技能ID, 技能等級)
     public int ChangeWeapon_ID;//更換裝備的ID暫存
     public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
@@ -135,6 +138,7 @@ public class UICtrl : MonoBehaviour
         UpdatePassiveSkill();
         PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
+        WeaponfieldUI.SetActive(false);
         UpdateMoneyUI();
         if (volume.profile.TryGet(out vignette))
             vignetteColor = vignette.color.value;
@@ -148,43 +152,43 @@ public class UICtrl : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Tab)) {
+        if (Input.GetKeyDown(KeyCode.Tab)) { // 天賦介面 Tab
             if (ValueData.Instance.isUIopen)
             {
                 PassiveskilltreeUI.SetActive(false);
-                //SkillStoreUI.SetActive(false);
-                //WeaponStoreUI.SetActive(false);
                 ValueUI.SetActive(false);
-                //SkillFieldSelectUI.SetActive(false);
-                //WeaponFieldSelectUI.SetActive(false);
-                ChangeSkill_ID = 0;
+                ChangeSkill_ID = new int[] { -1, 0 };
                 ChangeWeapon_ID = 0;
                 ValueData.Instance.isUIopen = false;
+                if(!SkillStoreUI.activeSelf && !WeaponStoreUI.activeSelf)
+                    WeaponfieldUI.SetActive(false);
+                Time.timeScale = 1;
             }
             else {
-                //SkillStoreUI.SetActive(true);
-                //UpdateSkillStore(new List<int> { 0, 1 });
-                //WeaponStoreUI.SetActive(true);
-                //UpdateWeaponStore(new List<int> { 0 });
                 ValueUI.SetActive(true);
                 PassiveskilltreeUI.SetActive(true);
                 UpdatePassiveSkill();
-                //UpdateLine();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
+                WeaponfieldUI.SetActive(true);
+                Time.timeScale = 0;
             }
         }
-        else if(Input.GetKeyDown(KeyCode.Escape))
+        else if(Input.GetKeyDown(KeyCode.Escape)) // 暫停選單 Esc
         {
-            if (settingUI.activeSelf == false)
+            if (!settingUI.activeSelf)
             {
+                PlayerCtrl.Instance.openedTarget = null;
                 settingUI.SetActive(true);
+                showWeaponstore(false);
+                showSkillstore(false);
                 Time.timeScale = 0;
             }
             else
             {
                 settingUI.SetActive(false);
-                Time.timeScale = 1;
+                if (!ValueData.Instance.isUIopen)
+                    Time.timeScale = 1;
             }
         }
 
@@ -201,6 +205,7 @@ public class UICtrl : MonoBehaviour
                 Tip_tag.SetActive(false);
                 Tip_line.SetActive(false);
                 Tip_affix.SetActive(false);
+                Tip_Level.SetActive(false);
             }
             else if (_tipinfo.Type == TipType.Skill)
             {
@@ -208,8 +213,9 @@ public class UICtrl : MonoBehaviour
                 Tip_tag.SetActive(true);
                 Tip_line.SetActive(true);
                 Tip_affix.SetActive(true);
+                Tip_Level.SetActive(true);
                 //顯示tag
-                foreach(Transform child in Tip_tag.transform)
+                foreach (Transform child in Tip_tag.transform)
                 {
                     child.gameObject.SetActive(false);
                 }
@@ -261,12 +267,23 @@ public class UICtrl : MonoBehaviour
                 Tip_Crit.text = (_tipinfo.Crit * 100).ToString("0") + " %";
                 Tip_CritDmg.text = (_tipinfo.CritDmg * 100).ToString("0") + " %";
                 Tip_Intro.text = _tipinfo.Intro;
+
+                //等級
+                int childcount = Tip_Level.transform.childCount;
+                for (int i = 0; i < childcount; i++)
+                {
+                    if (i < _tipinfo.Level)
+                        Tip_Level.transform.GetChild(i).gameObject.SetActive(true);
+                    else
+                        Tip_Level.transform.GetChild(i).gameObject.SetActive(false);
+                }
             }
             else if (_tipinfo.Type == TipType.Weapon)
             {
                 Tip_tag.SetActive(false);
                 Tip_line.SetActive(false);
                 Tip_affix.SetActive(true);
+                Tip_Level.SetActive(false);
                 toText(Tip_Cd, _tipinfo.Cd, "%", false);
                 toText(Tip_Cost, _tipinfo.Cost, "%", false);
                 toText(Tip_Dmg, _tipinfo.Dmg, "%");
@@ -467,7 +484,7 @@ public class UICtrl : MonoBehaviour
         }
     }
 
-    public void ChangeSkill(int target) {
+    public void ChangeSkill(int target , int level) {
         if (target < 0)
             return;
         if (ValueData.Instance.Skill[target].Price > ValueData.Instance.money)
@@ -475,37 +492,40 @@ public class UICtrl : MonoBehaviour
             Debug.Log("金幣不足");
             return;
         }
-        if (ChangeSkill_ID == target) {
-            ChangeSkill_ID = 0;
+        if (ChangeSkill_ID[0] == target && ChangeSkill_ID[1] == level) {
+            ChangeSkill_ID[0] = -1;
+            ChangeSkill_ID[1] = 0;
             SkillFieldSelectUI.SetActive(false);
         }
         else {
-            ChangeSkill_ID = target;
+            ChangeSkill_ID[0] = target;
+            ChangeSkill_ID[1] = level;
             isSpendmoney = true;
             SkillFieldSelectUI.SetActive(true);
         }
     }
     public void SelectSkillChangeField(int Field) {
         SkillFieldSelectUI.SetActive(false);
-        ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID].ID;
-        ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID].Name;
+        ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID[0]].ID;
+        ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID[0]].Name;
+        ValueData.Instance.SkillField[Field].Level = ChangeSkill_ID[1];
         if (ValueData.Instance.SkillField[Field].nowCD == 0)
         {
-            ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.Skill[ChangeSkill_ID].maxCD;
+            ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.Skill[ChangeSkill_ID[0]].maxCD;
             StartCoroutine(SkillCD(Field));
         }
-        SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID];
+        SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID[0]];
         SkillFieldIcon[Field].SetNativeSize();
-        if(ValueData.Instance.Skill[ChangeSkill_ID].ID == 0)
+        if(ValueData.Instance.Skill[ChangeSkill_ID[0]].ID == 0)
             SkillFieldIcon[Field].tag = "Untagged";
         else
             SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
-        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID].Price > 0)
+        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > 0)
         {
-            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID].Price);
+            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
         }
-        ChangeSkill_ID = -1;
+        ChangeSkill_ID[0] = -1;
     }
     public void ChangeWeapon(int target){
         if (target < 0)
@@ -539,7 +559,7 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.WeaponField[Field].CritDmg = ValueData.Instance.Weapon[ChangeWeapon_ID].CritDmg;
         WeaponFieldIcon[Field].sprite = ValueData.Instance.WeaponIcon[ChangeWeapon_ID];
         WeaponFieldIcon[Field].tag = "UI";
-        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
+        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
         if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
@@ -609,23 +629,28 @@ public class UICtrl : MonoBehaviour
     }
 
     //開啟技能商店
-    public void showSkillstore(bool Switch, List<int> itemID = null) 
+    public void showSkillstore(bool Switch, List<int> itemID = null , List<int> itemlevel = null) 
     {
         if (Switch)
         {
             SkillStoreUI.SetActive(true);
-            UpdateSkillStore(itemID);
-            ChangeSkill_ID = -1;
+            UpdateSkillStore(itemID, itemlevel);
+            ChangeSkill_ID[0] = -1;
+            ChangeSkill_ID[1] = 0;
+            WeaponfieldUI.SetActive(true);
         }
         else
         {
             SkillStoreUI.SetActive(false);
             SkillFieldSelectUI.SetActive(false);
-            ChangeSkill_ID = -1;
+            ChangeSkill_ID[0] = -1;
+            ChangeSkill_ID[1] = 0;
+            if (!settingUI.activeSelf)
+                WeaponfieldUI.SetActive(false);
         }
     }
 
-    public void UpdateSkillStore(List<int> itemID) {
+    public void UpdateSkillStore(List<int> itemID , List<int> itemlevel) {
         //清除舊內容
         foreach (Transform child in SkillStoreContent) 
         {
@@ -633,10 +658,11 @@ public class UICtrl : MonoBehaviour
         }
         if (itemID.Count <= 0)
             return;
-        for (int i = 0; i < itemID.Count; i++) {
+        for (int i = 0; i < itemID.Count; i++) 
+        {
             GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
             SkillBase skill = ValueData.Instance.Skill[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.CritDmg, skill.Size, skill.Speed, ValueData.Instance.SkillIntro[skill.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.CritDmg, skill.Size, skill.Speed, itemlevel[i], ValueData.Instance.SkillIntro[skill.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(skill.Price);
             if (ValueData.Instance.SkillIcon.Length > skill.ID)
             {
@@ -644,7 +670,8 @@ public class UICtrl : MonoBehaviour
                 icon.sprite = ValueData.Instance.SkillIcon[skill.ID];
                 icon.SetNativeSize();
             }
-            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID));
+            int lv = itemlevel[i];
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID, lv));
         }
         /*foreach (SkillBase skill in ValueData.Instance.Skill) {
             if (skill.ID != 0) {
@@ -664,12 +691,15 @@ public class UICtrl : MonoBehaviour
             WeaponStoreUI.SetActive(true);
             UpdateWeaponStore(itemID);
             ChangeWeapon_ID = -1;
+            WeaponfieldUI.SetActive(true);
         }
         else
         {
             WeaponStoreUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             ChangeWeapon_ID = -1;
+            if(!settingUI.activeSelf)
+                WeaponfieldUI.SetActive(false);
         }
         
     }
@@ -685,7 +715,7 @@ public class UICtrl : MonoBehaviour
         {
             GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponStoreContent);
             WeaponBase weapon = ValueData.Instance.Weapon[itemID[i]];
-            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Cost, weapon.Damage, weapon.Crit, weapon.CritDmg, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Cost, weapon.Damage, weapon.Crit, weapon.CritDmg, weapon.Size, weapon.Speed, 0, ValueData.Instance.WeaponIntro[weapon.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(weapon.Price);
             if (ValueData.Instance.WeaponIcon.Length > weapon.ID)
             {
@@ -734,7 +764,7 @@ public class UICtrl : MonoBehaviour
     //傷害數字
     public void ShowDamage(float value, Vector3 position ,bool isCrit) {
         //位置偏移
-        Vector3 _position = new Vector3(Random.Range(position.x-0.5f, position.x+0.5f) , position.y, Random.Range(position.z-0.5f, position.z+1f));
+        Vector3 _position = new Vector3(UnityEngine.Random.Range(position.x-0.5f, position.x+0.5f) , position.y, UnityEngine.Random.Range(position.z-0.5f, position.z+1f));
         //提高高度避免被較高的物體擋到
         Vector3 _canvas = new Vector3(_position.x, worldspaceCanvas.transform.position.y, worldspaceCanvas.transform.position.z);
         Vector3 _lerp = Vector3.Lerp(_position, Camera.main.transform.position , 0.1f);

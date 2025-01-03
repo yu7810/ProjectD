@@ -10,7 +10,7 @@ public class ValueData : MonoBehaviour
     public GameObject Player;
     private static ValueData instance;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
-    public bool isUIopen;//開關UI
+    public bool isUIopen;//開關 tab UI
     public CinemachineVirtualCamera virtualCamera;//鏡頭
     public GameObject moneyPrefab;
     private Coroutine _restoreAP; // 自然回魔
@@ -83,17 +83,17 @@ public class ValueData : MonoBehaviour
     //技能總表
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
-        new SkillBase(0,0,"-",0,0,0,0,0,0,0f),//無
-        new SkillBase(1,0,"劈砍",1.4f,10,1f,1,0,0.25f,2f),
-        new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f),//size=位移距離
-        new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f),
-        new SkillBase(4,20,"閃現",1f,0f,1f,1,1f,0f,2f),
-        new SkillBase(5,40,"新月斬",1.2f,6,0.8f,1,1f,0.1f,2f),
-        new SkillBase(6,0,"弦月斬",1.2f,12,1.1f,1,1f,0.1f,2f),
-        new SkillBase(7,0,"明月斬",1.2f,20,1.4f,1,1f,0.1f,2f),
-        new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f,2f),
-        new SkillBase(9,0,"飛箭",0.2f,3,1f,1,0.6f,0f,2f),
-        new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f),
+        new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//無
+        new SkillBase(1,0,"劈砍",1.4f,10,1f,1,0,0.25f,2f,1),
+        new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f,1),//size=位移距離
+        new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f,1),
+        new SkillBase(4,20,"閃現",1f,0f,1f,1,1f,0f,2f,1),
+        new SkillBase(5,40,"新月斬",1.2f,6,0.8f,1,1f,0.1f,2f,1),
+        new SkillBase(6,0,"弦月斬",1.2f,12,1.1f,1,1f,0.1f,2f,1),
+        new SkillBase(7,0,"明月斬",1.2f,20,1.4f,1,1f,0.1f,2f,1),
+        new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f,2f,1),
+        new SkillBase(9,0,"飛箭",0.2f,3,1f,1,0.6f,0f,2f,1),
+        new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
     };
     //技能介紹
     [NonSerialized]
@@ -129,9 +129,9 @@ public class ValueData : MonoBehaviour
 
     //已裝備技能欄位
     public SkillFieldBase[] SkillField = new SkillFieldBase[] {
-        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0),//滑鼠L
-        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0),//滑鼠R
-        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0),//空白鍵
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//滑鼠L
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//滑鼠R
+        new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//空白鍵
     };
 
     //裝備總表
@@ -253,7 +253,7 @@ public class ValueData : MonoBehaviour
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost + WeaponField[id].Cost);
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id].Crit;
             SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id].CritDmg;
-            UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillIntro[SkillField[id].ID]);
+            UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillField[id].Level, SkillIntro[SkillField[id].ID]);
         }
     }
 
@@ -391,7 +391,7 @@ public class ValueData : MonoBehaviour
             {
                 WeaponField[i].Damage = 1 + (money * 0.01f);
                 SkillFieldValueUpdate();
-                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Cost, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].CritDmg, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
+                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Cost, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].CritDmg, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
             }
         }
     }
@@ -565,8 +565,9 @@ public class SkillBase
     public float Crit { get; set; }     // 暴擊率
     public float CritDmg { get; set; }
     public int Price { get; set; }      // 價格
+    public int Level { get; set; }
 
-    public SkillBase(int id, int price,string name, float maxcd, float damage, float size, float speed, float cost, float crit, float critdmg)
+    public SkillBase(int id, int price,string name, float maxcd, float damage, float size, float speed, float cost, float crit, float critdmg, int level)
     {
         ID = id;
         Name = name;
@@ -578,6 +579,7 @@ public class SkillBase
         Crit = crit;
         CritDmg = critdmg;
         Price = price;
+        Level = level;
     }
 }
 
@@ -594,8 +596,9 @@ public class SkillFieldBase
     public float Cost { get; set; }
     public float Crit { get; set; }
     public float CritDmg { get; set; }
+    public int Level { get; set; }
 
-    public SkillFieldBase(int id, string name, float nowcd, float maxcd, float damage, float size, float speed, float cost, float crit, float critdmg)
+    public SkillFieldBase(int id, string name, float nowcd, float maxcd, float damage, float size, float speed, float cost, float crit, float critdmg, int level)
     {
         ID = id;
         Name = name;
@@ -607,6 +610,7 @@ public class SkillFieldBase
         Cost = cost;
         Crit = crit;
         CritDmg = critdmg;
+        Level = level;
     }
 }
 

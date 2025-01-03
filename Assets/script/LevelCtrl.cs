@@ -6,11 +6,12 @@ using UnityEngine.SceneManagement;
 public class LevelCtrl : MonoBehaviour
 {
     private static LevelCtrl instance;
-    public int nowLevel = 0;//當前關卡編號
-    public PrizeBase nowPrize;//當前關卡通關後會獲得的獎勵
+    public int nowclass = 0; // 當前章節編號
+    public int nowLevel = 0; // 當前關卡編號
+    public PrizeBase nowPrize; // 當前關卡通關後會獲得的獎勵
     public GameObject Enemys;
     GameObject ExitDoors;
-    public int leftEnemy;//剩餘敵人數量
+    public int leftEnemy; // 剩餘敵人數量
 
     public GameObject skillstorePrefab;
     public GameObject weaponstorePrefab;
@@ -69,8 +70,8 @@ public class LevelCtrl : MonoBehaviour
                 return;
             case PrizeBase.Money:
                 Debug.Log("金幣");
-                int min = 10 + 12 * nowLevel;
-                int max = 15 + 12 * nowLevel;
+                int min = 10 + 12 * nowclass;
+                int max = 15 + 12 * nowclass;
                 int _money = Random.Range(min, max);
                 GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
                 _itemMoney.GetComponent<Npc>().money = _money;
@@ -118,6 +119,8 @@ public class LevelCtrl : MonoBehaviour
         // 加載完成後執行某些操作
         //Debug.Log("場景加載完成！");
         nowLevel = level;
+        if (level == 1)
+            nowclass += 1;
         if (level != 0) // 戰鬥關卡抓取敵人
         {
             Enemys = GameObject.Find("Enemys");

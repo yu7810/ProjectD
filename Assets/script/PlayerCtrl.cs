@@ -20,7 +20,7 @@ public class PlayerCtrl : MonoBehaviour
     public ValueData valuedata;
     public Skill skill;
     GameObject ontriggerTarget; // 放碰到的物體
-    GameObject openedTarget; // 已經互動的NPC，用來開關對應UI
+    public GameObject openedTarget; // 已經互動的NPC，用來開關對應UI
     RaycastHit floorhit;
     public Vector3 playerToMouse;//滑鼠指到的座標
 
@@ -64,11 +64,12 @@ public class PlayerCtrl : MonoBehaviour
         isReload = false;
         valuedata.canBehurt = true;
         //初始技能
-        UICtrl.Instance.ChangeSkill_ID = 1;
+        UICtrl.Instance.ChangeSkill_ID[1] = 1;
+        UICtrl.Instance.ChangeSkill_ID[0] = 1;
         UICtrl.Instance.SelectSkillChangeField(0);
-        UICtrl.Instance.ChangeSkill_ID = 9;
+        UICtrl.Instance.ChangeSkill_ID[0] = 9;
         UICtrl.Instance.SelectSkillChangeField(1);
-        UICtrl.Instance.ChangeSkill_ID = 2;
+        UICtrl.Instance.ChangeSkill_ID[0] = 2;
         UICtrl.Instance.SelectSkillChangeField(2);
         //初始武器
         UICtrl.Instance.ChangeWeapon_ID = 0;
@@ -178,11 +179,6 @@ public class PlayerCtrl : MonoBehaviour
                 ontriggerTarget.GetComponent<Npc>().doNpc(true);
                 openedTarget = ontriggerTarget;
             }
-        }
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            UICtrl.Instance.showWeaponstore(false);
-            UICtrl.Instance.showSkillstore(false);
         }
     }
 

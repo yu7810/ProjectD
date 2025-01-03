@@ -15,6 +15,7 @@ public class Npc : MonoBehaviour
     [Header("商店")]
     public bool startRandom; // 使否在生成時隨機商品
     public List<int> item = new List<int> { };
+    public List<int> itemlevel = new List<int> { };
 
     [Header("門")]
     public PrizeBase Prize;//獎勵類型
@@ -42,7 +43,7 @@ public class Npc : MonoBehaviour
                 UICtrl.Instance.nowWeaponstore = this.gameObject.GetComponent<Npc>();
                 break;
             case NpcType.Skillstore:
-                UICtrl.Instance.showSkillstore(Switch, item);
+                UICtrl.Instance.showSkillstore(Switch, item, itemlevel);
                 UICtrl.Instance.nowSkillstore = this.gameObject.GetComponent<Npc>();
                 break;
             case NpcType.Money:
@@ -78,12 +79,14 @@ public class Npc : MonoBehaviour
         }
         else
             return;
-        
+
+        itemlevel.Clear();
         for (int i = 0; i < 3; i++)
         {
             int randomIndex = Random.Range(0, _pool.Count);
             _item.Add(_pool[randomIndex]);
             _pool.RemoveAt(randomIndex);
+            itemlevel.Add(Random.Range(0, LevelCtrl.Instance.nowclass + 1));
         }
 
         item.Clear();
