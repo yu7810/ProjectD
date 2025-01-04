@@ -166,8 +166,14 @@ public class ValueData : MonoBehaviour
     //已裝備裝備
     public WeaponFieldBase[] WeaponField = new WeaponFieldBase[] {
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//滑鼠L
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//滑鼠R
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//空白鍵
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
     };
 
     //技能商店池
@@ -246,13 +252,13 @@ public class ValueData : MonoBehaviour
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
-            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown + WeaponField[id].Cooldown);
-            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (Power + WeaponField[id].Damage);
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * (AttackSize + WeaponField[id].Size);
-            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (SkillSpeed + WeaponField[id].Speed);
-            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost + WeaponField[id].Cost);
-            SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id].Crit;
-            SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id].CritDmg;
+            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
+            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (Power + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
+            SkillField[id].Size = Skill[SkillField[id].ID].Size * (AttackSize + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
+            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (SkillSpeed + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
+            SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
+            SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
             UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillField[id].Level, SkillIntro[SkillField[id].ID]);
         }
     }

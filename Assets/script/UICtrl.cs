@@ -153,6 +153,8 @@ public class UICtrl : MonoBehaviour
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Tab)) { // 天賦介面 Tab
+            if (settingUI.activeSelf)
+                return;
             if (ValueData.Instance.isUIopen)
             {
                 PassiveskilltreeUI.SetActive(false);
@@ -645,7 +647,7 @@ public class UICtrl : MonoBehaviour
             SkillFieldSelectUI.SetActive(false);
             ChangeSkill_ID[0] = -1;
             ChangeSkill_ID[1] = 0;
-            if (!settingUI.activeSelf)
+            if (!ValueData.Instance.isUIopen)
                 WeaponfieldUI.SetActive(false);
         }
     }
@@ -698,7 +700,7 @@ public class UICtrl : MonoBehaviour
             WeaponStoreUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             ChangeWeapon_ID = -1;
-            if(!settingUI.activeSelf)
+            if(!ValueData.Instance.isUIopen)
                 WeaponfieldUI.SetActive(false);
         }
         

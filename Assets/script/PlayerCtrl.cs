@@ -78,6 +78,18 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.SelectWeaponChangeField(1);
         UICtrl.Instance.ChangeWeapon_ID = 0;
         UICtrl.Instance.SelectWeaponChangeField(2);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(3);
+        UICtrl.Instance.ChangeWeapon_ID = 1;
+        UICtrl.Instance.SelectWeaponChangeField(4);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(5);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(6);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(7);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.SelectWeaponChangeField(8);
         startPosition = Character.transform.localPosition;
     }
 
@@ -124,7 +136,7 @@ public class PlayerCtrl : MonoBehaviour
         //滑鼠L
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            if (valuedata.SkillField[0].ID == 0 || UICtrl.Instance.IsPointerOverUI(out GameObject uiElement))
+            if (valuedata.SkillField[0].ID == 0 || UICtrl.Instance.IsPointerOverUI(out GameObject uiElement) || Time.timeScale == 0)
                 return;
             if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost && canAttack)
             {
@@ -138,7 +150,7 @@ public class PlayerCtrl : MonoBehaviour
         //滑鼠R
         if (Input.GetKey(KeyCode.Mouse1))
         {
-            if (valuedata.SkillField[1].ID == 0)
+            if (valuedata.SkillField[1].ID == 0 || Time.timeScale == 0)
                 return;
             if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost && canAttack)
             {
@@ -152,7 +164,7 @@ public class PlayerCtrl : MonoBehaviour
         //空白鍵
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (valuedata.SkillField[2].ID == 0)
+            if (valuedata.SkillField[2].ID == 0 || Time.timeScale == 0)
                 return;
             if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost && canAttack)
             {
@@ -166,7 +178,7 @@ public class PlayerCtrl : MonoBehaviour
         //互動鍵E
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!ontriggerTarget || !canMove)
+            if (!ontriggerTarget || !canMove || Time.timeScale == 0)
                 return;
             if (openedTarget != null && openedTarget == ontriggerTarget)
             {
