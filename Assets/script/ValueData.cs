@@ -253,9 +253,9 @@ public class ValueData : MonoBehaviour
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
             SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
-            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (Power + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * (AttackSize + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
-            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (SkillSpeed + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (1 + Power + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
+            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
+            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
             SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
@@ -529,6 +529,15 @@ public class ValueData : MonoBehaviour
         PlayerCtrl.Instance.canAttack = true;
         PlayerCtrl.Instance.isReload = false;
         _reloadAP = null;
+    }
+
+    // 判斷該技能欄位是否擁有指定裝備
+    public bool isHaveweaponid(int field, int id)
+    {
+        if(WeaponField[field * 3].ID == id || WeaponField[field * 3 + 1].ID == id || WeaponField[field * 3 + 2].ID == id)
+            return true;
+        else
+            return false;
     }
 
 }

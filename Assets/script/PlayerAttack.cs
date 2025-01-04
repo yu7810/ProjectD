@@ -9,7 +9,6 @@ public class PlayerAttack : MonoBehaviour
     public GameObject AttackParticle;
     private SkillFieldBase thisSkill;
     private int _fidleid = -1;
-    private WeaponFieldBase thisWeapon;
     public float dmg;
     float crit;
     public List<GameObject> passTarget = new List<GameObject>();
@@ -101,7 +100,7 @@ public class PlayerAttack : MonoBehaviour
                 _dmg += distance * 2;
             }
         }
-        if(thisWeapon.ID == 8) // 武器8
+        if(ValueData.Instance.isHaveweaponid(_fidleid,8)) // 武器8
         {
             if (ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Cold))
                 _dmg *= 1 + ((Target.Count -1) * 0.2f);
@@ -113,13 +112,6 @@ public class PlayerAttack : MonoBehaviour
         {
             _dmg *= thisSkill.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
-
-            //裝備5能力
-            //if (thisWeapon.ID == 5 && ValueData.Instance.SkillField[_fidleid].nowCD >= 0.3f)
-            //{
-            //    float reducevalue = ValueData.Instance.SkillField[_fidleid].nowCD - 0.3f;
-            //    ValueData.Instance.doCooldown(ValueData.Instance.SkillField[_fidleid], reducevalue);
-            //}
 
             //天賦16能力
             if (ValueData.Instance.PassiveSkills[16])
@@ -166,7 +158,6 @@ public class PlayerAttack : MonoBehaviour
             if(_fidleid != value)
             {
                 _fidleid = value;
-                thisWeapon = ValueData.Instance.WeaponField[fidleid];
                 thisSkill = ValueData.Instance.SkillField[fidleid];
                 dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
                 crit = thisSkill.Crit;

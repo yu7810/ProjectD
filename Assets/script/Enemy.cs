@@ -129,7 +129,7 @@ public class Enemy : MonoBehaviour
         LevelCtrl.Instance.enemycheck();
         if (Filed != -1)
         {
-            if (ValueData.Instance.WeaponField[Filed].ID == 9) //裝備9能力
+            if (ValueData.Instance.isHaveweaponid(Filed, 9)) //裝備9能力
             {
                 int moneyadd = Random.Range(0, 4);
                 money[0] *= moneyadd;

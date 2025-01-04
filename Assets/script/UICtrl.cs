@@ -545,6 +545,13 @@ public class UICtrl : MonoBehaviour
             ChangeWeapon_ID = target;
             isSpendmoney = true;
             WeaponFieldSelectUI.SetActive(true);
+            // 顯示已有裝備欄位的選擇UI
+            int nowweaponfield = WeaponfieldUI.transform.childCount;
+            for (int i = 0; i < nowweaponfield; i++)
+            {
+                bool havefield = WeaponfieldUI.transform.GetChild(i).gameObject.activeSelf;
+                WeaponFieldSelectUI.transform.GetChild(i).gameObject.SetActive(havefield);
+            }
         }
     }
     public void SelectWeaponChangeField(int Field)

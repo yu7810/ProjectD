@@ -87,7 +87,7 @@ public class Skill : MonoBehaviour
                 break;
         }
 
-        if(ValueData.Instance.WeaponField[Fieldid].ID == 7) //武器7的效果
+        if(ValueData.Instance.isHaveweaponid(Fieldid, 7)) //武器7的效果
         {
             foreach (SkillTagType tag in ValueData.Instance.SkillTag[Skillid])
             {
@@ -105,7 +105,7 @@ public class Skill : MonoBehaviour
                 }
             }
         }
-        if (ValueData.Instance.WeaponField[Fieldid].ID == 6 && usedTime < 2) //武器6效果
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 6) && usedTime < 2) //武器6效果
         {
             StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
         }
@@ -236,12 +236,12 @@ public class Skill : MonoBehaviour
     }
     void Waterball(int Fieldid)
     {
-        float _cost = ValueData.Instance.AP/2 * ValueData.Instance.Cost;
+        float _cost = ValueData.Instance.AP/2 * (1 + ValueData.Instance.Cost + ValueData.Instance.WeaponField[Fieldid * 3].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Cost);
         ValueData.Instance.GetAp(-_cost);
-        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * ValueData.Instance.Power;
-        StartCoroutine(waterball(Fieldid, _cost));
+        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+        StartCoroutine(waterball(Fieldid));
     }
-    IEnumerator waterball(int Fieldid, float _dmg)
+    IEnumerator waterball(int Fieldid)
     {
         Vector3 targetPos = ValueData.Instance.Player.transform.position;
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
