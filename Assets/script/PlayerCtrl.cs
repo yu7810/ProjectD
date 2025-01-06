@@ -64,7 +64,7 @@ public class PlayerCtrl : MonoBehaviour
         isReload = false;
         valuedata.canBehurt = true;
         //初始技能
-        UICtrl.Instance.ChangeSkill_ID[1] = 1;
+        UICtrl.Instance.ChangeSkill_ID[1] = 0;//初始技能等級
         UICtrl.Instance.ChangeSkill_ID[0] = 1;
         UICtrl.Instance.SelectSkillChangeField(0);
         UICtrl.Instance.ChangeSkill_ID[0] = 9;
@@ -80,7 +80,7 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.SelectWeaponChangeField(2);
         UICtrl.Instance.ChangeWeapon_ID = 0;
         UICtrl.Instance.SelectWeaponChangeField(3);
-        UICtrl.Instance.ChangeWeapon_ID = 1;
+        UICtrl.Instance.ChangeWeapon_ID = 0;
         UICtrl.Instance.SelectWeaponChangeField(4);
         UICtrl.Instance.ChangeWeapon_ID = 0;
         UICtrl.Instance.SelectWeaponChangeField(5);
@@ -182,8 +182,7 @@ public class PlayerCtrl : MonoBehaviour
                 return;
             if (openedTarget != null && openedTarget == ontriggerTarget)
             {
-                UICtrl.Instance.showWeaponstore(false);
-                UICtrl.Instance.showSkillstore(false);
+                ontriggerTarget.GetComponent<Npc>().doNpc(false);
                 openedTarget = null;
             }
             else if (ontriggerTarget.tag == "NPC")
@@ -203,7 +202,7 @@ public class PlayerCtrl : MonoBehaviour
                 if (ontriggerTarget.TryGetComponent<Npc>(out Npc _npc))
                 {
                     if (_npc.NameUI)
-                        _npc.NameUI.SetActive(false);
+                        _npc.NameUI.gameObject.SetActive(false);
                 }
             }
             ontriggerTarget = other.gameObject;
@@ -211,7 +210,7 @@ public class PlayerCtrl : MonoBehaviour
             {
                 if (npc.NameUI)
                 {
-                    npc.NameUI.SetActive(true);
+                    npc.NameUI.gameObject.SetActive(true);
                     npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
                 }
                     
@@ -231,7 +230,7 @@ public class PlayerCtrl : MonoBehaviour
             if (other.TryGetComponent<Npc>(out Npc npc))
             {
                 if (npc.NameUI)
-                    npc.NameUI.SetActive(false);
+                    npc.NameUI.gameObject.SetActive(false);
             }
             if (ontriggerTarget == other.gameObject)
                 ontriggerTarget = null;

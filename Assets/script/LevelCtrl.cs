@@ -17,6 +17,7 @@ public class LevelCtrl : MonoBehaviour
     public GameObject weaponstorePrefab;
     public GameObject itemMoney;
     public GameObject itemPassivepoint;
+    public GameObject itemWeapon;
 
     //關卡池
     public int[][] Level = new int[][] // [等級][關卡ID]
@@ -74,7 +75,10 @@ public class LevelCtrl : MonoBehaviour
                 int max = 15 + 12 * nowclass;
                 int _money = Random.Range(min, max);
                 GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
-                _itemMoney.GetComponent<Npc>().money = _money;
+                Npc npc = _itemMoney.GetComponent<Npc>();
+                npc.money = _money;
+                npc.Name = _money + " 金幣";
+                npc.showName();
                 break;
         }
     }
@@ -175,6 +179,19 @@ public class LevelCtrl : MonoBehaviour
             yield return new WaitForSeconds(0.05f);
         }
     }
+
+    //生成裝備道具
+    public void doItemweapon(int ID)
+    {
+        Vector3 p = ValueData.Instance.Player.transform.position;
+        p.y = 0;
+        GameObject item = Instantiate(itemWeapon, p, itemWeapon.transform.rotation);
+        Npc npc = item.GetComponent<Npc>();
+        npc.item.Add(ID);
+        npc.Name = ValueData.Instance.Weapon[ID].Name;
+        npc.showName();
+    }
+
 
     //單例實體
     public static LevelCtrl Instance

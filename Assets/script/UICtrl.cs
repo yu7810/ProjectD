@@ -26,10 +26,14 @@ public class UICtrl : MonoBehaviour
     public GameObject UpgradeSys;//UpgradeSystem
     public GameObject GameOverUI;
     public GameObject SkillStoreUI;
+    public GameObject SkillStoreReloadBtn; // 重骰商品按鈕
     public GameObject WeaponStoreUI;
+    public GameObject WeaponStoreReloadBtn; // 重骰商品按鈕
+    public GameObject WeaponBoxUI;
     public GameObject PassiveskilltreeUI;
     public Transform SkillStoreContent;//商店內容頁父物件
     public Transform WeaponStoreContent;
+    public Transform WeaponBoxContent;
     public GameObject SkillFieldSelectUI;//選擇技能要放的欄位
     public GameObject WeaponFieldSelectUI;//選擇技能要放的欄位
     public GameObject StoreskillbuttonPrefab;
@@ -118,6 +122,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI passiveskillPoint;//天賦點數
     public Npc nowSkillstore; // 儲存現在開的商店，用於重骰等功能
     public Npc nowWeaponstore;
+    public int nowSelectitem; // 當前選擇item的list編號
     public GameObject settingUI;
 
     private EventSystem eventSystem;//滑鼠射線用
@@ -486,7 +491,8 @@ public class UICtrl : MonoBehaviour
         }
     }
 
-    public void ChangeSkill(int target , int level) {
+    // 點擊商店的商品時
+    public void ChangeSkill(int target , int level, int itemListID = 0) {
         if (target < 0)
             return;
         if (ValueData.Instance.Skill[target].Price > ValueData.Instance.money)
@@ -502,12 +508,31 @@ public class UICtrl : MonoBehaviour
         else {
             ChangeSkill_ID[0] = target;
             ChangeSkill_ID[1] = level;
+            nowSelectitem = itemListID;
             isSpendmoney = true;
             SkillFieldSelectUI.SetActive(true);
         }
     }
+    // 點擊要放的欄位時
     public void SelectSkillChangeField(int Field) {
         SkillFieldSelectUI.SetActive(false);
+
+        int oldlv = ValueData.Instance.SkillField[Field].Level;
+        int newlv = ChangeSkill_ID[1];
+        //如果新技能等級<舊技能，被擠掉的裝備變成地上的寶箱
+        if (newlv < oldlv)
+        {
+            for(int i= oldlv; i> newlv; i--)
+            {
+                if(ValueData.Instance.WeaponField[Field * 3 + (i - 1)].ID != 0)
+                {
+                    LevelCtrl.Instance.doItemweapon(ValueData.Instance.WeaponField[Field * 3 + (i - 1)].ID);
+                    ChangeWeapon_ID = 0;
+                    SelectWeaponChangeField(Field * 3 + (i - 1));
+                }
+            }
+        }
+
         ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID[0]].ID;
         ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID[0]].Name;
         ValueData.Instance.SkillField[Field].Level = ChangeSkill_ID[1];
@@ -527,12 +552,19 @@ public class UICtrl : MonoBehaviour
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
         }
+        if (nowSkillstore != null && ChangeSkill_ID[0] != 0) // 如果當前為開啟技能商店，則從該商店移除該商品
+        {
+            nowSkillstore.item.RemoveAt(nowSelectitem);
+            nowSkillstore.doNpc(true);
+        }
         ChangeSkill_ID[0] = -1;
     }
-    public void ChangeWeapon(int target){
+
+    // 點擊商店的商品時
+    public void ChangeWeapon(int target , bool isCostmoney = true , int itemListID = 0){
         if (target < 0)
             return;
-        if (ValueData.Instance.Weapon[target].Price > ValueData.Instance.money)
+        if (ValueData.Instance.Weapon[target].Price > ValueData.Instance.money && isCostmoney)
         {
             Debug.Log("金幣不足");
             return;
@@ -543,20 +575,31 @@ public class UICtrl : MonoBehaviour
         }
         else {
             ChangeWeapon_ID = target;
-            isSpendmoney = true;
+            nowSelectitem = itemListID;
+            if (isCostmoney)
+                isSpendmoney = true;
+            else
+                isSpendmoney = false;
             WeaponFieldSelectUI.SetActive(true);
             // 顯示已有裝備欄位的選擇UI
             int nowweaponfield = WeaponfieldUI.transform.childCount;
             for (int i = 0; i < nowweaponfield; i++)
             {
                 bool havefield = WeaponfieldUI.transform.GetChild(i).gameObject.activeSelf;
-                WeaponFieldSelectUI.transform.GetChild(i).gameObject.SetActive(havefield);
+                GameObject thisfield = WeaponFieldSelectUI.transform.GetChild(i).gameObject;
+                thisfield.SetActive(havefield);
             }
         }
     }
+    // 點擊要放的欄位時
     public void SelectWeaponChangeField(int Field)
     {
         WeaponFieldSelectUI.SetActive(false);
+        // 被擠掉的裝備變成裝備寶箱
+        if(ValueData.Instance.WeaponField[Field].ID != 0)
+        {
+            LevelCtrl.Instance.doItemweapon(ValueData.Instance.WeaponField[Field].ID);
+        }
         ValueData.Instance.WeaponField[Field].ID = ValueData.Instance.Weapon[ChangeWeapon_ID].ID;
         ValueData.Instance.WeaponField[Field].Name = ValueData.Instance.Weapon[ChangeWeapon_ID].Name;
         ValueData.Instance.WeaponField[Field].Damage = ValueData.Instance.Weapon[ChangeWeapon_ID].Damage;
@@ -573,6 +616,22 @@ public class UICtrl : MonoBehaviour
         if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
+        }
+        
+        if(nowWeaponstore != null && ChangeWeapon_ID != 0) // 如果當前為開啟武器商店，則從該商店移除該商品
+        {
+            nowWeaponstore.item.RemoveAt(nowSelectitem);
+            nowWeaponstore.doNpc(true);
+            if (nowWeaponstore.npcType == NpcType.Weapon) // 如果是寶箱，且已無內容物，則刪除寶箱
+            {
+                if (nowWeaponstore.item.Count == 0)
+                {
+                    GameObject box = nowWeaponstore.gameObject;
+                    nowWeaponstore.doNpc(false);
+                    Destroy(box);
+                }
+            }
+            
         }
         ChangeWeapon_ID = -1;
     }
@@ -680,7 +739,8 @@ public class UICtrl : MonoBehaviour
                 icon.SetNativeSize();
             }
             int lv = itemlevel[i];
-            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID, lv));
+            int x = i;
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID, lv, x));
         }
         /*foreach (SkillBase skill in ValueData.Instance.Skill) {
             if (skill.ID != 0) {
@@ -732,18 +792,34 @@ public class UICtrl : MonoBehaviour
                 icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
                 icon.SetNativeSize();
             }
-            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID));
+            int x = i;
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, true,  x));
         }
-        /*foreach (WeaponBase weapon in ValueData.Instance.Weapon)
+    }
+    public void UpdateWeaponBox(List<int> itemID)
+    {
+        //清除舊內容
+        foreach (Transform child in WeaponBoxContent)
         {
-            if (weapon.ID != 0)
+            Destroy(child.gameObject);
+        }
+        if (itemID.Count <= 0)
+            return;
+        for (int i = 0; i < itemID.Count; i++)
+        {
+            GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponBoxContent);
+            WeaponBase weapon = ValueData.Instance.Weapon[itemID[i]];
+            newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, weapon.ID, weapon.Name, weapon.Cooldown, weapon.Cost, weapon.Damage, weapon.Crit, weapon.CritDmg, weapon.Size, weapon.Speed, 0, ValueData.Instance.WeaponIntro[weapon.ID]);
+            newButton.GetComponent<TipInfo>().UpdatePrice(0);
+            if (ValueData.Instance.WeaponIcon.Length > weapon.ID)
             {
-                GameObject newButton = Instantiate(StoreweaponbuttonPrefab, WeaponStoreContent);
-                newButton.GetComponent<TipInfo>().UpdateInfo(2, weapon.Name, weapon.Cooldown, weapon.Costdown, weapon.Damage, weapon.Crit, weapon.Size, weapon.Speed, ValueData.Instance.WeaponIntro[weapon.ID]);
-                newButton.transform.Find("Icon").GetComponent<Image>().sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-                newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID));
+                Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
+                icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
+                icon.SetNativeSize();
             }
-        }*/
+            int x = i;
+            newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, false, x));
+        }
     }
 
     //滑鼠射線
@@ -809,8 +885,7 @@ public class UICtrl : MonoBehaviour
             return;
         if (!nowWeaponstore.startRandom)
             return;
-        ValueData.Instance.money -= 5;
-        UpdateMoneyUI();
+        ValueData.Instance.GetMoney(-5);
         nowWeaponstore.RandomItem();
         nowWeaponstore.doNpc(true);
     }
@@ -822,8 +897,7 @@ public class UICtrl : MonoBehaviour
             return;
         if (!nowSkillstore.startRandom)
             return;
-        ValueData.Instance.money -= 5;
-        UpdateMoneyUI();
+        ValueData.Instance.GetMoney(-5);
         nowSkillstore.RandomItem();
         nowSkillstore.doNpc(true);
     }
@@ -841,11 +915,32 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.passiveskillPoint = 0;
         ValueData.Instance.PlayerValueUpdate();
         PlayerCtrl.Instance.Start();
-        for(int x=0;x<3;x++)
+        for(int x=0;x<WeaponfieldUI.transform.childCount;x++)
         {
             ChangeWeapon_ID = 0;
             SelectWeaponChangeField(x);
         }
+    }
+
+    // 開啟地上的裝備寶箱時
+    public void showWeaponbox(bool Switch, List<int> itemID = null)
+    {
+        if (Switch)
+        {
+            WeaponBoxUI.SetActive(true);
+            UpdateWeaponBox(itemID);
+            ChangeWeapon_ID = -1;
+            WeaponfieldUI.SetActive(true);
+        }
+        else
+        {
+            WeaponBoxUI.SetActive(false);
+            WeaponFieldSelectUI.SetActive(false);
+            ChangeWeapon_ID = -1;
+            if (!ValueData.Instance.isUIopen)
+                WeaponfieldUI.SetActive(false);
+        }
+
     }
 
 }

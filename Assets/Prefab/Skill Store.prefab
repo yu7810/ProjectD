@@ -5148,11 +5148,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   npcType: 2
   Name: "\u6280\u80FD\u5546\u5E97"
-  NameUI: {fileID: 311966304705622390}
+  NameUI: {fileID: 2037111516383295344}
   money: 0
   passivepoint: 0
   startRandom: 0
   item: 
+  itemlevel: 
   Prize: 0
   Level: 0
 --- !u!1 &3761121554355402657

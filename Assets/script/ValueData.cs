@@ -84,15 +84,15 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//無
-        new SkillBase(1,0,"劈砍",1.4f,10,1f,1,0,0.25f,2f,1),
+        new SkillBase(1,20,"劈砍",1.4f,10,1f,1,0,0.25f,2f,1),
         new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f,1),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f,1),
         new SkillBase(4,20,"閃現",1f,0f,1f,1,1f,0f,2f,1),
-        new SkillBase(5,40,"新月斬",1.2f,6,0.8f,1,1f,0.1f,2f,1),
-        new SkillBase(6,0,"弦月斬",1.2f,12,1.1f,1,1f,0.1f,2f,1),
-        new SkillBase(7,0,"明月斬",1.2f,20,1.4f,1,1f,0.1f,2f,1),
+        new SkillBase(5,40,"新月斬",1.8f,6,0.8f,1,0f,0.1f,2f,1),
+        new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
+        new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),
         new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f,2f,1),
-        new SkillBase(9,0,"飛箭",0.2f,3,1f,1,0.6f,0f,2f,1),
+        new SkillBase(9,20,"飛箭",0.2f,3,1f,1,0.6f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
     };
     //技能介紹
@@ -180,7 +180,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> skillstorePool = new List<int>()
     {
-        2,4,5,8,10
+        1,2,4,5,8,9,10
     };
     //裝備商店池
     [NonSerialized]
@@ -260,6 +260,22 @@ public class ValueData : MonoBehaviour
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
             SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
             UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillField[id].Level, SkillIntro[SkillField[id].ID]);
+            
+            // 關閉該技能所有裝備欄位]
+            for (int i = 0; i < 3; i++)
+            {
+                UICtrl.Instance.WeaponfieldUI.transform.GetChild(id * 3 + i).gameObject.SetActive(false);
+            }
+            int Lv = SkillField[id].Level;
+            if (Lv >= 0 && Lv <= 3) // 依等級開啟該技能裝備欄位，最多3級
+            {
+                for (int i = 0; i < Lv; i++)
+                {
+                    UICtrl.Instance.WeaponfieldUI.transform.GetChild(id * 3 + i).gameObject.SetActive(true);
+                }
+            }
+            else
+                Debug.Log("技能等級不在預設範圍內");
         }
     }
 
