@@ -18,6 +18,7 @@ public class LevelCtrl : MonoBehaviour
     public GameObject itemMoney;
     public GameObject itemPassivepoint;
     public GameObject itemWeapon;
+    public GameObject itemSkill;
 
     //關卡池
     public int[][] Level = new int[][] // [等級][關卡ID]
@@ -191,7 +192,17 @@ public class LevelCtrl : MonoBehaviour
         npc.Name = ValueData.Instance.Weapon[ID].Name;
         npc.showName();
     }
-
+    public void doItemskill(int ID, int Lv)
+    {
+        Vector3 p = ValueData.Instance.Player.transform.position;
+        p.y = 0;
+        GameObject item = Instantiate(itemSkill, p, itemSkill.transform.rotation);
+        Npc npc = item.GetComponent<Npc>();
+        npc.item.Add(ID);
+        npc.itemlevel.Add(Lv);
+        npc.Name = ValueData.Instance.Skill[ID].Name + " Lv." + Lv;
+        npc.showName();
+    }
 
     //單例實體
     public static LevelCtrl Instance

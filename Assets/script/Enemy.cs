@@ -42,6 +42,8 @@ public class Enemy : MonoBehaviour
         m_Animator = GetComponent<Animator>();
         Hp = maxHp;
         canBeHit = true;
+        if (hpUI)
+            hpUI.gameObject.SetActive(false);
         if (gameObject.tag == "Barrel" || gameObject.tag == "Bell")
         {
             C = Mesh.transform.GetComponent<MeshRenderer>().material.GetColor("_EmissionColor");
@@ -95,14 +97,19 @@ public class Enemy : MonoBehaviour
         if (NoticeRange && NoticeRange.activeSelf)
             StartAction();
         if (immortal)
-            beAttack();
+        {
+            //beAttack();
+        }
         else if (Hp > Dmg)
         {
+            if (Hp == maxHp && hpUI) // 首次受擊時顯示HPUI
+                hpUI.gameObject.SetActive(true);
             Hp -= Dmg;
             hpUI.value = Hp / maxHp;
             beAttack();
         }
-        else {
+        else
+        {
             Hp = 0;
             immortal = true;
             hpUI.transform.parent.gameObject.SetActive(false);
@@ -125,8 +132,11 @@ public class Enemy : MonoBehaviour
 
     public void Die(int Filed = -1) {
         //UICtrl.Instance.GetEXP(EXP);
-        LevelCtrl.Instance.leftEnemy -= 1;
-        LevelCtrl.Instance.enemycheck();
+        if (enemyType != EnemyType.Barrel)
+        {
+            LevelCtrl.Instance.leftEnemy -= 1;
+            LevelCtrl.Instance.enemycheck();
+        }
         if (Filed != -1)
         {
             if (ValueData.Instance.isHaveweaponid(Filed, 9)) //裝備9能力
@@ -136,7 +146,7 @@ public class Enemy : MonoBehaviour
                 money[1] *= moneyadd;
             }
         }
-        int _money = Random.Range(money[0], money[1]);
+        int _money = Random.Range(money[0], money[1]+1);
         LevelCtrl.Instance.DropMoney(_money, transform.position, 0.5f);
 
         StopAllCoroutines();

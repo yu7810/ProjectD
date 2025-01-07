@@ -65,11 +65,11 @@ public class PlayerCtrl : MonoBehaviour
         valuedata.canBehurt = true;
         //初始技能
         UICtrl.Instance.ChangeSkill_ID[1] = 0;//初始技能等級
-        UICtrl.Instance.ChangeSkill_ID[0] = 1;
+        UICtrl.Instance.ChangeSkill_ID[0] = 0;
         UICtrl.Instance.SelectSkillChangeField(0);
-        UICtrl.Instance.ChangeSkill_ID[0] = 9;
+        UICtrl.Instance.ChangeSkill_ID[0] = 0;
         UICtrl.Instance.SelectSkillChangeField(1);
-        UICtrl.Instance.ChangeSkill_ID[0] = 2;
+        UICtrl.Instance.ChangeSkill_ID[0] = 0;
         UICtrl.Instance.SelectSkillChangeField(2);
         //初始武器
         UICtrl.Instance.ChangeWeapon_ID = 0;
@@ -226,7 +226,10 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (other.tag == "NPC")
         {
-            other.GetComponent<Npc>().doNpc(false);
+            if(UICtrl.Instance.nowSkillstore && UICtrl.Instance.nowSkillstore.gameObject == other.gameObject)
+                other.GetComponent<Npc>().doNpc(false);
+            if(UICtrl.Instance.nowWeaponstore && UICtrl.Instance.nowWeaponstore.gameObject == other.gameObject)
+                other.GetComponent<Npc>().doNpc(false);
             if (other.TryGetComponent<Npc>(out Npc npc))
             {
                 if (npc.NameUI)

@@ -138,15 +138,15 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"ªÅ¤â", 0, 0, 0, 0, 0, 0, 0),//Dmg¡BCD¡BSize¡BSpeed¡BCost¬Ò¬O­¿²v¡A1f=100%
-        new WeaponBase(1,RarityType.Normal,20,"ÅK¼C", 0.4f, -0.15f, 0, 0, 0, 0.1f, 0),
+        new WeaponBase(1,RarityType.Normal,20,"ÅK¼C", 0.2f, -0.15f, 0, -0.2f, 0, 0.1f, 0),
         new WeaponBase(2,RarityType.Normal,20,"ÅK¤}", 0, 0, 0 , 0.4f, -0.2f, 0, 0),
-        new WeaponBase(3,RarityType.Normal,20,"ÅK©ò", 0.4f, 0.2f, 0.5f, -0.2f, 0.4f, 0, 0),
-        new WeaponBase(4,RarityType.Magic,20,"¦u°]¤ü", 0, 0, 0, 0, 0, 0.05f, 0),
-        new WeaponBase(5,RarityType.Rare,60,"µLºÉ", 2f, 0.2f, -0.4f, -0.6f, 1f, 0.35f, 0),
-        new WeaponBase(6,RarityType.Rare,60,"­·¼É", 0.5f, 0, -0.25f, -0.4f, 0.7f, 0, 0),
-        new WeaponBase(7,RarityType.Rare,60,"ÁÉ³Õ¸qªÏ", 0, 0, -0.5f, 1f, 0.6f, 0, 0),
-        new WeaponBase(8,RarityType.Rare,60,"ºx´õ", 0, 1f, 1f, 0, 0, 0, 0),
-        new WeaponBase(9,RarityType.Magic,20,"©Û°]¿ß", 0, 0, 0, 0, 0, 0.05f, 0),
+        new WeaponBase(3,RarityType.Normal,20,"ÅK©ò", 0.3f, 0.2f, 0.35f, -0.2f, 0.3f, 0, 0),
+        new WeaponBase(4,RarityType.Magic,20,"¦u°]¤ü", 0, -0.1f, 0, 0, 0, 0, 0),
+        new WeaponBase(5,RarityType.Rare,60,"µLºÉ", 0.4f, 0.2f, -0.3f, -0.3f, 1f, 0.2f, 0.5f),
+        new WeaponBase(6,RarityType.Rare,60,"­·¼É", 0.5f, 0, -0.2f, -0.2f, 1f, 0, 0),
+        new WeaponBase(7,RarityType.Rare,60,"ÁÉ³Õ¸qªÏ", 0, -0.1f, -0.5f, 1f, 0.2f, 0, 0),
+        new WeaponBase(8,RarityType.Rare,60,"ºx´õ", -0.2f, 1f, 1f, 0, 0, 0, 0),
+        new WeaponBase(9,RarityType.Magic,20,"©Û°]¿ß", 0, -0.1f, 0, 0, 0, 0, 0),
     };
     //¸Ë³Æ¤¶²Ð
     [NonSerialized]
@@ -444,6 +444,8 @@ public class ValueData : MonoBehaviour
         }
         else // ¦©¦å
         {
+            if (!canBehurt)
+                return;
             value *= (1 - Damagereduction);
             if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // ¤Ñ½á10
             {

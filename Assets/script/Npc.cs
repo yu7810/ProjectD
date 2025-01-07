@@ -26,6 +26,7 @@ public class Npc : MonoBehaviour
     {
         if (startRandom)
             RandomItem();
+        showName();
     }
 
     public void doNpc(bool Switch) {
@@ -75,11 +76,18 @@ public class Npc : MonoBehaviour
                 }
                 break;
             case NpcType.Weapon:
-                UICtrl.Instance.showWeaponbox(Switch, item);
+                UICtrl.Instance.showBox(Switch, item);
                 if (Switch)
                     UICtrl.Instance.nowWeaponstore = this.gameObject.GetComponent<Npc>();
                 else if (!Switch)
                     UICtrl.Instance.nowWeaponstore = null;
+                break;
+            case NpcType.Skill:
+                UICtrl.Instance.showBox(Switch, item, itemlevel);
+                if (Switch)
+                    UICtrl.Instance.nowSkillstore = this.gameObject.GetComponent<Npc>();
+                else if (!Switch)
+                    UICtrl.Instance.nowSkillstore = null;
                 break;
         }
     }
@@ -127,4 +135,5 @@ public enum NpcType{
     Money,
     Passiveskill,
     Weapon,
+    Skill,
 }
