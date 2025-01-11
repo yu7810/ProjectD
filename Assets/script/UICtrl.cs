@@ -8,7 +8,6 @@ using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal;
 using System;
 
 public class UICtrl : MonoBehaviour
@@ -116,7 +115,6 @@ public class UICtrl : MonoBehaviour
     public Color vignetteColor; // Global Volume裡vignette的初始顏色
     public Color vignetteBehurtColor;
     public Volume volume; // Global Volume
-    public Vignette vignette;
     public Line line;
     public Transform LineFather;
     public TextMeshProUGUI passiveskillPoint;//天賦點數
@@ -145,8 +143,6 @@ public class UICtrl : MonoBehaviour
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
         UpdateMoneyUI();
-        if (volume.profile.TryGet(out vignette))
-            vignetteColor = vignette.color.value;
             
     }
 

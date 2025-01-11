@@ -87,7 +87,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(1,20,"劈砍",1.4f,10,1f,1,0,0.25f,2f,1),
         new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f,1),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f,1),
-        new SkillBase(4,20,"閃現",1f,0f,1f,1,1f,0f,2f,1),
+        new SkillBase(4,20,"閃現",0.5f,0f,1f,1,3f,0f,2f,1),
         new SkillBase(5,40,"新月斬",1.8f,6,0.8f,1,0f,0.1f,2f,1),
         new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),

@@ -107,7 +107,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 2
-  immortal: 1
+  immortal: 0
   Hp: 0
   maxHp: 20
   Attack: 0
@@ -116,7 +116,7 @@ MonoBehaviour:
   AttackRange: 0
   rotationSpeed: 0
   idleAnimation: 0
-  money: 0000000000000000
+  money: 0000000001000000
   Mesh: {fileID: 505971442272338187}
   hpUI: {fileID: 1380247593393322548}
   Bullet: {fileID: 0}
