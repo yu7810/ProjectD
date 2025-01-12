@@ -50,6 +50,7 @@ public class UICtrl : MonoBehaviour
     public Image ScreenMask;
 
     public GameObject Tip; // 說明窗相關
+    public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
     public GameObject Tip_line; // 美化UI用
     public GameObject Tip_affix; // 數值欄位的父物件
     public TextMeshProUGUI Tip_Name;
@@ -198,6 +199,8 @@ public class UICtrl : MonoBehaviour
         //Tip彈窗
         if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
         {
+            if (Tip.activeSelf)
+                return;
             Tip.SetActive(true);
             TipInfo _tipinfo = uiElement.GetComponent<TipInfo>();
             Tip_Name.text = _tipinfo.Name;
@@ -304,6 +307,7 @@ public class UICtrl : MonoBehaviour
                 else if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Unique)
                     Tip_Name.color = RarityColor_Unique;
             }
+            LayoutRebuilder.ForceRebuildLayoutImmediate(TiplayoutTransform);
         }
         else
         {
