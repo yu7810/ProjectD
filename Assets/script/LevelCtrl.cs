@@ -50,6 +50,7 @@ public class LevelCtrl : MonoBehaviour
 
         Vector3 p = ValueData.Instance.Player.transform.position;
         p.y = 0;
+        Npc npc;
 
         switch (nowPrize) {
             case PrizeBase.None:
@@ -58,7 +59,10 @@ public class LevelCtrl : MonoBehaviour
             case PrizeBase.PassivePoin:
                 Debug.Log("天賦點");
                 GameObject _itemPassivepoint = Instantiate(itemPassivepoint, p, itemPassivepoint.transform.rotation);
-                _itemPassivepoint.GetComponent<Npc>().passivepoint = 3;
+                npc = _itemPassivepoint.GetComponent<Npc>();
+                npc.passivepoint = 2;
+                npc.Name = 2 + " 天賦點";
+                npc.showName();
                 return;
             case PrizeBase.Skill:
                 Debug.Log("技能商店");
@@ -76,7 +80,7 @@ public class LevelCtrl : MonoBehaviour
                 int max = 15 + 12 * nowclass;
                 int _money = Random.Range(min, max);
                 GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
-                Npc npc = _itemMoney.GetComponent<Npc>();
+                npc = _itemMoney.GetComponent<Npc>();
                 npc.money = _money;
                 npc.Name = _money + " 金幣";
                 npc.showName();

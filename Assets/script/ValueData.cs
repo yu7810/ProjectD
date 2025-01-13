@@ -253,8 +253,8 @@ public class ValueData : MonoBehaviour
             if (_rageCount != null)
                 StopCoroutine(_rageCount);
         }
-        //ぱ结28
-        if (PassiveSkills[28])
+        //ぱ结14
+        if (PassiveSkills[14])
         {
             if (_restoreAP != null) 
             {
@@ -318,7 +318,7 @@ public class ValueData : MonoBehaviour
     private void Start()
     {
         _restoreAP = StartCoroutine(restoreAP());
-        _reloadAP = null;
+        Reload(false);
     }
 
     //ぱ结计璸衡
@@ -341,7 +341,7 @@ public class ValueData : MonoBehaviour
                 add_Cooldown -= 0.08f;
                 break;
             case 3:
-                add_maxRage -= 5;
+                add_maxRage -= 8;
                 break;
             case 4:
                 add_CritDmg += 0.1f;
@@ -535,12 +535,10 @@ public class ValueData : MonoBehaviour
             else
                 AP = 0;
 
-            if(PassiveSkills[28]) // ぱ结28
+            if(PassiveSkills[14]) // ぱ结14
             {
-                if (AP <= 1 && _reloadAP == null)
-                {
-                    _reloadAP = StartCoroutine(reloadAP());
-                }
+                if(AP < 0.1f)
+                    Reload(true);
             }
         }
     }
@@ -562,7 +560,21 @@ public class ValueData : MonoBehaviour
             yield return new WaitForSeconds(0.02f);
         }
     }
-    //ぱ结28
+
+    // 秨闽reload祘
+    public void Reload(bool _bool)
+    {
+        if (_bool)
+        {
+            if (_reloadAP == null)
+            {
+                _reloadAP = StartCoroutine(reloadAP());
+            }
+        }
+        else
+            _reloadAP = null;
+    }
+    //ぱ结14
     IEnumerator reloadAP()
     {
         PlayerCtrl.Instance.canAttack = false;
@@ -582,7 +594,7 @@ public class ValueData : MonoBehaviour
         }
         PlayerCtrl.Instance.canAttack = true;
         PlayerCtrl.Instance.isReload = false;
-        _reloadAP = null;
+        Reload(false);
     }
 
     //搭脖硄ノ

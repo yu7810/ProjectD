@@ -146,6 +146,13 @@ public class PlayerCtrl : MonoBehaviour
                 StartCoroutine(UICtrl.Instance.SkillCD(0));
                 skill.UseSkill(valuedata.SkillField[0].ID, 0);
             }
+            else if(valuedata.AP < valuedata.SkillField[0].Cost)
+            {
+                if (valuedata.PassiveSkills[14]) // 天賦14
+                {
+                    valuedata.Reload(true);
+                }
+            }
         }
         //滑鼠R
         if (Input.GetKey(KeyCode.Mouse1))
@@ -160,6 +167,13 @@ public class PlayerCtrl : MonoBehaviour
                 StartCoroutine(UICtrl.Instance.SkillCD(1));
                 skill.UseSkill(valuedata.SkillField[1].ID, 1);
             }
+            else if (valuedata.AP < valuedata.SkillField[1].Cost)
+            {
+                if (valuedata.PassiveSkills[14]) // 天賦14
+                {
+                    valuedata.Reload(true);
+                }
+            }
         }
         //空白鍵
         if (Input.GetKeyDown(KeyCode.Space))
@@ -173,6 +187,13 @@ public class PlayerCtrl : MonoBehaviour
                 UICtrl.Instance.UpdateSkillCD();
                 StartCoroutine(UICtrl.Instance.SkillCD(2));
                 skill.UseSkill(valuedata.SkillField[2].ID, 2);
+            }
+            else if (valuedata.AP < valuedata.SkillField[2].Cost)
+            {
+                if (valuedata.PassiveSkills[14]) // 天賦14
+                {
+                    valuedata.Reload(true);
+                }
             }
         }
         //互動鍵E
