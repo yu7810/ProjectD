@@ -15,12 +15,15 @@ public class ValueData : MonoBehaviour
     public GameObject moneyPrefab;
     private Coroutine _restoreAP; // 自然回魔
     private Coroutine _reloadAP; // 天賦28
+    private Coroutine _lostRage; // 盛怒自然衰退
+    private Coroutine _rageCount; // 盛怒衰退倒數
 
     //基底數值
     public int money;//身上持有的金幣數量
     public int passiveskillPoint = 0;//天賦點數
     public float base_maxAp = 10;
     public float base_maxHp = 30;
+    public float base_maxRage = 0;
     public float base_MoveSpeed = 3f;
     public float base_Power = 5;
     public float base_SkillSpeed = 1;
@@ -38,6 +41,7 @@ public class ValueData : MonoBehaviour
     //天賦數值
     public float add_maxAp;
     public float add_maxHp;
+    public float add_maxRage;
     public float add_MoveSpeed;
     public float add_Power;
     public float add_SkillSpeed;
@@ -51,6 +55,10 @@ public class ValueData : MonoBehaviour
     public float add_Damagereduction;
     public float add_Vision;
     public float add_BulletSpeed;
+    public float add_RagePower; // 天賦0給予的傷害加乘
+    public float add_RageCritdmg; // 天賦6給予的暴傷加乘
+    public float add_RageCooldown; // 天賦10給予的冷卻
+    public float add_RageMovespeed; // 天賦11給予的跑速
 
     //局外數值(預留)
 
@@ -61,6 +69,8 @@ public class ValueData : MonoBehaviour
     public float maxAP;
     public float HP;
     public float maxHP;
+    public float Rage; // 盛怒值
+    public float maxRage;
     public float EXP;
     public float maxEXP;
     public float Power;//基礎傷害倍率
@@ -76,6 +86,7 @@ public class ValueData : MonoBehaviour
     public float Damagereduction;//傷害減免%
     public float Vision;//視野範圍(FOV)
     public float BulletSpeed;//投射物飛行速度%
+    public float RageTime; // 盛怒當前倒數時間
 
     public Sprite[] SkillIcon;//技能icon
     public Sprite[] WeaponIcon;//武器icon
@@ -195,6 +206,7 @@ public class ValueData : MonoBehaviour
         //重製
         add_maxAp = 0;
         add_maxHp = 0;
+        add_maxRage = 0;
         add_MoveSpeed = 0;
         add_Power= 0;
         add_SkillSpeed = 0;
@@ -216,22 +228,31 @@ public class ValueData : MonoBehaviour
         //加總
         maxAP = base_maxAp + add_maxAp;
         maxHP = base_maxHp + add_maxHp;
-        Power = base_Power + add_Power;
-        MoveSpeed = 1 + add_MoveSpeed;
+        maxRage = base_maxRage + add_maxRage;
+        Power = base_Power + add_Power + add_RagePower;
+        MoveSpeed = 1 + add_MoveSpeed + add_RageMovespeed;
         SkillSpeed = base_SkillSpeed + add_SkillSpeed;
         EnemyTimer = base_EnemyTimer + add_EnemyTimer;
         AttackSize = base_AttackSize + add_AttackSize;
-        Cooldown = (base_Cooldown + add_Cooldown);
+        Cooldown = base_Cooldown + add_Cooldown + add_RageCooldown;
         Cost = (base_Cost + add_Cost);
         Crit = base_Crit + add_Crit;
-        CritDmg = base_CritDmg + add_CritDmg;
+        CritDmg = base_CritDmg + add_CritDmg + add_RageCritdmg;
         RestoreAP = base_RestoreAP + add_RestoreAP;
         Damagereduction = base_Damagereduction + add_Damagereduction;
         Vision = base_Vision + add_Vision;
         BulletSpeed = base_BulletSpeed + add_BulletSpeed;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
+        GetRage(0);
         virtualCamera.m_Lens.FieldOfView = Vision;
+        //天賦0
+        if (!PassiveSkills[0])
+        {
+            UICtrl.Instance.UI_Rage.SetActive(false);
+            if (_rageCount != null)
+                StopCoroutine(_rageCount);
+        }
         //天賦28
         if (PassiveSkills[28])
         {
@@ -252,11 +273,11 @@ public class ValueData : MonoBehaviour
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
-            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
-            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (1 + Power + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
-            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
-            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
+            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown) * (1 + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
+            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (1 + Power) * (1 + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
+            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
+            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
             SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
             UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillField[id].Level, SkillIntro[SkillField[id].ID]);
@@ -305,96 +326,111 @@ public class ValueData : MonoBehaviour
         switch (id)
         {
             case 0:
-                add_Power += 0.1f;
+                if (UICtrl.Instance.UI_Rage.activeSelf)
+                    return;
+                UICtrl.Instance.UI_Rage.SetActive(true);
+                if (_rageCount != null)
+                    StopCoroutine(_rageCount);
+                _rageCount = StartCoroutine(rageCount());
+                GetRage(0);
                 break;
             case 1:
-                add_Power += 0.1f;
+                add_Cooldown -= 0.08f;
                 break;
             case 2:
-                add_Power += 0.1f;
+                add_Cooldown -= 0.08f;
                 break;
             case 3:
-                add_Cooldown -= 0.08f;
+                add_maxRage -= 5;
                 break;
             case 4:
-                add_Cooldown -= 0.08f;
+                add_CritDmg += 0.1f;
                 break;
             case 5:
-                add_Cooldown -= 0.08f;
+                add_CritDmg += 0.1f;
                 break;
             case 6:
-                add_Cooldown -= 0.08f;
-                break;
-            case 7:
-                add_maxHp += 1f;
-                break;
-            case 8:
-                add_maxHp += 1f;
-                break;
-            case 9:
-                add_maxHp += 1f;
-                break;
-            case 10:
-                add_Cost += 1f;
-                add_Damagereduction -= 1f;
-                break;
-            case 12:
-                add_Crit += 0.05f;
-                break;
-            case 13:
-                add_Crit += 0.05f;
-                break;
-            case 14:
-                add_Crit += 0.05f;
-                break;
-            case 15:
-                add_Crit += 0.05f;
-                break;
-            case 16:
                 
                 break;
-            case 18:
+            case 7:
+                add_maxRage += 5;
+                break;
+            case 8:
+                add_maxRage += 5;
+                break;
+            case 9:
+                
+                break;
+            case 10:
+                
+                break;
+            case 11:
+
+                break;
+            case 12:
                 add_Vision += 5f;
+                add_MoveSpeed += 0.05f;
+                break;
+            case 13:
+                add_Vision += 5f;
+                add_MoveSpeed += 0.05f;
+                break;
+            case 14:
+                
+                break;
+            case 15:
+                add_Power += 0.1f;
+                break;
+            case 16:
+                add_Power += 0.1f;
+                break;
+            case 17:
+                add_Power += 0.1f;
+                break;
+            case 18:
+                
                 break;
             case 19:
-                add_Vision += 5f;
+                
                 break;
             case 20:
-                add_Vision += 5f;
+                
+                break;
+            case 21:
+
                 break;
             case 22:
-                add_BulletSpeed += 0.25f;
+                
                 break;
             case 23:
-                add_BulletSpeed += 0.25f;
+                
                 break;
             case 24:
-                add_BulletSpeed += 0.25f;
+                add_maxAp += 2;
+                break;
+            case 25:
+                add_maxAp += 2;
                 break;
             case 26:
-                add_maxAp += 1f;
+                add_maxAp += 2;
                 break;
             case 27:
-                add_maxAp += 1f;
+                
                 break;
             case 28:
                 
                 break;
             case 29:
-                add_maxAp += 1f;
+                add_maxAp += 2;
                 break;
             case 30:
-                add_RestoreAP += 0.5f;
+                add_maxAp += 2;
                 break;
             case 31:
-                add_BulletSpeed += 0.6f;
+                
                 break;
             case 32:
-                add_MoveSpeed += 0.2f;
-                break;
-            case 33:
-                add_maxAp += 2;
-                add_maxHp += 2;
+                
                 break;
         }
     }
@@ -547,6 +583,92 @@ public class ValueData : MonoBehaviour
         PlayerCtrl.Instance.canAttack = true;
         PlayerCtrl.Instance.isReload = false;
         _reloadAP = null;
+    }
+
+    //加減盛怒通用
+    public void GetRage(float value)
+    {
+        if (value > 0) // 加
+        {
+            if (maxRage > Rage + value)
+                Rage += value;
+            else
+                Rage = maxRage;
+
+            RageTime = 5; // 重製盛怒衰退倒數
+            if(_lostRage != null)
+            {
+                StopCoroutine(_lostRage);
+                _lostRage = null;
+            }
+        }
+        else if(value < 0) // 減
+        {
+            if (Rage > -value)
+                Rage += value;
+            else
+                Rage = 0;
+        }
+        float valueRage = Rage / maxRage;
+        UICtrl.Instance.Value_Rage.fillAmount = valueRage;
+        UICtrl.Instance.maxrageUI.text = maxRage.ToString("0");
+        UICtrl.Instance.nowrageUI.text = Rage.ToString("0");
+
+        float mRage = Mathf.Floor(Rage);
+        add_RagePower = mRage * 0.05f;
+        if (PassiveSkills[6])
+            add_RageCritdmg = mRage * 0.04f;
+        if (PassiveSkills[10])
+            add_RageCooldown = mRage * -0.02f;
+        if(PassiveSkills[11])
+            add_RageMovespeed = mRage * 0.03f;
+        if (value != 0) // 避免死迴圈
+        {
+            PlayerValueUpdate();
+            SkillFieldValueUpdate();
+        }
+        
+    }
+    //盛怒倒數
+    IEnumerator rageCount()
+    { 
+        while(true)
+        {
+            if (RageTime > 0)
+            {
+                RageTime -= 0.02f;
+                yield return new WaitForSeconds(0.02f);
+            }
+            else
+            {
+                //RageTime = 0;
+                if (_lostRage == null && Rage > 0)
+                {
+                    _lostRage = StartCoroutine(lostRage());
+                }
+                    
+                yield return new WaitForFixedUpdate();
+            }
+        }
+        
+    }
+    //盛怒衰退
+    IEnumerator lostRage()
+    {
+        float value = 0.02f;
+        while (true)
+        {
+            if (Rage > 0)
+            {
+                GetRage(-value);
+                yield return new WaitForSeconds(value);
+            }
+            else
+            {
+                _lostRage = null;
+                yield break;
+            }
+        }
     }
 
     // 判斷該技能欄位是否擁有指定裝備

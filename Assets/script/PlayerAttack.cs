@@ -45,7 +45,7 @@ public class PlayerAttack : MonoBehaviour
                 Target.Add(other.gameObject);
             else
                 doDamage(other.gameObject);
-            
+
         }
         else if (other.transform.tag == "Wall" && isBullet)
         {
@@ -73,13 +73,14 @@ public class PlayerAttack : MonoBehaviour
         }
         else if (other.transform.tag == "EnemyAttack")
         {
-            if (ValueData.Instance.PassiveSkills[32]) // 天賦32
+            if (ValueData.Instance.PassiveSkills[9]) // 天賦9
             {
-                if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack))
+                if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack) || ValueData.Instance.Rage != ValueData.Instance.maxRage)
                     return;
                 if (other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged)
                 {
-                    Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
+                    //Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
+                    doDamage(other.gameObject);
                     Destroy(other.transform.parent.gameObject);
                 }
             }
@@ -113,7 +114,7 @@ public class PlayerAttack : MonoBehaviour
             _dmg *= thisSkill.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
 
-            //天賦16能力
+            //天賦16
             if (ValueData.Instance.PassiveSkills[16])
             {
                 for (int i = 0; i < 3; i++)
@@ -122,11 +123,21 @@ public class PlayerAttack : MonoBehaviour
                         ValueData.Instance.doCooldown(ValueData.Instance.SkillField[i], 1f);
                 }
             }
+            //天賦0
+            if (ValueData.Instance.PassiveSkills[0])
+            {
+                ValueData.Instance.GetRage(1);
+            }
         }
-        else
+        else // 未暴擊
+        {
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, false);
-        target.transform.GetComponent<Enemy>().Hurt(_dmg, _fidleid);
+            if(ValueData.Instance.PassiveSkills[3])
+                ValueData.Instance.GetRage(1);
+        }
 
+        if (target.transform.tag == "Barrel" || target.transform.tag == "Enemy" || target.transform.tag == "Bell")
+            target.transform.GetComponent<Enemy>().Hurt(_dmg, _fidleid);
         Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
 
         if (isBullet)

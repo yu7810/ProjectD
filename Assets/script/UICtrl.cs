@@ -48,6 +48,10 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI nowapUI;
     public TextMeshProUGUI maxapUI;
     public Image ScreenMask;
+    public GameObject UI_Rage; // 盛怒UI的最上層物件
+    public Image Value_Rage;
+    public TextMeshProUGUI nowrageUI;
+    public TextMeshProUGUI maxrageUI;
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -699,14 +703,14 @@ public class UICtrl : MonoBehaviour
     public void UpdateValueUI() {
         HP_text.text = ValueData.Instance.maxHP.ToString();
         AP_text.text = ValueData.Instance.maxAP.ToString();
-        Power_text.text = (ValueData.Instance.Power * 100).ToString();
-        Movespeed_text.text = (ValueData.Instance.MoveSpeed * 100).ToString();
-        SkillSpeed_text.text = (ValueData.Instance.SkillSpeed * 100).ToString();
+        Power_text.text = (ValueData.Instance.Power * 100).ToString("0");
+        Movespeed_text.text = (ValueData.Instance.MoveSpeed * 100).ToString("0");
+        SkillSpeed_text.text = (ValueData.Instance.SkillSpeed * 100).ToString("0");
         EnemyTimer_text.text = ValueData.Instance.EnemyTimer.ToString();
-        AttackSize_text.text = (ValueData.Instance.AttackSize * 100).ToString();
-        Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString();
-        Costdown_text.text = (ValueData.Instance.Cost * 100).ToString();
-        Crit_text.text = (ValueData.Instance.Crit * 100).ToString();
+        AttackSize_text.text = (ValueData.Instance.AttackSize * 100).ToString("0");
+        Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString("0");
+        Costdown_text.text = (ValueData.Instance.Cost * 100).ToString("0");
+        Crit_text.text = (ValueData.Instance.Crit * 100).ToString("0");
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
         Bulletspeed_text.text = (ValueData.Instance.BulletSpeed * 100).ToString("0");
