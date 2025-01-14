@@ -79,7 +79,6 @@ public class PlayerAttack : MonoBehaviour
                     return;
                 if (other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged)
                 {
-                    //Instantiate(AttackParticle, other.transform.position, AttackParticle.transform.rotation);
                     doDamage(other.gameObject);
                     Destroy(other.transform.parent.gameObject);
                 }
@@ -127,6 +126,13 @@ public class PlayerAttack : MonoBehaviour
             if (ValueData.Instance.PassiveSkills[0])
             {
                 ValueData.Instance.GetRage(1);
+            }
+            // 天賦19 被消耗
+            if (ValueData.Instance.PassiveSkills[19])
+            {
+                ValueData.Instance.add_ReloadCrit = 0;
+                ValueData.Instance.PlayerValueUpdate();
+                ValueData.Instance.SkillFieldValueUpdate();
             }
         }
         else // 未暴擊

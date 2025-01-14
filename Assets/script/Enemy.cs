@@ -146,6 +146,9 @@ public class Enemy : MonoBehaviour
                 money[1] *= moneyadd;
             }
         }
+        if (ValueData.Instance.PassiveSkills[27]) // 天賦27 擊殺回魔
+            ValueData.Instance.GetAp(ValueData.Instance.maxAP / 5);
+
         int _money = Random.Range(money[0], money[1]+1);
         LevelCtrl.Instance.DropMoney(_money, transform.position, 0.5f);
 

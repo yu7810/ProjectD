@@ -59,6 +59,10 @@ public class ValueData : MonoBehaviour
     public float add_RageCritdmg; // ぱ结6倒ぉ忌端
     public float add_RageCooldown; // ぱ结10倒ぉ玱
     public float add_RageMovespeed; // ぱ结11倒ぉ禲硉
+    public float add_ReloadCrit; // ぱ结19倒ぉ肂忌瞯
+    public float add_ReloadMovespeed; // ぱ结18倒ぉ禲硉
+    public float add_MaxapRestore; // ぱ结22 肂程臸臸確
+    public float add_ManaPower; // ぱ结23倒ぉ肂端甡
 
     //Ы计(箇痙)
 
@@ -228,17 +232,30 @@ public class ValueData : MonoBehaviour
         //羆
         maxAP = base_maxAp + add_maxAp;
         maxHP = base_maxHp + add_maxHp;
+        if (PassiveSkills[28]) 
+        {
+            maxAP *= 1.5f;
+            maxHP *= 0.5f;
+        }
         maxRage = base_maxRage + add_maxRage;
-        Power = base_Power + add_Power + add_RagePower;
-        MoveSpeed = 1 + add_MoveSpeed + add_RageMovespeed;
+        if (PassiveSkills[23]) // ぱ结23
+            add_ManaPower = Mathf.FloorToInt(maxAP) * 0.05f;
+        else
+            add_ManaPower = 0f;
+        Power = base_Power + add_Power + add_RagePower + add_ManaPower;
+        MoveSpeed = 1 + add_MoveSpeed + add_RageMovespeed + add_ReloadMovespeed;
         SkillSpeed = base_SkillSpeed + add_SkillSpeed;
         EnemyTimer = base_EnemyTimer + add_EnemyTimer;
         AttackSize = base_AttackSize + add_AttackSize;
         Cooldown = base_Cooldown + add_Cooldown + add_RageCooldown;
         Cost = (base_Cost + add_Cost);
-        Crit = base_Crit + add_Crit;
+        Crit = base_Crit + add_Crit + add_ReloadCrit;
         CritDmg = base_CritDmg + add_CritDmg + add_RageCritdmg;
-        RestoreAP = base_RestoreAP + add_RestoreAP;
+        if (PassiveSkills[22]) // ぱ结22
+            add_MaxapRestore = maxAP / 10;
+        else
+            add_MaxapRestore = 0;
+        RestoreAP = base_RestoreAP + add_RestoreAP + add_MaxapRestore;
         Damagereduction = base_Damagereduction + add_Damagereduction;
         Vision = base_Vision + add_Vision;
         BulletSpeed = base_BulletSpeed + add_BulletSpeed;
@@ -267,7 +284,8 @@ public class ValueData : MonoBehaviour
             if (_restoreAP == null)
                 _restoreAP = StartCoroutine(restoreAP());
         }
-            
+        GetHp(0);
+        GetAp(0);
     }
 
     //传猌竟м㊣㊣玡叫絋玂Τ穝筁PlayerValue
@@ -469,9 +487,7 @@ public class ValueData : MonoBehaviour
     //搭ネ㏑硄ノ
     public void GetHp(float value, bool useBehurtTimer = false)
     {
-        if (value == 0)
-            return;
-        else if (value > 0) // ﹀
+        if (value >= 0) // ﹀
         {
             if (HP < maxHP - value)
                 HP += value;
@@ -519,9 +535,7 @@ public class ValueData : MonoBehaviour
     //搭臸硄ノ
     public void GetAp(float value)
     {
-        if (value == 0)
-            return;
-        else if(value > 0) // 臸
+        if(value >= 0) // 臸
         {
             if (maxAP > AP + value)
                 AP += value;
@@ -579,9 +593,19 @@ public class ValueData : MonoBehaviour
     {
         PlayerCtrl.Instance.canAttack = false;
         PlayerCtrl.Instance.isReload = true;
+        if (PassiveSkills[18])
+        {
+            add_ReloadMovespeed = 0.2f;
+            PlayerValueUpdate();
+        }
+        
         while (AP < maxAP)
         {
-            float value = RestoreAP / 50 * 3;
+            float value;
+            if (PassiveSkills[20]) // ぱ结20
+                value = RestoreAP / 50 * 4;
+            else
+                value = RestoreAP / 50 * 2.5f;
             if (AP >= maxAP - value)
             {
                 AP = maxAP;
@@ -594,6 +618,12 @@ public class ValueData : MonoBehaviour
         }
         PlayerCtrl.Instance.canAttack = true;
         PlayerCtrl.Instance.isReload = false;
+        if (PassiveSkills[19])
+            add_ReloadCrit = 1f;
+        if (PassiveSkills[18])
+            add_ReloadMovespeed = 0;
+        PlayerValueUpdate();
+        SkillFieldValueUpdate();
         Reload(false);
     }
 

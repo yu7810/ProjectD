@@ -136,65 +136,17 @@ public class PlayerCtrl : MonoBehaviour
         //滑鼠L
         if (Input.GetKey(KeyCode.Mouse0))
         {
-            if (valuedata.SkillField[0].ID == 0 || UICtrl.Instance.IsPointerOverUI(out GameObject uiElement) || Time.timeScale == 0)
-                return;
-            if (valuedata.SkillField[0].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[0].Cost && canAttack)
-            {
-                valuedata.GetAp(-valuedata.SkillField[0].Cost);
-                valuedata.SkillField[0].nowCD = valuedata.SkillField[0].maxCD;
-                UICtrl.Instance.UpdateSkillCD();
-                StartCoroutine(UICtrl.Instance.SkillCD(0));
-                skill.UseSkill(valuedata.SkillField[0].ID, 0);
-            }
-            else if(valuedata.AP < valuedata.SkillField[0].Cost)
-            {
-                if (valuedata.PassiveSkills[14]) // 天賦14
-                {
-                    valuedata.Reload(true);
-                }
-            }
+            UseSkill(0);
         }
         //滑鼠R
         if (Input.GetKey(KeyCode.Mouse1))
         {
-            if (valuedata.SkillField[1].ID == 0 || Time.timeScale == 0)
-                return;
-            if (valuedata.SkillField[1].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[1].Cost && canAttack)
-            {
-                valuedata.GetAp(-valuedata.SkillField[1].Cost);
-                valuedata.SkillField[1].nowCD = valuedata.SkillField[1].maxCD;
-                UICtrl.Instance.UpdateSkillCD();
-                StartCoroutine(UICtrl.Instance.SkillCD(1));
-                skill.UseSkill(valuedata.SkillField[1].ID, 1);
-            }
-            else if (valuedata.AP < valuedata.SkillField[1].Cost)
-            {
-                if (valuedata.PassiveSkills[14]) // 天賦14
-                {
-                    valuedata.Reload(true);
-                }
-            }
+            UseSkill(1);
         }
         //空白鍵
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (valuedata.SkillField[2].ID == 0 || Time.timeScale == 0)
-                return;
-            if (valuedata.SkillField[2].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[2].Cost && canAttack)
-            {
-                valuedata.GetAp(-valuedata.SkillField[2].Cost);
-                valuedata.SkillField[2].nowCD = valuedata.SkillField[2].maxCD;
-                UICtrl.Instance.UpdateSkillCD();
-                StartCoroutine(UICtrl.Instance.SkillCD(2));
-                skill.UseSkill(valuedata.SkillField[2].ID, 2);
-            }
-            else if (valuedata.AP < valuedata.SkillField[2].Cost)
-            {
-                if (valuedata.PassiveSkills[14]) // 天賦14
-                {
-                    valuedata.Reload(true);
-                }
-            }
+            UseSkill(2);
         }
         //互動鍵E
         if (Input.GetKeyDown(KeyCode.E))
@@ -280,6 +232,32 @@ public class PlayerCtrl : MonoBehaviour
             if (enemyattack.enemyType == EnemyType.Ranged)
             {
                 Destroy(other.gameObject);
+            }
+        }
+    }
+
+    private void UseSkill(int Field)
+    {
+        if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack)
+        {
+            if (valuedata.PassiveSkills[21])
+            {
+                int rng = UnityEngine.Random.Range(0, 2);
+                if(rng == 1)
+                    valuedata.GetAp(-valuedata.SkillField[Field].Cost);
+            }
+            else
+                valuedata.GetAp(-valuedata.SkillField[Field].Cost);
+            valuedata.SkillField[Field].nowCD = valuedata.SkillField[Field].maxCD;
+            UICtrl.Instance.UpdateSkillCD();
+            StartCoroutine(UICtrl.Instance.SkillCD(Field));
+            skill.UseSkill(valuedata.SkillField[Field].ID, Field);
+        }
+        else if (valuedata.AP < valuedata.SkillField[Field].Cost)
+        {
+            if (valuedata.PassiveSkills[14]) // 天賦14
+            {
+                valuedata.Reload(true);
             }
         }
     }
