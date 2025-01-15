@@ -49,7 +49,7 @@ public class PlayerAttack : MonoBehaviour
         }
         else if (other.transform.tag == "Wall" && isBullet)
         {
-            if (ValueData.Instance.PassiveSkills[25]) // 天賦25
+            if (ValueData.Instance.isHaveweaponid(_fidleid, 10)) //武器10 反彈
             {
                 Vector3 direction = transform.forward;
 
@@ -92,7 +92,7 @@ public class PlayerAttack : MonoBehaviour
     {
         float _dmg = dmg; // 多一層，避免傷害疊加
 
-        if (isBullet && ValueData.Instance.PassiveSkills[21]) //天賦21
+        if (isBullet && ValueData.Instance.isHaveweaponid(_fidleid, 12)) //武器12狙擊
         {
             if (startPos != Vector3.zero)
             {
@@ -113,8 +113,7 @@ public class PlayerAttack : MonoBehaviour
             _dmg *= thisSkill.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
 
-            //天賦16
-            if (ValueData.Instance.PassiveSkills[16])
+            if (ValueData.Instance.isHaveweaponid(_fidleid, 13)) // 武器13
             {
                 for (int i = 0; i < 3; i++)
                 {
@@ -148,7 +147,7 @@ public class PlayerAttack : MonoBehaviour
 
         if (isBullet)
         {
-            if(ValueData.Instance.PassiveSkills[17] && canSplit) // 天賦17 (投射物分裂)
+            if(ValueData.Instance.isHaveweaponid(_fidleid, 11) && canSplit) // 武器11 投射物分裂
             {
                 Quaternion forward = transform.rotation;
                 Quaternion leftDirection = Quaternion.Euler(0, -30, 0) * forward;

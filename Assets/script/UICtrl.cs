@@ -898,9 +898,8 @@ public class UICtrl : MonoBehaviour
         //位置偏移
         Vector3 _position = new Vector3(UnityEngine.Random.Range(position.x-0.5f, position.x+0.5f) , position.y, UnityEngine.Random.Range(position.z-0.5f, position.z+1f));
         //提高高度避免被較高的物體擋到
-        Vector3 _canvas = new Vector3(_position.x, worldspaceCanvas.transform.position.y, worldspaceCanvas.transform.position.z);
         Vector3 _lerp = Vector3.Lerp(_position, Camera.main.transform.position , 0.1f);
-        TextMeshPro damagetext = Instantiate(DamagetextPrefab, _lerp, worldspaceCanvas.transform.rotation, DamagetextParent.transform);
+        TextMeshPro damagetext = Instantiate(DamagetextPrefab, _lerp, Camera.main.transform.rotation, DamagetextParent.transform);
         damagetext.text = value.ToString("0");
         if (isCrit)
         {

@@ -63,6 +63,7 @@ public class ValueData : MonoBehaviour
     public float add_ReloadMovespeed; // 天賦18給予的跑速
     public float add_MaxapRestore; // 天賦22 額外最大魔力的魔力恢復
     public float add_ManaPower; // 天賦23給予的額外傷害
+    public float add_ManaCrit; // 天賦31給予的額外暴率
 
     //局外數值(預留)
 
@@ -153,15 +154,19 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 0, 0, 0, 0, 0, 0, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
-        new WeaponBase(1,RarityType.Normal,20,"鐵劍", 0.2f, -0.15f, 0, -0.2f, 0, 0.1f, 0),
-        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 0, 0, 0 , 0.4f, -0.2f, 0, 0),
-        new WeaponBase(3,RarityType.Normal,20,"鐵斧", 0.3f, 0.2f, 0.35f, -0.2f, 0.3f, 0, 0),
+        new WeaponBase(1,RarityType.Normal,20,"鐵劍", 0.2f, -0.15f, 0, -0.2f, 0, 0, 0),
+        new WeaponBase(2,RarityType.Normal,20,"鐵弓", 0, 0, 0 , 0.25f, -0.15f, 0, 0),
+        new WeaponBase(3,RarityType.Normal,20,"鐵斧", 0, 0.2f, 0.35f, -0.2f, 0.3f, 0.15f, 0),
         new WeaponBase(4,RarityType.Magic,20,"守財犬", 0, -0.1f, 0, 0, 0, 0, 0),
         new WeaponBase(5,RarityType.Rare,60,"無盡", 0.4f, 0.2f, -0.3f, -0.3f, 1f, 0.2f, 0.5f),
         new WeaponBase(6,RarityType.Rare,60,"風暴", 0.5f, 0, -0.2f, -0.2f, 1f, 0, 0),
         new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 0, -0.1f, -0.5f, 1f, 0.2f, 0, 0),
         new WeaponBase(8,RarityType.Rare,60,"漩渦", -0.2f, 1f, 1f, 0, 0, 0, 0),
         new WeaponBase(9,RarityType.Magic,20,"招財貓", 0, -0.1f, 0, 0, 0, 0, 0),
+        new WeaponBase(10,RarityType.Rare,60,"彈弓", 0, 0, -0.2f, 0.2f, -0.1f, 0, 0),
+        new WeaponBase(11,RarityType.Rare,60,"分裂", 0, 0, 0, 0.2f, -0.1f, 0, 0),
+        new WeaponBase(12,RarityType.Rare,60,"狙擊", 0, 0, -0.2f, 0.4f, 0, 0, 0),
+        new WeaponBase(13,RarityType.Rare,60,"暴擊冷卻", 0, -0.1f, 0, 0, 0.25f, 0.2f, 0),
     };
     //裝備介紹
     [NonSerialized]
@@ -176,6 +181,10 @@ public class ValueData : MonoBehaviour
         "使用位移技能時觸發L欄位上的非位移技能",
         "冰冷技能命中複數目標時，每個額外目標使傷害提升20%",
         "擊殺敵人掉落的金幣為0~3倍",
+        "投射物命中牆壁時會反彈",
+        "投射物命中敵人後，額外分裂出兩個",
+        "投射物傷害依距離提升",
+        "暴擊時降低其他技能冷卻 1 秒",
     };
 
     //已裝備裝備
@@ -249,7 +258,9 @@ public class ValueData : MonoBehaviour
         AttackSize = base_AttackSize + add_AttackSize;
         Cooldown = base_Cooldown + add_Cooldown + add_RageCooldown;
         Cost = (base_Cost + add_Cost);
-        Crit = base_Crit + add_Crit + add_ReloadCrit;
+        if (PassiveSkills[31])
+            add_ManaCrit = Mathf.FloorToInt(maxAP) * 0.03f;
+        Crit = base_Crit + add_Crit + add_ReloadCrit + add_ManaCrit;
         CritDmg = base_CritDmg + add_CritDmg + add_RageCritdmg;
         if (PassiveSkills[22]) // 天賦22
             add_MaxapRestore = maxAP / 10;
@@ -293,7 +304,10 @@ public class ValueData : MonoBehaviour
         for (int id = 0; id < 3; id++) {
             SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown) * (1 + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
             SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (1 + Power) * (1 + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size);
+            float add_CostSize = 1;
+            if (PassiveSkills[32])
+                add_CostSize = (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
+            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size) * add_CostSize;
             SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
@@ -359,7 +373,7 @@ public class ValueData : MonoBehaviour
                 add_Cooldown -= 0.08f;
                 break;
             case 3:
-                add_maxRage -= 8;
+                add_maxRage -= 15;
                 break;
             case 4:
                 add_CritDmg += 0.1f;
@@ -421,7 +435,7 @@ public class ValueData : MonoBehaviour
                 
                 break;
             case 23:
-                
+                add_Cost += 0.5f;
                 break;
             case 24:
                 add_maxAp += 2;
@@ -499,7 +513,7 @@ public class ValueData : MonoBehaviour
             if (!canBehurt)
                 return;
             value *= (1 - Damagereduction);
-            if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // 天賦10
+            /*if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // MOM
             {
                 if (AP >= -value)
                 {
@@ -511,7 +525,7 @@ public class ValueData : MonoBehaviour
                     value += AP;
                     GetAp(-AP);
                 }
-            }
+            }*/
             if (HP > -value)
             {
                 if (value == 0)
@@ -637,7 +651,7 @@ public class ValueData : MonoBehaviour
             else
                 Rage = maxRage;
 
-            RageTime = 5; // 重製盛怒衰退倒數
+            RageTime = 3; // 重製盛怒衰退倒數
             if(_lostRage != null)
             {
                 StopCoroutine(_lostRage);

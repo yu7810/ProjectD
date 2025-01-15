@@ -144,16 +144,6 @@ public class LevelCtrl : MonoBehaviour
         // 每次進關卡回滿魔力
         ValueData.Instance.GetAp(ValueData.Instance.maxAP);
 
-        // 天賦11
-        if(ValueData.Instance.PassiveSkills[11])
-        {
-            if(ValueData.Instance.maxHP > ValueData.Instance.HP)
-            {
-                float value = ValueData.Instance.maxHP - ValueData.Instance.HP;
-                ValueData.Instance.GetHp(value);
-            }
-        }
-
         PlayerCtrl.Instance.canMove = true;
 
         //畫面淡入

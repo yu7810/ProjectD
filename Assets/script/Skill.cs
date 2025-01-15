@@ -12,6 +12,7 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Magicarrow;
     public GameObject Skill_Waterball_1;
     public GameObject Skill_Waterball_2;
+    public GameObject Skill_Enemyexplode; // 天賦32敵人死亡爆炸
     public ParticleSystem SmokeTrail;
     LayerMask maskFloor = (1 << 7);
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
