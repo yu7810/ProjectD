@@ -817,7 +817,7 @@ public class UICtrl : MonoBehaviour
             {
                 Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
                 icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-                icon.SetNativeSize();
+                //icon.SetNativeSize();
             }
             int x = i;
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, true,  x));

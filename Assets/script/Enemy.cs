@@ -354,11 +354,11 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         AttackCollider.SetActive(true);
-        float _time = 1;
+        float _time = 0.6f;
         while(Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
-            rb.velocity = transform.forward * 6;
+            rb.velocity = transform.forward * 5;
             _time -= Time.fixedDeltaTime;
         }
         rb.velocity = Vector3.zero;

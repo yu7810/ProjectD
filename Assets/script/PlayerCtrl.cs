@@ -133,6 +133,8 @@ public class PlayerCtrl : MonoBehaviour
 
     private void Update()
     {
+        if (UICtrl.Instance.IsPointerOverUI(out GameObject uiElement))
+            return;
         //滑鼠L
         if (Input.GetKey(KeyCode.Mouse0))
         {

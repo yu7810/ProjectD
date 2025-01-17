@@ -108,7 +108,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),
         new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f,2f,1),
-        new SkillBase(9,20,"飛箭",0.2f,3,1f,1,0.6f,0f,2f,1),
+        new SkillBase(9,20,"飛箭",0.2f,3,1f,1,0.5f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
     };
     //技能介紹
