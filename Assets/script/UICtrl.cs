@@ -9,6 +9,7 @@ using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
 using System;
+using I2.Loc;
 
 public class UICtrl : MonoBehaviour
 {
@@ -52,6 +53,7 @@ public class UICtrl : MonoBehaviour
     public Image Value_Rage;
     public TextMeshProUGUI nowrageUI;
     public TextMeshProUGUI maxrageUI;
+    public TMP_Dropdown LanguageDropdown; // 語言選項下拉UI
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -188,6 +190,7 @@ public class UICtrl : MonoBehaviour
             {
                 PlayerCtrl.Instance.openedTarget = null;
                 settingUI.SetActive(true);
+                StartLanguageDropdown();
                 showWeaponstore(false);
                 showSkillstore(false);
                 Time.timeScale = 0;
@@ -207,8 +210,7 @@ public class UICtrl : MonoBehaviour
                 return;
             Tip.SetActive(true);
             TipInfo _tipinfo = uiElement.GetComponent<TipInfo>();
-            Tip_Name.text = _tipinfo.Name;
-            Tip_Intro.text = _tipinfo.Intro;
+            
             if (_tipinfo.Type == TipType.Passiveskill)
             {
                 Tip_Name.color = RarityColor_Normal;//天賦名稱一律白色
@@ -216,6 +218,11 @@ public class UICtrl : MonoBehaviour
                 Tip_line.SetActive(false);
                 Tip_affix.SetActive(false);
                 Tip_Level.SetActive(false);
+
+                LocalizationManager.TryGetTranslation("Passiveskill/Passiveskill Name " + _tipinfo.Id, out string tipname);
+                Tip_Name.text = tipname;
+                LocalizationManager.TryGetTranslation("Passiveskill/Passiveskill Info " + _tipinfo.Id, out string tipinfo);
+                Tip_Intro.text = tipinfo;
             }
             else if (_tipinfo.Type == TipType.Skill)
             {
@@ -276,7 +283,11 @@ public class UICtrl : MonoBehaviour
                 Tip_Speed.text = _tipinfo.Speed.ToString("0.0");
                 Tip_Crit.text = (_tipinfo.Crit * 100).ToString("0") + " %";
                 Tip_CritDmg.text = (_tipinfo.CritDmg * 100).ToString("0") + " %";
-                Tip_Intro.text = _tipinfo.Intro;
+
+                LocalizationManager.TryGetTranslation("Skill/Skill Name " + _tipinfo.Id, out string tipname);
+                Tip_Name.text = tipname;
+                LocalizationManager.TryGetTranslation("Skill/Skill Info " + _tipinfo.Id, out string tipinfo);
+                Tip_Intro.text = tipinfo;
 
                 //等級
                 int childcount = Tip_Level.transform.childCount;
@@ -310,6 +321,11 @@ public class UICtrl : MonoBehaviour
                     Tip_Name.color = RarityColor_Rare;
                 else if (ValueData.Instance.Weapon[_tipinfo.Id].Rarity == RarityType.Unique)
                     Tip_Name.color = RarityColor_Unique;
+
+                LocalizationManager.TryGetTranslation("Weapon/Weapon Name " + _tipinfo.Id, out string tipname);
+                Tip_Name.text = tipname;
+                LocalizationManager.TryGetTranslation("Weapon/Weapon Info " + _tipinfo.Id, out string tipinfo);
+                Tip_Intro.text = tipinfo;
             }
             LayoutRebuilder.ForceRebuildLayoutImmediate(TiplayoutTransform);
         }
@@ -997,4 +1013,37 @@ public class UICtrl : MonoBehaviour
 
     }
 
+    // 語系選擇
+    public void SelectLenguage()
+    {
+        int index = LanguageDropdown.value;
+        string selectedOption = LanguageDropdown.options[index].text;
+        string targetLanguage;
+
+        if (selectedOption == "繁體中文")
+            targetLanguage = "Chinese (Taiwan)";
+        else if (selectedOption == "English")
+            targetLanguage = "English";
+        else if (selectedOption == "简体中文")
+            targetLanguage = "Chinese (Simplified)";
+        else
+            return;
+        
+        if (LocalizationManager.HasLanguage(targetLanguage))
+            LocalizationManager.CurrentLanguage = targetLanguage;
+    }
+
+    // 語系下拉式選單初始化
+    private void StartLanguageDropdown()
+    {
+        if (LocalizationManager.CurrentLanguage == "English")
+            LanguageDropdown.value = 0;
+        else if (LocalizationManager.CurrentLanguage == "Chinese (Taiwan)")
+            LanguageDropdown.value = 1;
+        else if (LocalizationManager.CurrentLanguage == "Chinese (Simplified)")
+            LanguageDropdown.value = 2;
+
+        //LocalizationManager.TryGetTranslation("", out string value);
+    }
+    
 }
