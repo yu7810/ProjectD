@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-
+using I2.Loc;
 public class Npc : MonoBehaviour
 {
     public NpcType npcType;
@@ -67,7 +67,7 @@ public class Npc : MonoBehaviour
                     Destroy(gameObject);
                 }
                 break;
-            case NpcType.Passiveskill:
+            case NpcType.Passivepoint:
                 if (Switch)
                 {
                     ValueData.Instance.passiveskillPoint += passivepoint;
@@ -123,7 +123,32 @@ public class Npc : MonoBehaviour
 
     public void showName()
     {
-        NameUI.text = Name;
+        string _name = "";
+        if (npcType == NpcType.Door)
+            LocalizationManager.TryGetTranslation(Name, out _name);
+        else if (npcType == NpcType.Weaponstore)
+            LocalizationManager.TryGetTranslation("NPC/Weaponstore Name", out _name);
+        else if (npcType == NpcType.Skillstore)
+            LocalizationManager.TryGetTranslation("NPC/Skillstore Name", out _name);
+        else if (npcType == NpcType.Money)
+        {
+            LocalizationManager.TryGetTranslation("NPC/Exitdoor Money", out _name);
+            _name = money + " " + _name;
+        }
+        else if (npcType == NpcType.Passivepoint)
+        {
+            LocalizationManager.TryGetTranslation("NPC/Item Passivepoint Name", out _name);
+            _name = passivepoint + " " + _name;
+        }
+        else if (npcType == NpcType.Weapon)
+            LocalizationManager.TryGetTranslation("Weapon/Weapon Name " + item[0], out _name);
+        else if (npcType == NpcType.Skill)
+        {
+            LocalizationManager.TryGetTranslation("Skill/Skill Name " + item[0], out _name);
+            _name = "L" + itemlevel[0] + " " + _name;
+        }
+
+        NameUI.text = _name;
     }
 
 }
@@ -133,7 +158,7 @@ public enum NpcType{
     Weaponstore,
     Skillstore,
     Money,
-    Passiveskill,
+    Passivepoint,
     Weapon,
     Skill,
 }

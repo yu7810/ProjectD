@@ -61,7 +61,6 @@ public class LevelCtrl : MonoBehaviour
                 GameObject _itemPassivepoint = Instantiate(itemPassivepoint, p, itemPassivepoint.transform.rotation);
                 npc = _itemPassivepoint.GetComponent<Npc>();
                 npc.passivepoint = 2;
-                npc.Name = 2 + " ¤Ñ½áÂI";
                 npc.showName();
                 return;
             case PrizeBase.Skill:
@@ -82,7 +81,6 @@ public class LevelCtrl : MonoBehaviour
                 GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
                 npc = _itemMoney.GetComponent<Npc>();
                 npc.money = _money;
-                npc.Name = _money + " ª÷¹ô";
                 npc.showName();
                 break;
         }

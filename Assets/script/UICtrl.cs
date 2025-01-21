@@ -76,14 +76,12 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI Power_text;
     public TextMeshProUGUI Movespeed_text;
     public TextMeshProUGUI SkillSpeed_text;
-    public TextMeshProUGUI EnemyTimer_text;
     public TextMeshProUGUI AttackSize_text;
     public TextMeshProUGUI Cooldown_text;
     public TextMeshProUGUI Costdown_text;
     public TextMeshProUGUI Crit_text;
     public TextMeshProUGUI CritDmg_text;
     public TextMeshProUGUI Damagereduction_text;
-    public TextMeshProUGUI Bulletspeed_text;
     public TextMeshProUGUI RestoreAP_text;
 
     public GameObject Tip_tag;//Tip上的Tag欄相關
@@ -722,14 +720,12 @@ public class UICtrl : MonoBehaviour
         Power_text.text = (ValueData.Instance.Power * 100).ToString("0");
         Movespeed_text.text = (ValueData.Instance.MoveSpeed * 100).ToString("0");
         SkillSpeed_text.text = (ValueData.Instance.SkillSpeed * 100).ToString("0");
-        EnemyTimer_text.text = ValueData.Instance.EnemyTimer.ToString();
         AttackSize_text.text = (ValueData.Instance.AttackSize * 100).ToString("0");
         Cooldown_text.text = (ValueData.Instance.Cooldown * 100).ToString("0");
         Costdown_text.text = (ValueData.Instance.Cost * 100).ToString("0");
         Crit_text.text = (ValueData.Instance.Crit * 100).ToString("0");
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
-        Bulletspeed_text.text = (ValueData.Instance.BulletSpeed * 100).ToString("0");
         RestoreAP_text.text = ValueData.Instance.RestoreAP.ToString("0.0");
     }
 

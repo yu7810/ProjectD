@@ -90,7 +90,6 @@ public class ValueData : MonoBehaviour
     public float RestoreAP;
     public float Damagereduction;//傷害減免%
     public float Vision;//視野範圍(FOV)
-    public float BulletSpeed;//投射物飛行速度%
     public float RageTime; // 盛怒當前倒數時間
 
     public Sprite[] SkillIcon;//技能icon
@@ -269,7 +268,6 @@ public class ValueData : MonoBehaviour
         RestoreAP = base_RestoreAP + add_RestoreAP + add_MaxapRestore;
         Damagereduction = base_Damagereduction + add_Damagereduction;
         Vision = base_Vision + add_Vision;
-        BulletSpeed = base_BulletSpeed + add_BulletSpeed;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
         GetRage(0);

@@ -187,6 +187,7 @@ public class PlayerCtrl : MonoBehaviour
                 {
                     npc.NameUI.gameObject.SetActive(true);
                     npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
+                    npc.showName();
                 }
                     
             }

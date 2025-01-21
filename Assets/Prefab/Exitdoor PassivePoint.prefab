@@ -306,7 +306,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   npcType: 0
-  Name: "\u5929\u8CE6\u9EDE"
+  Name: NPC/Exitdoor Passivepoint
   NameUI: {fileID: 4603747682735407175}
   money: 0
   passivepoint: 0
