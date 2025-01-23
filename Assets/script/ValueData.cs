@@ -99,7 +99,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//µL
-        new SkillBase(1,20,"¼A¬å",1.4f,10,1f,1,0,0.25f,2f,1),
+        new SkillBase(1,20,"¼A¬å",1.2f,10,1f,1,0,0.25f,2f,1),
         new SkillBase(2,20,"½Ä¨ë",2.4f,0,1f,1,0,0,2f,1),//size=¦ì²¾¶ZÂ÷
         new SkillBase(3,0,"­µ²Å",1f,10,1f,1,0,0,2f,1),
         new SkillBase(4,20,"°{²{",0.5f,0f,1f,1,3f,0f,2f,1),
@@ -356,6 +356,7 @@ public class ValueData : MonoBehaviour
         switch (id)
         {
             case 0:
+                add_maxRage += 20;
                 if (UICtrl.Instance.UI_Rage.activeSelf)
                     return;
                 UICtrl.Instance.UI_Rage.SetActive(true);

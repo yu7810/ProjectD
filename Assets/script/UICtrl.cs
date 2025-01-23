@@ -8,6 +8,7 @@ using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.PostProcessing;
 using System;
 using I2.Loc;
 
@@ -83,6 +84,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI CritDmg_text;
     public TextMeshProUGUI Damagereduction_text;
     public TextMeshProUGUI RestoreAP_text;
+    public TextMeshProUGUI Rage_text;
 
     public GameObject Tip_tag;//Tip上的Tag欄相關
     public TextMeshProUGUI tagAttack;
@@ -119,7 +121,8 @@ public class UICtrl : MonoBehaviour
     public Color valueColor_normal;//技能數值的顏色
     public Color vignetteColor; // Global Volume裡vignette的初始顏色
     public Color vignetteBehurtColor;
-    public Volume volume; // Global Volume
+    public PostProcessVolume volume; // 鏡頭渲染
+    public Vignette vignette;
     public Line line;
     public Transform LineFather;
     public TextMeshProUGUI passiveskillPoint;//天賦點數
@@ -148,7 +151,7 @@ public class UICtrl : MonoBehaviour
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
         UpdateMoneyUI();
-            
+        volume.profile.TryGetSettings(out vignette);
     }
 
     private void FixedUpdate()
@@ -727,6 +730,7 @@ public class UICtrl : MonoBehaviour
         CritDmg_text.text = (ValueData.Instance.CritDmg * 100).ToString("0");
         Damagereduction_text.text = (ValueData.Instance.Damagereduction * 100).ToString("0");
         RestoreAP_text.text = ValueData.Instance.RestoreAP.ToString("0.0");
+        Rage_text.text = ValueData.Instance.maxRage.ToString();
     }
 
     //開啟技能商店
@@ -1038,8 +1042,6 @@ public class UICtrl : MonoBehaviour
             LanguageDropdown.value = 1;
         else if (LocalizationManager.CurrentLanguage == "Chinese (Simplified)")
             LanguageDropdown.value = 2;
-
-        //LocalizationManager.TryGetTranslation("", out string value);
     }
-    
+
 }
