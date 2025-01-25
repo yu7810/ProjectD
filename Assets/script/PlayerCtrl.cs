@@ -94,35 +94,36 @@ public class PlayerCtrl : MonoBehaviour
     }
 
     void FixedUpdate()
-    {   
-        //基本移動
-        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+    {
+        if (canMove)
         {
-            if (!canMove)
-                return;
-            Move = true;
-            m_Animator.SetBool("Move", Move);
-            Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
-            Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3f;
-            m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
-        }
-        else
-        {
-            Move = false;
-            m_Animator.SetBool("Move", Move);
-        }
-        if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
-        {
-            m_Rigidbody.velocity = Vector3.zero;
-        }
-        //3D角色轉向
-        Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(camRay, out floorhit, 30f, mask))
-        {
-            playerToMouse = floorhit.point - transform.position;
-            playerToMouse.y = 0;
-            Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
-            m_Rigidbody.MoveRotation(newRotation);
+            //基本移動
+            if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
+            {
+                Move = true;
+                m_Animator.SetBool("Move", Move);
+                Vector3 m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
+                Vector3 _move = m_Input * valuedata.MoveSpeed * Time.fixedDeltaTime * 3f;
+                m_Rigidbody.MovePosition(m_Rigidbody.position + _move);
+            }
+            else
+            {
+                Move = false;
+                m_Animator.SetBool("Move", Move);
+            }
+            if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
+            {
+                m_Rigidbody.velocity = Vector3.zero;
+            }
+            //3D角色轉向
+            Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(camRay, out floorhit, 30f, mask))
+            {
+                playerToMouse = floorhit.point - transform.position;
+                playerToMouse.y = 0;
+                Quaternion newRotation = Quaternion.LookRotation(playerToMouse);
+                m_Rigidbody.MoveRotation(newRotation);
+            }
         }
 
         //漂浮
@@ -229,12 +230,16 @@ public class PlayerCtrl : MonoBehaviour
             return;
         if (other.tag == "EnemyAttack")
         {
-            //BeHurt(other.transform.parent.GetComponent<Enemy>().Attack, true);
             EnemyAttack enemyattack = other.transform.GetComponent<EnemyAttack>();
+            Enemy enemy = enemyattack.enemy;
             ValueData.Instance.GetHp(-enemyattack.dmg, true);
             if (enemyattack.enemyType == EnemyType.Ranged)
             {
                 Destroy(other.gameObject);
+            }
+            else if(enemyattack.enemyType == EnemyType.Tank)
+            {
+                enemy.StopAction();
             }
         }
     }
@@ -243,6 +248,8 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack)
         {
+            if (valuedata.SkillField[Field].ID <= 0)
+                return;
             if (valuedata.PassiveSkills[21])
             {
                 int rng = UnityEngine.Random.Range(0, 2);

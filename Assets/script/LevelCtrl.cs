@@ -31,6 +31,7 @@ public class LevelCtrl : MonoBehaviour
         new int[]{ 5,},
         new int[]{ 6,},
         new int[]{ 7,},
+        new int[]{ 8,},
     };
 
     //½T»{³Ñ¾l¼Ä¤H

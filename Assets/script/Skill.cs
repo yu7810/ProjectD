@@ -18,6 +18,8 @@ public class Skill : MonoBehaviour
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
     Quaternion startRot = new Quaternion(0, 0, 0,0);
     int UsedTime = 0; // 紀錄技能連續使用次數
+    Coroutine useSkillStop; // 攻擊停頓
+    float stopTime; // 剩餘停頓時間
 
     void Awake()
     {
@@ -44,6 +46,22 @@ public class Skill : MonoBehaviour
 
     public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
         UsedTime = usedTime;
+
+        if (UsedTime == 0)
+        {
+            float skillspeed = 0.2f * (ValueData.Instance.SkillField[Fieldid].maxCD / ValueData.Instance.Skill[Skillid].maxCD);
+
+            if (useSkillStop == null)
+            {
+                stopTime = skillspeed;
+                useSkillStop = StartCoroutine(UseSkillStop());
+            }
+            else
+            {
+                if (stopTime < skillspeed)
+                    stopTime = skillspeed;
+            }
+        }
 
         if (Startpos == Vector3.zero) {
             startPos = ValueData.Instance.Player.transform.position;
@@ -110,6 +128,26 @@ public class Skill : MonoBehaviour
         {
             StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
         }
+    }
+
+    // 攻擊時不可移動
+    IEnumerator UseSkillStop()
+    {
+        if (stopTime <= 0)
+        {
+            stopTime = 0;
+            useSkillStop = null;
+            yield break;
+        }
+            
+        PlayerCtrl.Instance.canMove = false;
+        while(stopTime >= 0.05f)
+        {
+            yield return new WaitForSeconds(0.05f);
+            stopTime -= 0.05f;
+        }
+        PlayerCtrl.Instance.canMove = true;
+        useSkillStop = null;
     }
 
     //技能發射點
@@ -227,7 +265,11 @@ public class Skill : MonoBehaviour
     }
     void Magicarrow(int Fieldid)
     {
-        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), startRot);
+        //浮動角度
+        float rngAngle = Random.Range(0f, 10f);
+        Quaternion currentRotation = startRot * Quaternion.Euler(0, rngAngle, 0);
+
+        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
         PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
         b.fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;

@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 974127178772758727}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fill Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -47,7 +47,9 @@ GameObject:
   - component: {fileID: 7128687770488311714}
   - component: {fileID: 3994261888817969570}
   - component: {fileID: 4343416763915994939}
-  m_Layer: 0
+  - component: {fileID: 6505739581597095094}
+  - component: {fileID: 1592826719241346225}
+  m_Layer: 8
   m_Name: Barrel
   m_TagString: Barrel
   m_Icon: {fileID: 0}
@@ -69,7 +71,6 @@ Transform:
   m_Children:
   - {fileID: 1531567906003164194}
   - {fileID: 8280837296858087573}
-  - {fileID: 408419858218504377}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &3994261888817969570
@@ -89,7 +90,7 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 5
   m_Convex: 1
   m_CookingOptions: 30
@@ -108,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyType: 2
   immortal: 0
+  notMove: 0
   Hp: 0
   maxHp: 10
   Attack: 0
@@ -123,6 +125,43 @@ MonoBehaviour:
   canBeHit: 0
   canAttack: 0
   canMove: 0
+--- !u!65 &6505739581597095094
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440814806139389431}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1.2, z: 1}
+  m_Center: {x: 0, y: 0.6, z: 0}
+--- !u!208 &1592826719241346225
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 440814806139389431}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.5, y: 0.6, z: 0.5}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0.6, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &505971442272338187
 GameObject:
   m_ObjectHideFlags: 0
@@ -134,12 +173,12 @@ GameObject:
   - component: {fileID: 8280837296858087573}
   - component: {fileID: 199887482373211948}
   - component: {fileID: 9161267712662971468}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Mesh
   m_TagString: Barrel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 1
-  m_StaticEditorFlags: 8
+  m_StaticEditorFlags: 0
   m_IsActive: 1
 --- !u!4 &8280837296858087573
 Transform:
@@ -206,37 +245,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!1 &887118197219828556
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 408419858218504377}
-  m_Layer: 0
-  m_Name: Colidder
-  m_TagString: Barrel
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &408419858218504377
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 887118197219828556}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 7128687770488311714}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1939172796703022841
 GameObject:
   m_ObjectHideFlags: 0
@@ -246,7 +254,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 325672020567604552}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Handle Slide Area
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -283,7 +291,7 @@ GameObject:
   - component: {fileID: 4702785997034655205}
   - component: {fileID: 2548855150622537991}
   - component: {fileID: 1184361332061602838}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -359,7 +367,7 @@ GameObject:
   - component: {fileID: 2872699691042168201}
   - component: {fileID: 750915464683425985}
   - component: {fileID: 3517744721312122025}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -460,7 +468,7 @@ GameObject:
   - component: {fileID: 8664460167484119028}
   - component: {fileID: 602593223535391875}
   - component: {fileID: 1338199875803532835}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -534,7 +542,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5819175494722813498}
   - component: {fileID: 1380247593393322548}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Hp
   m_TagString: Untagged
   m_Icon: {fileID: 0}

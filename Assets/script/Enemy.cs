@@ -9,6 +9,7 @@ public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType;
     public bool immortal; // 不死的
+    public bool notMove; // 不會移動的
     public float Hp;
     public float maxHp;
     public float Attack;
@@ -37,6 +38,7 @@ public class Enemy : MonoBehaviour
     GameObject NoticeRange;
     float noticeDistance; // 視野射線距離
     LayerMask mask = (1 << 8) | (1 << 9); // 視線，判斷玩家用
+    Coroutine sprint; // 鯡魚衝刺
 
     private void OnEnable() {
         m_Animator = GetComponent<Animator>();
@@ -262,10 +264,13 @@ public class Enemy : MonoBehaviour
         }
         else // 若玩家在視野外
         {
-            m_Animator.SetBool("isMoving", true);
-            agent.isStopped = false;
-            agent.angularSpeed = rotationSpeed;
-            agent.SetDestination(target.position);
+            if (!notMove)
+            {
+                m_Animator.SetBool("isMoving", true);
+                agent.isStopped = false;
+                agent.angularSpeed = rotationSpeed;
+                agent.SetDestination(target.position);
+            }
         }
 
         yield return new WaitForNextFrameUnit();
@@ -283,12 +288,14 @@ public class Enemy : MonoBehaviour
         }
         else if (enemyType == EnemyType.Ranged)
         {
-            Instantiate(Bullet, transform.position, transform.rotation);
+            GameObject bullet = Instantiate(Bullet, transform.position, transform.rotation);
+            bullet.transform.GetChild(0).GetComponent<EnemyAttack>().enemy = this;
             m_Animator.SetBool("Attack", false);
         }
         else if (enemyType == EnemyType.Tank)
         {
-            StartCoroutine(Sprint());
+            if(sprint == null)
+                sprint = StartCoroutine(Sprint());
         }
         canAttack = false;
     }
@@ -312,7 +319,13 @@ public class Enemy : MonoBehaviour
 
     IEnumerator _AttackCD()
     {
-        yield return new WaitForSeconds(AttackCD);
+        float attackcd = AttackCD;
+        if(attackcd != 0)
+        {
+            float rng = Random.Range(0.5f, 2f);
+            attackcd *= rng;
+        }
+        yield return new WaitForSeconds(attackcd);
         canAttack = true;
     }
 
@@ -361,8 +374,23 @@ public class Enemy : MonoBehaviour
             rb.velocity = transform.forward * 5;
             _time -= Time.fixedDeltaTime;
         }
-        rb.velocity = Vector3.zero;
-        EndAttack();
+
+        StopAction();
+    }
+
+    //中斷動作用
+    public void StopAction()
+    {
+        if(enemyType == EnemyType.Tank)
+        {
+            if(sprint != null)
+            {
+                StopCoroutine(sprint);
+                rb.velocity = Vector3.zero;
+                EndAttack();
+                sprint = null;
+            }
+        }
     }
 
 }

@@ -6,5 +6,5 @@ public class EnemyAttack : MonoBehaviour
 {
     public float dmg;
     public EnemyType enemyType;
-
+    public Enemy enemy;
 }
