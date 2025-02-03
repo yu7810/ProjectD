@@ -20,6 +20,9 @@ public class LevelCtrl : MonoBehaviour
     public GameObject itemWeapon;
     public GameObject itemSkill;
 
+    // 用來招喚的怪物
+    public GameObject EnemyHerring;
+
     //關卡池
     public int[][] Level = new int[][] // [等級][關卡ID]
     {
@@ -32,6 +35,8 @@ public class LevelCtrl : MonoBehaviour
         new int[]{ 6,},
         new int[]{ 7,},
         new int[]{ 8,},
+        new int[]{ 9,},
+        new int[]{ 10,},
     };
 
     //確認剩餘敵人

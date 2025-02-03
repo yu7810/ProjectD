@@ -26,7 +26,6 @@ public class Npc : MonoBehaviour
     {
         if (startRandom)
             RandomItem();
-        showName();
     }
 
     public void doNpc(bool Switch) {

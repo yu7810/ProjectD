@@ -142,7 +142,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         if (target.transform.tag == "Barrel" || target.transform.tag == "Enemy" || target.transform.tag == "Bell")
-            target.transform.GetComponent<Enemy>().Hurt(_dmg, _fidleid);
+            target.transform.GetComponent<Enemy>().Hurt(-_dmg, _fidleid);
         Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
 
         if (isBullet)

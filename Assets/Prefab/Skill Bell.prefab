@@ -139,7 +139,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: 8eaf7d6fa83adc5429daeed3706a69df, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -200,7 +200,9 @@ MonoBehaviour:
     type: 3}
   dmg: 0
   passTarget: []
+  Target: []
   isBullet: 0
+  canSplit: 1
 --- !u!114 &2228706363267556148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -214,7 +216,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 3
+  enemyRarity: 0
   immortal: 1
+  notMove: 0
   Hp: 0
   maxHp: 0
   Attack: 0
@@ -222,6 +226,7 @@ MonoBehaviour:
   AttackCD: 0
   AttackRange: 0
   rotationSpeed: 0
+  idleAnimation: 0
   money: 0000000000000000
   Mesh: {fileID: 1940010075036936795}
   hpUI: {fileID: 9058881866906777176}
@@ -229,6 +234,8 @@ MonoBehaviour:
   canBeHit: 0
   canAttack: 0
   canMove: 0
+  BossStage: 0
+  MinionPosition: []
 --- !u!1 &2233164717680762103
 GameObject:
   m_ObjectHideFlags: 0

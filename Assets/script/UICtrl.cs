@@ -173,7 +173,8 @@ public class UICtrl : MonoBehaviour
                 ValueData.Instance.isUIopen = false;
                 if(!SkillStoreUI.activeSelf && !WeaponStoreUI.activeSelf)
                     WeaponfieldUI.SetActive(false);
-                Time.timeScale = 1;
+                if(!GameOverUI.activeSelf)
+                    Time.timeScale = 1;
             }
             else {
                 ValueUI.SetActive(true);
@@ -199,7 +200,7 @@ public class UICtrl : MonoBehaviour
             else
             {
                 settingUI.SetActive(false);
-                if (!ValueData.Instance.isUIopen)
+                if (!ValueData.Instance.isUIopen && !GameOverUI.activeSelf)
                     Time.timeScale = 1;
             }
         }

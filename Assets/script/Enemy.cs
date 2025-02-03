@@ -8,6 +8,7 @@ using UnityEngine.UI;
 public class Enemy : MonoBehaviour
 {
     public EnemyType enemyType;
+    public EnemyRarity enemyRarity;
     public bool immortal; // 不死的
     public bool notMove; // 不會移動的
     public float Hp;
@@ -39,6 +40,11 @@ public class Enemy : MonoBehaviour
     float noticeDistance; // 視野射線距離
     LayerMask mask = (1 << 8) | (1 << 9); // 視線，判斷玩家用
     Coroutine sprint; // 鯡魚衝刺
+    Coroutine call; // 招喚小兵
+    Coroutine move;
+    Coroutine attackCD;
+    public int BossStage; // Boss階段
+    public GameObject[] MinionPosition; // 要招喚小怪的點
 
     private void OnEnable() {
         m_Animator = GetComponent<Animator>();
@@ -102,21 +108,47 @@ public class Enemy : MonoBehaviour
         {
             //beAttack();
         }
-        else if (Hp > Dmg)
+        else if(Dmg < 0) //受傷
         {
-            if (Hp == maxHp && hpUI) // 首次受擊時顯示HPUI
-                hpUI.gameObject.SetActive(true);
-            Hp -= Dmg;
+            if (Hp > -Dmg)
+            {
+                if (Hp == maxHp && hpUI) // 首次受擊時顯示HPUI
+                    hpUI.gameObject.SetActive(true);
+                Hp += Dmg;
+                hpUI.value = Hp / maxHp;
+                beAttack();
+
+                if (enemyRarity == EnemyRarity.Boss) // BOSS轉階段條件
+                {
+                    if (Hp <= maxHp * 3 / 4 && BossStage == 0)
+                        BossStage = 1;
+                    else if (Hp <= maxHp * 1 / 2 && BossStage == 2)
+                        BossStage = 3;
+                    else if (Hp <= maxHp * 1 / 4 && BossStage == 2)
+                        BossStage = 5;
+                }
+            }
+            else
+            {
+                Hp = 0;
+                immortal = true;
+                hpUI.transform.parent.gameObject.SetActive(false);
+                Die(Filed);
+            }
+        }
+        else // 回血
+        {
+            if (maxHp > Dmg + Hp)
+            {
+                Hp += Dmg;
+            }
+            else
+            {
+                Hp = maxHp;
+            }
             hpUI.value = Hp / maxHp;
-            beAttack();
         }
-        else
-        {
-            Hp = 0;
-            immortal = true;
-            hpUI.transform.parent.gameObject.SetActive(false);
-            Die(Filed);
-        }
+
         if (gameObject.tag == "Bell" && bellCD == 0)
         {
             GameObject a = Instantiate(Skill.Instance.Skill_Bellattack, gameObject.transform.position, gameObject.transform.rotation);
@@ -125,7 +157,7 @@ public class Enemy : MonoBehaviour
             float size = ValueData.Instance.SkillField[id].Size;
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();
-            atk.dmg = Dmg * 1.2f;
+            atk.dmg = -Dmg * 1.2f;
             atk.passTarget.Add(this.gameObject);
             bellCD = 0.1f;
             StartCoroutine(BellCD());
@@ -134,7 +166,7 @@ public class Enemy : MonoBehaviour
 
     public void Die(int Filed = -1) {
         //UICtrl.Instance.GetEXP(EXP);
-        if (enemyType != EnemyType.Barrel)
+        if (enemyType != EnemyType.Barrel && enemyRarity != EnemyRarity.Minion)
         {
             LevelCtrl.Instance.leftEnemy -= 1;
             LevelCtrl.Instance.enemycheck();
@@ -155,7 +187,7 @@ public class Enemy : MonoBehaviour
         LevelCtrl.Instance.DropMoney(_money, transform.position, 0.5f);
 
         StopAllCoroutines();
-        Destroy(transform.gameObject);
+        Destroy(gameObject);
     }
 
     private void OnTriggerStay(Collider other)
@@ -176,12 +208,26 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.tag == "EnemyAttack")
+        {
+            if (other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
+            {
+                other.GetComponent<EnemyAttack>().enemy.Hurt(100);
+                other.GetComponent<EnemyAttack>().enemy.StopAction();
+                Destroy(gameObject);
+            }
+        }
+    }
+
     void StartAction()
     {
         NoticeRange.SetActive(false);
         m_Animator.SetBool("isMoving", true);
         m_Animator.SetInteger("IdleAnimation", 0);
-        StartCoroutine(_Move());
+        if(move == null)
+            move = StartCoroutine(_Move());
     }
 
     public void beAttack() {
@@ -274,6 +320,7 @@ public class Enemy : MonoBehaviour
         }
 
         yield return new WaitForNextFrameUnit();
+        move = null;
         StartCoroutine(_Move());
 
     }
@@ -294,7 +341,35 @@ public class Enemy : MonoBehaviour
         }
         else if (enemyType == EnemyType.Tank)
         {
-            if(sprint == null)
+            if (enemyRarity == EnemyRarity.Boss) // Boss行為
+            {
+                if (BossStage == 0 || BossStage == 2 || BossStage == 4 || BossStage == 6)
+                {
+                    m_Animator.SetInteger("Attack Type", 0);
+                    sprint = StartCoroutine(Sprint());
+                }
+                else if (BossStage == 1)
+                {
+                    m_Animator.SetInteger("Attack Type", 1);
+                    call = StartCoroutine(CallHerring(2));
+                    BossStage = 2;
+                }
+                else if (BossStage == 3)
+                {
+                    AttackCD = 1.5f;
+                    m_Animator.SetInteger("Attack Type", 1);
+                    call = StartCoroutine(CallHerring(4));
+                    BossStage = 4;
+                }
+                else if (BossStage == 5)
+                {
+                    AttackCD = 1f;
+                    m_Animator.SetInteger("Attack Type", 1);
+                    call = StartCoroutine(CallHerring(8));
+                    BossStage = 6;
+                }
+            }
+            else
                 sprint = StartCoroutine(Sprint());
         }
         canAttack = false;
@@ -310,8 +385,10 @@ public class Enemy : MonoBehaviour
         }
         canMove = true;
         agent.isStopped = false;
-        StartCoroutine(_Move());
-        StartCoroutine(_AttackCD());
+        if(move == null)
+            move = StartCoroutine(_Move());
+        if(attackCD == null)
+            attackCD = StartCoroutine(_AttackCD());
     }
     public void EndBehit() {
         m_Animator.SetBool("BeHit", false);
@@ -327,6 +404,7 @@ public class Enemy : MonoBehaviour
         }
         yield return new WaitForSeconds(attackcd);
         canAttack = true;
+        attackCD = null;
     }
 
     IEnumerator BellCD()
@@ -367,14 +445,45 @@ public class Enemy : MonoBehaviour
     {
         yield return new WaitForSeconds(0.2f);
         AttackCollider.SetActive(true);
-        float _time = 0.6f;
-        while(Hp > 0 && _time > 0)
+
+        float _time;
+        if (enemyRarity == EnemyRarity.Boss)
+            _time = 1f;
+        else
+            _time = 0.6f;
+        while (Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
             rb.velocity = transform.forward * 5;
             _time -= Time.fixedDeltaTime;
         }
 
+        StopAction();
+    }
+
+    //招喚小怪鯡魚
+    IEnumerator CallHerring(int count)
+    {
+        if (MinionPosition.Length == 0 || count <= 0)
+        {
+            StopAction();
+            yield break;
+        }
+
+        int lastposition = -1;
+        for(int i = 0 ; i < count ; i++)
+        {
+            int newposition = Random.Range(0, MinionPosition.Length);
+            if (newposition == lastposition && MinionPosition.Length >= 1) //新招喚點與上次招喚點相同則重骰
+                newposition = Random.Range(0, MinionPosition.Length);
+            lastposition = newposition;
+            yield return new WaitForSeconds(1f);
+            GameObject _minion = Instantiate(LevelCtrl.Instance.EnemyHerring, MinionPosition[newposition].transform.position, MinionPosition[newposition].transform.rotation);
+            Enemy _enemy = _minion.GetComponent<Enemy>();
+            _enemy.enemyRarity = EnemyRarity.Minion;
+            _enemy.money[0] = 0;
+            _enemy.money[1] = 0;
+        }
         StopAction();
     }
 
@@ -386,10 +495,14 @@ public class Enemy : MonoBehaviour
             if(sprint != null)
             {
                 StopCoroutine(sprint);
-                rb.velocity = Vector3.zero;
-                EndAttack();
                 sprint = null;
+                rb.velocity = Vector3.zero;
             }
+            if(call != null)
+            {
+                call = null;
+            }
+            EndAttack();
         }
     }
 
@@ -400,6 +513,13 @@ public enum EnemyType
     Melee, // 近戰 蜥蜴
     Ranged, // 遠程 魷魚
     Barrel, // 桶子
-    Minion, // 招喚物
+    Minion, // 招喚物 (鐘)
     Tank, // 近戰 鯡魚
+}
+public enum EnemyRarity
+{
+    Normal,
+    Minion, //招喚物
+    Rare, //菁英
+    Boss
 }
