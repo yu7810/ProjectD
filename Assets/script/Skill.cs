@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Skill : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Magicarrow;
     public GameObject Skill_Waterball_1;
     public GameObject Skill_Waterball_2;
-    public GameObject Skill_Enemyexplode; // 天賦32敵人死亡爆炸
-    public ParticleSystem SmokeTrail;
+    public GameObject Skill_DashTrail;
+    public GameObject Skill_FlashTrail;
     LayerMask maskFloor = (1 << 7);
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
     Quaternion startRot = new Quaternion(0, 0, 0,0);
@@ -47,10 +48,11 @@ public class Skill : MonoBehaviour
     public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
         UsedTime = usedTime;
 
-        if (UsedTime == 0)
+        if (UsedTime == 0 && !ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement)) // 位移技及多次施放不會有攻擊停頓
         {
-            float skillspeed = 0.2f * (ValueData.Instance.SkillField[Fieldid].maxCD / ValueData.Instance.Skill[Skillid].maxCD);
+            float skillspeed = 0.1f * (ValueData.Instance.SkillField[Fieldid].maxCD / ValueData.Instance.Skill[Skillid].maxCD);
 
+            //攻擊停頓
             if (useSkillStop == null)
             {
                 stopTime = skillspeed;
@@ -172,30 +174,35 @@ public class Skill : MonoBehaviour
     }
     IEnumerator dash(int Fieldid)
     {
-        //ValueData.Instance.canBehurt = false;
-        //SmokeTrail.Play();
         PlayerCtrl.Instance.canMove = false;
         ValueData.Instance.canBehurt = false;
+        GameObject trail = Instantiate(Skill_DashTrail, startPos, startRot);
         Vector3 m_Input;
         if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
             m_Input = ValueData.Instance.Player.transform.forward;
-        for(int i =0;i<10;i++)
+        for(int i =0;i<14;i++)
         {
             Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 15);
             m_Rigidbody.MovePosition(m);
+
+            //更新托尾效果
+            Vector3 newpos = PlayerCtrl.Instance.transform.position;
+            newpos.y = 0.3f;
+            trail.transform.position = newpos;
+
             yield return new WaitForSeconds(0.005f);
         }
+        trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
-        //SmokeTrail.Stop();
-        //ValueData.Instance.canBehurt = true;
     }
 
     void Flash()
     {
+        GameObject trail = Instantiate(Skill_FlashTrail, startPos, startRot);
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
@@ -215,6 +222,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 6;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // 避開替換技能時生成道具
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -230,6 +238,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 7;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // 避開替換技能時生成道具
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -245,6 +254,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 5;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // 避開替換技能時生成道具
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -266,7 +276,7 @@ public class Skill : MonoBehaviour
     void Magicarrow(int Fieldid)
     {
         //浮動角度
-        float rngAngle = Random.Range(0f, 10f);
+        float rngAngle = Random.Range(0f, 6f);
         Quaternion currentRotation = startRot * Quaternion.Euler(0, rngAngle, 0);
 
         GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
@@ -291,7 +301,7 @@ public class Skill : MonoBehaviour
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
             targetPos = floorhit.point;
-            targetPos.y = 0.5f;
+            targetPos.y = 0.7f;
         }
         GameObject a = Instantiate(Skill_Waterball_1, targetPos, Skill_Waterball_1.transform.rotation);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;

@@ -544,22 +544,28 @@ public class UICtrl : MonoBehaviour
 
         int oldlv = ValueData.Instance.SkillField[Field].Level;
         int newlv = ChangeSkill_ID[1];
-        //如果新技能等級<舊技能，擠掉欄位上的裝備
-        if (newlv < oldlv)
+        if((ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
         {
-            for(int i= oldlv; i> newlv; i--)
+            ChangeSkill_ID[1] += 1;
+        }
+        else
+        {
+            if (newlv < oldlv)//如果新技能等級<舊技能，擠掉欄位上的裝備
             {
-                if(ValueData.Instance.WeaponField[Field * 3 + (i - 1)].ID != 0)
+                for (int i = oldlv; i > newlv; i--)
                 {
-                    ChangeWeapon_ID = 0;
-                    SelectWeaponChangeField(Field * 3 + (i - 1));
+                    if (ValueData.Instance.WeaponField[Field * 3 + (i - 1)].ID != 0)
+                    {
+                        ChangeWeapon_ID = 0;
+                        SelectWeaponChangeField(Field * 3 + (i - 1));
+                    }
                 }
             }
-        }
-        // 被擠掉的技能變成寶箱
-        if (ValueData.Instance.SkillField[Field].ID != 0)
-        {
-            LevelCtrl.Instance.doItemskill(ValueData.Instance.SkillField[Field].ID , ValueData.Instance.SkillField[Field].Level);
+            // 被擠掉的技能變成寶箱
+            if (ValueData.Instance.SkillField[Field].ID != 0)
+            {
+                LevelCtrl.Instance.doItemskill(ValueData.Instance.SkillField[Field].ID, ValueData.Instance.SkillField[Field].Level);
+            }
         }
 
         ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID[0]].ID;
@@ -581,7 +587,7 @@ public class UICtrl : MonoBehaviour
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
         }
-        if (nowSkillstore != null && ChangeSkill_ID[0] != 0) // 如果當前為開啟技能商店，則從該商店移除該商品
+        if (nowSkillstore != null && ChangeSkill_ID[0] != 0 && !nowSkillstore.unlimited) // 如果當前為開啟技能商店，則從該商店移除該商品
         {
             nowSkillstore.item.RemoveAt(nowSelectitem);
             nowSkillstore.doNpc(true);
@@ -657,7 +663,7 @@ public class UICtrl : MonoBehaviour
             ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
         }
         
-        if(nowWeaponstore != null && ChangeWeapon_ID != 0) // 如果當前為開啟武器商店，則從該商店移除該商品
+        if(nowWeaponstore != null && ChangeWeapon_ID != 0 && !nowWeaponstore.unlimited) // 如果當前為開啟武器商店，則從該商店移除該商品
         {
             nowWeaponstore.item.RemoveAt(nowSelectitem);
             nowWeaponstore.doNpc(true);

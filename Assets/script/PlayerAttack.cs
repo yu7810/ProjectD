@@ -71,16 +71,23 @@ public class PlayerAttack : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (other.transform.tag == "EnemyAttack")
+        else if (other.transform.tag == "EnemyAttack" || other.transform.tag == "PlayerAttack")
         {
             if (ValueData.Instance.PassiveSkills[9]) // 天賦9
             {
                 if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack) || ValueData.Instance.Rage != ValueData.Instance.maxRage)
                     return;
-                if (other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged)
+                if ((other.transform.tag == "EnemyAttack" && other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged) || (other.transform.tag == "PlayerAttack"))
                 {
                     doDamage(other.gameObject);
                     Destroy(other.transform.parent.gameObject);
+
+                    // 天賦0 獲得盛怒
+                    if (ValueData.Instance.PassiveSkills[0])
+                        ValueData.Instance.GetRage(1);
+                    // 天賦27 擊殺回魔
+                    if (ValueData.Instance.PassiveSkills[27])
+                        ValueData.Instance.GetAp(ValueData.Instance.maxAP / 5);
                 }
             }
         }

@@ -246,7 +246,7 @@ public class PlayerCtrl : MonoBehaviour
 
     private void UseSkill(int Field)
     {
-        if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack)
+        if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack && !isReload)
         {
             if (valuedata.SkillField[Field].ID <= 0)
                 return;

@@ -169,13 +169,21 @@ public class LevelCtrl : MonoBehaviour
     IEnumerator dropMoney(int value, Vector3 pos, float offset)
     {
         GameObject money = ValueData.Instance.moneyPrefab;
+
+        // 每個金幣間的掉落延遲時間
+        float _delay = 1f / value;
+        if (_delay < 0.01f)
+            _delay = 0.01f;
+        else if (_delay > 0.1f)
+            _delay = 0.1f;
+
         for (int i = 0; i < value; i++)
         {
             Vector3 _offset = new Vector3(Random.Range(-offset, offset), 0, Random.Range(-offset, offset));
             Vector3 _pos = pos + _offset;
             _pos.y = 0;
             Instantiate(money, _pos, money.transform.rotation);
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(_delay);
         }
     }
 

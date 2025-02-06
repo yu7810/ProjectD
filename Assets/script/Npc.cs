@@ -15,6 +15,7 @@ public class Npc : MonoBehaviour
 
     [Header("商店 / 道具")]
     public bool startRandom; // 使否在生成時隨機商品
+    public bool unlimited; // 商品不會被消耗
     public List<int> item = new List<int> { };
     public List<int> itemlevel = new List<int> { };
 
