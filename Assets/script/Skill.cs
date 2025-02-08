@@ -162,10 +162,11 @@ public class Skill : MonoBehaviour
 
     void Basicattack(int Fieldid)
     {
+        startPos.y = 1.3f;
         GameObject a = Instantiate(Skill_A, startPos, startRot);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
-        a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
+        a.transform.localScale *= _size;
     }
 
     void Dash(int Fieldid)  //ฐ{มื

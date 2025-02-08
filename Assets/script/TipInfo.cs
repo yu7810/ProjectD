@@ -60,5 +60,6 @@ public enum TipType{
     SkillField,
     Weapon,
     WeaponField,
-    Passiveskill
+    Passiveskill,
+    GarbageCan,
 }

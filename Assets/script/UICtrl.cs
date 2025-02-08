@@ -55,6 +55,8 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI nowrageUI;
     public TextMeshProUGUI maxrageUI;
     public TMP_Dropdown LanguageDropdown; // 語言選項下拉UI
+    public Transform UIDrogParent; // 存放當前拖曳的UI，使其不被其他UI覆蓋
+    public GameObject GarbageCan;
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -152,6 +154,7 @@ public class UICtrl : MonoBehaviour
         WeaponfieldUI.SetActive(false);
         UpdateMoneyUI();
         volume.profile.TryGetSettings(out vignette);
+        GarbageCan.SetActive(false);
     }
 
     private void FixedUpdate()
@@ -867,7 +870,7 @@ public class UICtrl : MonoBehaviour
                 {
                     Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
                     icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-                    icon.SetNativeSize();
+                    //icon.SetNativeSize();
                 }
                 int x = i;
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, false, x));
