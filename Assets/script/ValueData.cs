@@ -166,6 +166,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(11,RarityType.Rare,60,"分裂", 0, 0, 0, 0.2f, -0.1f, 0, 0),
         new WeaponBase(12,RarityType.Rare,60,"狙擊", 0, 0, -0.2f, 0.4f, 0, 0, 0),
         new WeaponBase(13,RarityType.Rare,60,"暴擊冷卻", 0, -0.1f, 0, 0, 0.25f, 0.2f, 0),
+        new WeaponBase(14,RarityType.Rare,60,"虛空妖刃", 0, 0, 0, 0, 0, 0, 0),
     };
     //裝備介紹
     [NonSerialized]
@@ -184,6 +185,7 @@ public class ValueData : MonoBehaviour
         "投射物命中敵人後，額外分裂出兩個",
         "投射物傷害依距離提升",
         "暴擊時降低其他技能冷卻 1 秒",
+        "14",
     };
 
     //已裝備裝備
@@ -209,7 +211,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14
     };
 
     //每次加減天賦時呼叫，更新所有數值

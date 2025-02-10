@@ -65,7 +65,16 @@ public class Skill : MonoBehaviour
             }
         }
 
-        if (Startpos == Vector3.zero) {
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 14)) //武器14 從滑鼠座標攻擊
+        {
+            startPos = ValueData.Instance.Player.transform.position;
+            Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
+            {
+                startPos = floorhit.point;
+            }
+        }
+        else if (Startpos == Vector3.zero) {
             startPos = ValueData.Instance.Player.transform.position;
             startPos.y = 0.3f;
         }
@@ -269,7 +278,11 @@ public class Skill : MonoBehaviour
 
     void Bell(int Fieldid) 
     {
-        Vector3 targetpos = attackPoint(1.5f);
+        Vector3 targetpos;
+        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // 裝備14會讓中的位置改到滑鼠位置
+            targetpos = attackPoint(1.5f);
+        else
+            targetpos = startPos;
         targetpos.y = 0;
         GameObject a = Instantiate(Skill_Bell, targetpos, Skill_Bell.transform.rotation);
         a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;

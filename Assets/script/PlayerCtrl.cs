@@ -19,10 +19,11 @@ public class PlayerCtrl : MonoBehaviour
     public GameObject UpgradeSystem;
     public ValueData valuedata;
     public Skill skill;
-    GameObject ontriggerTarget; // 放碰到的物體
+    GameObject ontriggerTarget; // 放當前可互動(E)的物體
     public GameObject openedTarget; // 已經互動的NPC，用來開關對應UI
     RaycastHit floorhit;
     public Vector3 playerToMouse;//滑鼠指到的座標
+    private List<GameObject> interactableObjects = new List<GameObject>(); // 追蹤範圍內的目標
 
     //角色漂浮效果
     private float amplitude = 0.15f;  // 漂浮的幅度
@@ -154,7 +155,7 @@ public class PlayerCtrl : MonoBehaviour
         //互動鍵E
         if (Input.GetKeyDown(KeyCode.E))
         {
-            if (!ontriggerTarget || !canMove || Time.timeScale == 0)
+            if (!ontriggerTarget || !canMove)
                 return;
             if (openedTarget != null && openedTarget == ontriggerTarget)
             {
@@ -163,8 +164,8 @@ public class PlayerCtrl : MonoBehaviour
             }
             else if (ontriggerTarget.tag == "NPC")
             {
-                ontriggerTarget.GetComponent<Npc>().doNpc(true);
                 openedTarget = ontriggerTarget;
+                ontriggerTarget.GetComponent<Npc>().doNpc(true);
             }
         }
     }
@@ -173,24 +174,13 @@ public class PlayerCtrl : MonoBehaviour
     {
         if (other.tag == "NPC")
         {
-            if (ontriggerTarget) // 關閉上個NPC的名字
+            if (other.TryGetComponent<Npc>(out Npc _npc))
             {
-                if (ontriggerTarget.TryGetComponent<Npc>(out Npc _npc))
+                interactableObjects.Add(other.gameObject);
+                if (ontriggerTarget == null)
                 {
-                    if (_npc.NameUI)
-                        _npc.NameUI.gameObject.SetActive(false);
+                    UpdateCurrentTarget();
                 }
-            }
-            ontriggerTarget = other.gameObject;
-            if(other.TryGetComponent<Npc>(out Npc npc))
-            {
-                if (npc.NameUI)
-                {
-                    npc.NameUI.gameObject.SetActive(true);
-                    npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
-                    npc.showName();
-                }
-                    
             }
         }
         else if(other.tag == "Money")
@@ -199,9 +189,9 @@ public class PlayerCtrl : MonoBehaviour
             ValueData.Instance.GetMoney(1);
         }
     }
-    private void OnTriggerExit(Collider other)
+    public void OnTriggerExit(Collider other)
     {
-        if (other.tag == "NPC")
+        if (other.tag == "NPC") // 所有可互動(E)對象tag都會是NPC
         {
             if(UICtrl.Instance.nowSkillstore && UICtrl.Instance.nowSkillstore.gameObject == other.gameObject)
                 other.GetComponent<Npc>().doNpc(false);
@@ -209,18 +199,24 @@ public class PlayerCtrl : MonoBehaviour
                 other.GetComponent<Npc>().doNpc(false);
             if (other.TryGetComponent<Npc>(out Npc npc))
             {
-                if (npc.NameUI)
-                    npc.NameUI.gameObject.SetActive(false);
+                if (interactableObjects.Contains(other.gameObject))
+                {
+                    interactableObjects.Remove(other.gameObject);
+                    if (ontriggerTarget == other.gameObject)
+                    {
+                        ontriggerTarget = null;
+
+                        // 關閉名稱UI
+                        if (npc.NameUI)
+                        {
+                            npc.NameUI.gameObject.SetActive(false);
+                        }
+                        UpdateCurrentTarget();
+                    }
+                }
             }
-            if (ontriggerTarget == other.gameObject)
-                ontriggerTarget = null;
-            if(openedTarget == other.gameObject)
+            if (openedTarget == other.gameObject)
                 openedTarget = null;
-        }
-        else if (other.tag == "Door")
-        {
-            if(ontriggerTarget == other.gameObject)
-                ontriggerTarget = null;
         }
     }
 
@@ -285,6 +281,44 @@ public class PlayerCtrl : MonoBehaviour
         if (UICtrl.Instance.vignette != null)
             UICtrl.Instance.vignette.color.value = UICtrl.Instance.vignetteColor;
         valuedata.canBehurt = true;
+    }
+
+    private void UpdateCurrentTarget()
+    {
+        // 移除已經消失的物件
+        interactableObjects.RemoveAll(obj => obj == null);
+
+        if (interactableObjects.Count > 0)
+        {
+            // 設定最接近的目標作為當前目標
+            ontriggerTarget = FindClosestTarget();
+
+            // 開啟名稱UI
+            if (ontriggerTarget.TryGetComponent<Npc>(out Npc _npc))
+            {
+                if (_npc.NameUI)
+                {
+                    _npc.NameUI.gameObject.SetActive(true);
+                    _npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
+                    _npc.showName();
+                }
+            }
+        }
+    }
+    private GameObject FindClosestTarget()
+    {
+        GameObject closest = null;
+        float minDistance = float.MaxValue;
+        foreach (var obj in interactableObjects)
+        {
+            float distance = Vector3.Distance(transform.position, obj.transform.position);
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                closest = obj;
+            }
+        }
+        return closest;
     }
 
 }

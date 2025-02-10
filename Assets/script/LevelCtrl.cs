@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using TMPro;
 
 public class LevelCtrl : MonoBehaviour
 {
@@ -19,24 +21,26 @@ public class LevelCtrl : MonoBehaviour
     public GameObject itemPassivepoint;
     public GameObject itemWeapon;
     public GameObject itemSkill;
+    public CanvasGroup ScreenMask;
+    public TextMeshProUGUI Progress;
 
     // 用來招喚的怪物
     public GameObject EnemyHerring;
 
     //關卡池
-    public int[][] Level = new int[][] // [等級][關卡ID]
+    public string[][] Level = new string[][] // [等級][關卡ID]
     {
-        new int[]{ 0 },
-        new int[]{ 1,},
-        new int[]{ 2,},
-        new int[]{ 3,},
-        new int[]{ 4,},
-        new int[]{ 5,},
-        new int[]{ 6,},
-        new int[]{ 7,},
-        new int[]{ 8,},
-        new int[]{ 9,},
-        new int[]{ 10,},
+        new string[]{ "Title", "MainScene" }, // 首頁,據點
+        new string[]{ "Level_1_1", },
+        new string[]{ "Level_2_1", },
+        new string[]{ "Level_3_1", },
+        new string[]{ "Level_4_1", },
+        new string[]{ "Level_5_1", },
+        new string[]{ "Level_6_1", },
+        new string[]{ "Level_7_1", },
+        new string[]{ "Level_8_1", },
+        new string[]{ "Level_9_1", },
+        new string[]{ "Level_10_1", },
     };
 
     //確認剩餘敵人
@@ -98,34 +102,46 @@ public class LevelCtrl : MonoBehaviour
 
     IEnumerator LoadSceneWithProgress(int level)
     {
-        PlayerCtrl.Instance.canMove = false;
+        if(PlayerCtrl.Instance)
+            PlayerCtrl.Instance.canMove = false;
 
         //畫面淡出
-        Color c = UICtrl.Instance.ScreenMask.color;
+        Progress.text = "0 %";
         for (float i=0;i<1;i+=0.05f)
         {
-            c.a = i;
-            UICtrl.Instance.ScreenMask.color = c;
+            ScreenMask.alpha = i;
             yield return new WaitForSeconds(0.01f);
         }
-        c.a = 1;
-        UICtrl.Instance.ScreenMask.color = c;
+        ScreenMask.alpha = 1;
 
-        ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
-
-        // 從關卡池抽關卡
-        int x = Random.Range(0, Level[level].Length);
-        int targetScene = Level[level][x];
-
+        string targetScene;
+        if (level == -1) // 從遊戲回到首頁
+        {
+            if (DontDestroy.instance)
+                Destroy(DontDestroy.instance.gameObject);
+            targetScene = Level[0][0];
+        }
+        else if(level == 0) // 到據點
+        {
+            targetScene = Level[0][1];
+        }
+        else // 到關卡
+        {
+            ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
+            // 從關卡池抽關卡
+            int x = Random.Range(0, Level[level].Length);
+            targetScene = Level[level][x];
+        }
+        
         // 開始異步加載場景
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(targetScene);
 
         // 在場景加載完成前，讓程序等待
         while (!asyncLoad.isDone)
         {
-            // 可以在這裡顯示加載進度，例如載入畫面
-            //float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
-            //Debug.Log("Loading progress: " + (progress * 100) + "%");
+            // 加載進度
+            float progress = Mathf.Clamp01(asyncLoad.progress / 0.9f);
+            Progress.text = (progress * 100).ToString("0") + " %";
 
             yield return null;
         }
@@ -153,12 +169,10 @@ public class LevelCtrl : MonoBehaviour
         //畫面淡入
         for (float i = 1; i >= 0; i-=0.05f)
         {
-            c.a = i;
-            UICtrl.Instance.ScreenMask.color = c;
+            ScreenMask.alpha = i;
             yield return new WaitForSeconds(0.01f);
         }
-        c.a = 0;
-        UICtrl.Instance.ScreenMask.color = c;
+        ScreenMask.alpha = 0;
     }
 
     public void DropMoney(int value, Vector3 pos, float offset)

@@ -99,13 +99,11 @@ public class PlayerAttack : MonoBehaviour
     {
         float _dmg = dmg; // 多一層，避免傷害疊加
 
-        if (isBullet && ValueData.Instance.isHaveweaponid(_fidleid, 12)) //武器12狙擊
+        if (ValueData.Instance.isHaveweaponid(_fidleid, 12)) //武器12狙擊 isBullet && 
         {
-            if (startPos != Vector3.zero)
-            {
-                float distance = Vector3.Distance(startPos, transform.position);
-                _dmg += distance * 2;
-            }
+            Vector3 playerpos = ValueData.Instance.Player.transform.position;
+            float distance = Vector3.Distance(playerpos, transform.position);
+            _dmg += distance * 2;
         }
         if(ValueData.Instance.isHaveweaponid(_fidleid,8)) // 武器8
         {

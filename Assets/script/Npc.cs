@@ -64,6 +64,8 @@ public class Npc : MonoBehaviour
                 if (Switch)
                 {
                     LevelCtrl.Instance.DropMoney(money, transform.position, 1f);
+                    if (gameObject.TryGetComponent<Collider>(out Collider _box)) // 因為Destroy不會觸發OnTriggerExit，所以手動呼叫
+                        PlayerCtrl.Instance.OnTriggerExit(_box);
                     Destroy(gameObject);
                 }
                 break;
@@ -72,6 +74,8 @@ public class Npc : MonoBehaviour
                 {
                     ValueData.Instance.passiveskillPoint += passivepoint;
                     UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
+                    if (gameObject.TryGetComponent<Collider>(out Collider _box)) // 因為Destroy不會觸發OnTriggerExit，所以手動呼叫
+                        PlayerCtrl.Instance.OnTriggerExit(_box);
                     Destroy(gameObject);
                 }
                 break;

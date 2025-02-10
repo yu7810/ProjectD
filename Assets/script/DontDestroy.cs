@@ -5,7 +5,7 @@ using UnityEngine;
 public class DontDestroy : MonoBehaviour
 {
     // 靜態實例，用於存儲唯一的實例
-    private static DontDestroy instance;
+    public static DontDestroy instance;
 
     // 在 Awake 中檢查和創建單例
     void Awake()

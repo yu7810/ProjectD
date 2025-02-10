@@ -16,7 +16,6 @@ public class UICtrl : MonoBehaviour
 {
     private static UICtrl instance;
     public Canvas canvas;
-    public Canvas worldspaceCanvas;
     public Image Value_AP;
     public Image Value_HP;
     public Image Value_EXP;
@@ -43,13 +42,11 @@ public class UICtrl : MonoBehaviour
     public GameObject WeaponfieldUI;
     public TextMeshPro DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
-    public GameObject[] DontDestroy;
     public TextMeshProUGUI MoneyValue;
     public TextMeshProUGUI nowhpUI;
     public TextMeshProUGUI maxhpUI;
     public TextMeshProUGUI nowapUI;
     public TextMeshProUGUI maxapUI;
-    public Image ScreenMask;
     public GameObject UI_Rage; // 盛怒UI的最上層物件
     public Image Value_Rage;
     public TextMeshProUGUI nowrageUI;
@@ -383,21 +380,6 @@ public class UICtrl : MonoBehaviour
         }
         instance = this;
         DontDestroyOnLoad(gameObject);
-
-        if (DontDestroy.Length > 0)
-        {
-            GameObject[] objects = new GameObject[DontDestroy.Length];
-            for (int i = 1; i < objects.Length; i++)
-            {
-                Destroy(objects[i]);
-            }
-            //= GameObject.Find(DontDestroy[0].name);
-        }
-
-        foreach (GameObject obj in DontDestroy)
-        {
-            DontDestroyOnLoad(obj);
-        }
     }
 
     void UIUpdate() {
@@ -543,11 +525,37 @@ public class UICtrl : MonoBehaviour
     }
     // 點擊要放的欄位時
     public void SelectSkillChangeField(int Field) {
+       
+        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > 0)
+        {
+            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
+        }
+        if (nowSkillstore != null && ChangeSkill_ID[0] != 0 && !nowSkillstore.unlimited) // 如果當前為開啟技能商店，則從該商店移除該商品
+        {
+            nowSkillstore.item.RemoveAt(nowSelectitem);
+            nowSkillstore.doNpc(true);
+            if (nowSkillstore.npcType == NpcType.Skill) // 如果是寶箱，且已無內容物，則刪除寶箱
+            {
+                if (nowSkillstore.item.Count == 0)
+                {
+                    GameObject box = nowSkillstore.gameObject;
+                    nowSkillstore.doNpc(false);
+                    if(box.TryGetComponent<Collider>(out Collider _box)) // 因為Destroy不會觸發OnTriggerExit，所以手動呼叫
+                        PlayerCtrl.Instance.OnTriggerExit(_box);
+                    Destroy(box);
+                }
+            }
+        }
+        DoChangeSkill(Field);
+    }
+
+    public void DoChangeSkill(int Field)
+    {
         SkillFieldSelectUI.SetActive(false);
 
         int oldlv = ValueData.Instance.SkillField[Field].Level;
         int newlv = ChangeSkill_ID[1];
-        if((ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
+        if ((ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
         {
             ChangeSkill_ID[1] += 1;
         }
@@ -581,29 +589,12 @@ public class UICtrl : MonoBehaviour
         }
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID[0]];
         SkillFieldIcon[Field].SetNativeSize();
-        if(ValueData.Instance.Skill[ChangeSkill_ID[0]].ID == 0)
+        if (ValueData.Instance.Skill[ChangeSkill_ID[0]].ID == 0)
             SkillFieldIcon[Field].tag = "Untagged";
         else
             SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
-        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > 0)
-        {
-            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
-        }
-        if (nowSkillstore != null && ChangeSkill_ID[0] != 0 && !nowSkillstore.unlimited) // 如果當前為開啟技能商店，則從該商店移除該商品
-        {
-            nowSkillstore.item.RemoveAt(nowSelectitem);
-            nowSkillstore.doNpc(true);
-            if (nowSkillstore.npcType == NpcType.Skill) // 如果是寶箱，且已無內容物，則刪除寶箱
-            {
-                if (nowSkillstore.item.Count == 0)
-                {
-                    GameObject box = nowSkillstore.gameObject;
-                    nowSkillstore.doNpc(false);
-                    Destroy(box);
-                }
-            }
-        }
+
         ChangeSkill_ID[0] = -1;
         ChangeSkill_ID[1] = 0;
     }
@@ -642,9 +633,36 @@ public class UICtrl : MonoBehaviour
     // 點擊要放的欄位時
     public void SelectWeaponChangeField(int Field)
     {
+        if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
+        {
+            ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
+        }
+        
+        if(nowWeaponstore != null && ChangeWeapon_ID != 0 && !nowWeaponstore.unlimited) // 如果當前為開啟武器商店，則從該商店移除該商品
+        {
+            nowWeaponstore.item.RemoveAt(nowSelectitem);
+            nowWeaponstore.doNpc(true);
+            if (nowWeaponstore.npcType == NpcType.Weapon) // 如果是寶箱，且已無內容物，則刪除寶箱
+            {
+                if (nowWeaponstore.item.Count == 0)
+                {
+                    GameObject box = nowWeaponstore.gameObject;
+                    nowWeaponstore.doNpc(false);
+                    if (box.TryGetComponent<Collider>(out Collider _box)) // 因為Destroy不會觸發OnTriggerExit，所以手動呼叫
+                        PlayerCtrl.Instance.OnTriggerExit(_box);
+                    Destroy(box);
+                }
+            }
+            
+        }
+        DoChangeWeapon(Field);
+    }
+
+    public void DoChangeWeapon(int Field)
+    {
         WeaponFieldSelectUI.SetActive(false);
         // 被擠掉的裝備變成裝備寶箱
-        if(ValueData.Instance.WeaponField[Field].ID != 0)
+        if (ValueData.Instance.WeaponField[Field].ID != 0)
         {
             LevelCtrl.Instance.doItemweapon(ValueData.Instance.WeaponField[Field].ID);
         }
@@ -661,26 +679,6 @@ public class UICtrl : MonoBehaviour
         WeaponFieldIcon[Field].tag = "UI";
         WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
-        if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
-        {
-            ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
-        }
-        
-        if(nowWeaponstore != null && ChangeWeapon_ID != 0 && !nowWeaponstore.unlimited) // 如果當前為開啟武器商店，則從該商店移除該商品
-        {
-            nowWeaponstore.item.RemoveAt(nowSelectitem);
-            nowWeaponstore.doNpc(true);
-            if (nowWeaponstore.npcType == NpcType.Weapon) // 如果是寶箱，且已無內容物，則刪除寶箱
-            {
-                if (nowWeaponstore.item.Count == 0)
-                {
-                    GameObject box = nowWeaponstore.gameObject;
-                    nowWeaponstore.doNpc(false);
-                    Destroy(box);
-                }
-            }
-            
-        }
         ChangeWeapon_ID = -1;
     }
 
@@ -753,16 +751,16 @@ public class UICtrl : MonoBehaviour
             BoxUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             UpdateSkillStore(itemID, itemlevel);
-            ChangeSkill_ID[0] = -1;
-            ChangeSkill_ID[1] = 0;
+            //ChangeSkill_ID[0] = -1;
+            //ChangeSkill_ID[1] = 0;
             WeaponfieldUI.SetActive(true);
         }
         else
         {
             SkillStoreUI.SetActive(false);
             SkillFieldSelectUI.SetActive(false);
-            ChangeSkill_ID[0] = -1;
-            ChangeSkill_ID[1] = 0;
+            //ChangeSkill_ID[0] = -1;
+            //ChangeSkill_ID[1] = 0;
             if (!ValueData.Instance.isUIopen)
                 WeaponfieldUI.SetActive(false);
         }
@@ -812,14 +810,14 @@ public class UICtrl : MonoBehaviour
             BoxUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             UpdateWeaponStore(itemID);
-            ChangeWeapon_ID = -1;
+            //ChangeWeapon_ID = -1;
             WeaponfieldUI.SetActive(true);
         }
         else
         {
             WeaponStoreUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
-            ChangeWeapon_ID = -1;
+            //ChangeWeapon_ID = -1;
             if(!ValueData.Instance.isUIopen)
                 WeaponfieldUI.SetActive(false);
         }
@@ -1004,9 +1002,9 @@ public class UICtrl : MonoBehaviour
             SkillStoreUI.SetActive(false);
             //WeaponFieldSelectUI.SetActive(false);
             UpdateBox(itemID, itemLv);
-            ChangeWeapon_ID = -1;
-            ChangeSkill_ID[0] = -1;
-            ChangeSkill_ID[1] = 0;
+            //ChangeWeapon_ID = -1;
+            //ChangeSkill_ID[0] = -1;
+            //ChangeSkill_ID[1] = 0;
             WeaponfieldUI.SetActive(true);
         }
         else
@@ -1014,9 +1012,9 @@ public class UICtrl : MonoBehaviour
             BoxUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             SkillFieldSelectUI.SetActive(false);
-            ChangeWeapon_ID = -1;
-            ChangeSkill_ID[0] = -1;
-            ChangeSkill_ID[1] = 0;
+            //ChangeWeapon_ID = -1;
+            //ChangeSkill_ID[0] = -1;
+            //ChangeSkill_ID[1] = 0;
             if (!ValueData.Instance.isUIopen)
                 WeaponfieldUI.SetActive(false);
         }
