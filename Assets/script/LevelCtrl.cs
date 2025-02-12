@@ -106,6 +106,7 @@ public class LevelCtrl : MonoBehaviour
             PlayerCtrl.Instance.canMove = false;
 
         //畫面淡出
+        ScreenMask.blocksRaycasts = true;
         Progress.text = "0 %";
         for (float i=0;i<1;i+=0.05f)
         {
@@ -124,10 +125,12 @@ public class LevelCtrl : MonoBehaviour
         else if(level == 0) // 到據點
         {
             targetScene = Level[0][1];
+            if(PlayerCtrl.Instance)
+                PlayerCtrl.Instance.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
         }
         else // 到關卡
         {
-            ValueData.Instance.Player.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
+            PlayerCtrl.Instance.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
             // 從關卡池抽關卡
             int x = Random.Range(0, Level[level].Length);
             targetScene = Level[level][x];
@@ -173,6 +176,7 @@ public class LevelCtrl : MonoBehaviour
             yield return new WaitForSeconds(0.01f);
         }
         ScreenMask.alpha = 0;
+        ScreenMask.blocksRaycasts = false;
     }
 
     public void DropMoney(int value, Vector3 pos, float offset)

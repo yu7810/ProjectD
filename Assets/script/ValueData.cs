@@ -205,7 +205,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> skillstorePool = new List<int>()
     {
-        1,2,4,5,8,9,10
+        1,2,4,8,9,10
     };
     //¸Ë³Æ°Ó©±¦À
     [NonSerialized]

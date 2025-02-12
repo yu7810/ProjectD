@@ -77,7 +77,7 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack) || ValueData.Instance.Rage != ValueData.Instance.maxRage)
                     return;
-                if ((other.transform.tag == "EnemyAttack" && other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged) || (other.transform.tag == "PlayerAttack"))
+                if ((other.transform.tag == "EnemyAttack" && other.GetComponent<EnemyAttack>().enemyType == EnemyType.Ranged) || (other.transform.tag == "PlayerAttack" && other.GetComponent<PlayerAttack>().isBullet == true))
                 {
                     doDamage(other.gameObject);
                     Destroy(other.transform.parent.gameObject);
