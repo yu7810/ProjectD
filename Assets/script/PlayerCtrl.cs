@@ -240,8 +240,14 @@ public class PlayerCtrl : MonoBehaviour
         }
     }
 
-    private void UseSkill(int Field)
+    public void UseSkill(int Field)
     {
+        // 裝備18 暴擊時施放 不能主動使用技能
+        if(ValueData.Instance.isHaveweaponid(Field, 18))
+        {
+            return;
+        }
+        // 冷卻及魔力足夠才能使用
         if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack && !isReload)
         {
             if (valuedata.SkillField[Field].ID <= 0)

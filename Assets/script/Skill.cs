@@ -119,25 +119,28 @@ public class Skill : MonoBehaviour
 
         if(ValueData.Instance.isHaveweaponid(Fieldid, 7)) //武器7的效果
         {
-            foreach (SkillTagType tag in ValueData.Instance.SkillTag[Skillid])
+            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//當前施放的需為位移技
             {
-                if (tag == SkillTagType.Movement)//當前施放的需為位移技
+                int _id = ValueData.Instance.SkillField[0].ID;
+                if (ValueData.Instance.SkillTag[_id].Contains(SkillTagType.Movement))
                 {
-                    int _id = ValueData.Instance.SkillField[0].ID;
-                    foreach (SkillTagType _tag in ValueData.Instance.SkillTag[_id])//額外觸發的需為非位移技
-                    {
-                        if (_tag == SkillTagType.Movement)
-                            return;
-                    }
-                    startPos = ValueData.Instance.Player.transform.position;
-                    startPos.y = 0.3f;
-                    UseSkill(ValueData.Instance.SkillField[0].ID, 0, startPos, startRot);
+                    return;
                 }
+                startPos = ValueData.Instance.Player.transform.position;
+                startPos.y = 0.3f;
+                UseSkill(ValueData.Instance.SkillField[0].ID, 0, startPos, startRot);
             }
         }
         if (ValueData.Instance.isHaveweaponid(Fieldid, 6) && usedTime < 2) //武器6效果
         {
             StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
+        }
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 16)) //武器16的效果
+        {
+            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//當前施放的需為位移技
+            {
+                ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
+            }
         }
     }
 
@@ -205,7 +208,6 @@ public class Skill : MonoBehaviour
             yield return new WaitForSeconds(0.005f);
         }
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
-        ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
     }
@@ -293,7 +295,12 @@ public class Skill : MonoBehaviour
         float rngAngle = Random.Range(0f, 6f);
         Quaternion currentRotation = startRot * Quaternion.Euler(0, rngAngle, 0);
 
-        GameObject a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
+        GameObject a;
+        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // 裝備14會讓中的位置改到滑鼠位置
+            a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
+        else
+            a = Instantiate(Skill_Magicarrow, startPos, currentRotation);
+        
         PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
         b.fidleid = Fieldid;
         float _size = ValueData.Instance.SkillField[Fieldid].Size;

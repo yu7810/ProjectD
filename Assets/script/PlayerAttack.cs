@@ -138,6 +138,14 @@ public class PlayerAttack : MonoBehaviour
                 ValueData.Instance.PlayerValueUpdate();
                 ValueData.Instance.SkillFieldValueUpdate();
             }
+            //裝備18 暴擊時施放
+            for(int i=0; i<3; i++)
+            {
+                if (_fidleid != i && ValueData.Instance.isHaveweaponid(i, 18))
+                {
+                    Skill.Instance.UseSkill(ValueData.Instance.SkillField[i].ID, i);
+                }
+            }
         }
         else // 未暴擊
         {

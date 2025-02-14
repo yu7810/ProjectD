@@ -99,7 +99,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//無
-        new SkillBase(1,20,"劈砍",1.2f,10,1f,1,0,0.25f,2f,1),
+        new SkillBase(1,20,"劈砍",1f,10,1f,1,0,0.25f,2f,1),
         new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f,1),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f,1),
         new SkillBase(4,20,"閃現",0.5f,0f,1f,1,3f,0f,2f,1),
@@ -107,7 +107,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),
         new SkillBase(8,20,"The喪鐘",4f,0,1f,1,2,0f,2f,1),
-        new SkillBase(9,20,"飛箭",0.2f,3,1f,1,0.3f,0f,2f,1),
+        new SkillBase(9,20,"飛箭",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
     };
     //技能介紹
@@ -167,14 +167,19 @@ public class ValueData : MonoBehaviour
         new WeaponBase(12,RarityType.Rare,60,"狙擊", 0, 0, -0.2f, 0.4f, 0, 0, 0),
         new WeaponBase(13,RarityType.Rare,60,"暴擊冷卻", 0, -0.1f, 0, 0, 0.25f, 0.2f, 0),
         new WeaponBase(14,RarityType.Rare,60,"虛空妖刃", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(15,RarityType.Normal,20,"布鞋", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(16,RarityType.Normal,20,"魔力鞋", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(17,RarityType.Normal,20,"初新者匕首", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(18,RarityType.Rare,60,"紫晶戒指", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(19,RarityType.Normal,20,"學徒法書", 0, 0, 0, 0, 0, 0, 0),
     };
     //裝備介紹
     [NonSerialized]
     public string[] WeaponIntro = new string[] {
         "-",
-        "-",
-        "-",
-        "-",
+        "1",
+        "2",
+        "3",
         "身上每1金幣提供1%傷害增幅",
         "「大力點，一下搞定」",
         "技能額外重複2次",
@@ -186,6 +191,11 @@ public class ValueData : MonoBehaviour
         "投射物傷害依距離提升",
         "暴擊時降低其他技能冷卻 1 秒",
         "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
     };
 
     //已裝備裝備
@@ -211,7 +221,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
     };
 
     //每次加減天賦時呼叫，更新所有數值
@@ -439,13 +449,13 @@ public class ValueData : MonoBehaviour
                 add_Cost += 0.5f;
                 break;
             case 24:
-                add_maxAp += 2;
+                add_maxAp += 1;
                 break;
             case 25:
-                add_maxAp += 2;
+                add_maxAp += 1;
                 break;
             case 26:
-                add_maxAp += 2;
+                add_maxAp += 1;
                 break;
             case 27:
                 
@@ -454,10 +464,10 @@ public class ValueData : MonoBehaviour
                 
                 break;
             case 29:
-                add_maxAp += 2;
+                add_maxAp += 1;
                 break;
             case 30:
-                add_maxAp += 2;
+                add_maxAp += 1;
                 break;
             case 31:
                 

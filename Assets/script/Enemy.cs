@@ -100,6 +100,11 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        StopAllCoroutines();
+    }
+
     //受到傷害時使用
     public void Hurt(float Dmg, int Filed = -1) {
         if (NoticeRange && NoticeRange.activeSelf)
@@ -124,7 +129,7 @@ public class Enemy : MonoBehaviour
                         BossStage = 1;
                     else if (Hp <= maxHp * 1 / 2 && BossStage == 2)
                         BossStage = 3;
-                    else if (Hp <= maxHp * 1 / 4 && BossStage == 2)
+                    else if (Hp <= maxHp * 1 / 4 && BossStage == 4)
                         BossStage = 5;
                 }
             }
@@ -212,10 +217,9 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == "EnemyAttack")
         {
-            if (other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
+            if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion && other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
             {
-                other.GetComponent<EnemyAttack>().enemy.Hurt(100);
-                other.GetComponent<EnemyAttack>().enemy.StopAction();
+                other.GetComponent<EnemyAttack>().enemy.Hurt(500); // boss回血
                 Destroy(gameObject);
             }
         }
@@ -245,21 +249,29 @@ public class Enemy : MonoBehaviour
         else if (gameObject.tag == "Enemy") {
             if(canMove)
             {
-                canMove = false;
-                agent.isStopped = true;
-                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
-                yield return new WaitForSeconds(0.2f);
-                Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-                //yield return new WaitForSeconds(0.1f);
-                canMove = true;
-                agent.isStopped = false;
+                if(enemyRarity == EnemyRarity.Minion || enemyRarity == EnemyRarity.Normal || enemyRarity == EnemyRarity.Rare) // 會受傷停頓
+                {
+                    canMove = false;
+                    agent.isStopped = true;
+                    Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
+                    yield return new WaitForSeconds(0.2f);
+                    Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
+                    canMove = true;
+                    agent.isStopped = false;
+                }
+                else // 不會受傷停頓
+                {
+                    Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
+                    yield return new WaitForSeconds(0.2f);
+                    Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
+                }
+                
             }
             else // 當下本來就不能移動時，不去動agent
             {
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.65f, 0.65f, 0.65f));
                 yield return new WaitForSeconds(0.2f);
                 Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", C);
-                //yield return new WaitForSeconds(0.1f);
             }
         }
     }
@@ -282,6 +294,7 @@ public class Enemy : MonoBehaviour
             {
                 // 停下並轉向玩家
                 agent.isStopped = true;
+                rb.velocity = Vector3.zero;
                 m_Animator.SetBool("isMoving", false);
 
                 // 計算目標方向
@@ -297,6 +310,7 @@ public class Enemy : MonoBehaviour
                 {
                     canMove = false;
                     m_Animator.SetBool("Attack", true);
+                    move = null;
                     yield break;
                 }
             }
@@ -320,8 +334,7 @@ public class Enemy : MonoBehaviour
         }
 
         yield return new WaitForNextFrameUnit();
-        move = null;
-        StartCoroutine(_Move());
+        move = StartCoroutine(_Move());
 
     }
 
@@ -351,26 +364,29 @@ public class Enemy : MonoBehaviour
                 else if (BossStage == 1)
                 {
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(2));
+                    call = StartCoroutine(CallHerring(4));
                     BossStage = 2;
                 }
                 else if (BossStage == 3)
                 {
                     AttackCD = 1.5f;
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(4));
+                    call = StartCoroutine(CallHerring(8));
                     BossStage = 4;
                 }
                 else if (BossStage == 5)
                 {
                     AttackCD = 1f;
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(8));
+                    call = StartCoroutine(CallHerring(12));
                     BossStage = 6;
                 }
             }
             else
+            {
                 sprint = StartCoroutine(Sprint());
+            }
+                
         }
         canAttack = false;
     }
@@ -386,7 +402,9 @@ public class Enemy : MonoBehaviour
         canMove = true;
         agent.isStopped = false;
         if(move == null)
+        {
             move = StartCoroutine(_Move());
+        }
         if(attackCD == null)
             attackCD = StartCoroutine(_AttackCD());
     }
@@ -454,7 +472,7 @@ public class Enemy : MonoBehaviour
         while (Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
-            rb.velocity = transform.forward * 5;
+            rb.velocity = transform.forward * 2.5f * agent.speed;
             _time -= Time.fixedDeltaTime;
         }
 
@@ -471,13 +489,14 @@ public class Enemy : MonoBehaviour
         }
 
         int lastposition = -1;
+        float _time = 1f / count; // 在x秒內招喚完
         for(int i = 0 ; i < count ; i++)
         {
             int newposition = Random.Range(0, MinionPosition.Length);
             if (newposition == lastposition && MinionPosition.Length >= 1) //新招喚點與上次招喚點相同則重骰
                 newposition = Random.Range(0, MinionPosition.Length);
             lastposition = newposition;
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(_time);
             GameObject _minion = Instantiate(LevelCtrl.Instance.EnemyHerring, MinionPosition[newposition].transform.position, MinionPosition[newposition].transform.rotation);
             Enemy _enemy = _minion.GetComponent<Enemy>();
             _enemy.enemyRarity = EnemyRarity.Minion;
