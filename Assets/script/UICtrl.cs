@@ -555,7 +555,7 @@ public class UICtrl : MonoBehaviour
 
         int oldlv = ValueData.Instance.SkillField[Field].Level;
         int newlv = ChangeSkill_ID[1];
-        if ((ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
+        if (ChangeSkill_ID[0] != 0 && (ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
         {
             ChangeSkill_ID[1] += 1;
         }
@@ -985,11 +985,6 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.passiveskillPoint = 0;
         ValueData.Instance.PlayerValueUpdate();
         PlayerCtrl.Instance.Start();
-        for(int x=0;x<WeaponfieldUI.transform.childCount;x++)
-        {
-            ChangeWeapon_ID = 0;
-            SelectWeaponChangeField(x);
-        }
     }
 
     // 開啟地上的裝備寶箱時

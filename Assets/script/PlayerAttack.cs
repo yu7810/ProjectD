@@ -112,8 +112,8 @@ public class PlayerAttack : MonoBehaviour
         }
 
         //暴擊
-        float randomvalue = Random.Range(0.01f, 1f);
-        if (crit >= randomvalue)
+        float randomvalue = Random.Range(0f, 1f);
+        if (crit > randomvalue && thisSkill.ID != 8) // 喪鐘不會暴擊
         {
             _dmg *= thisSkill.CritDmg;
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, true);
@@ -143,7 +143,8 @@ public class PlayerAttack : MonoBehaviour
             {
                 if (_fidleid != i && ValueData.Instance.isHaveweaponid(i, 18))
                 {
-                    Skill.Instance.UseSkill(ValueData.Instance.SkillField[i].ID, i);
+                    if(Skill.Instance.CastOnCritical())
+                        Skill.Instance.UseSkill(ValueData.Instance.SkillField[i].ID, i);
                 }
             }
         }
@@ -199,7 +200,7 @@ public class PlayerAttack : MonoBehaviour
         float speed = 5f * thisSkill.Speed;
         while(this.gameObject)
         {
-            yield return new WaitForSeconds(0.01f);
+            yield return new WaitForSecondsRealtime(0.01f);
             transform.position += transform.forward * speed * Time.deltaTime;
         }
     }

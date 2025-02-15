@@ -99,14 +99,14 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//µL
-        new SkillBase(1,20,"¼A¬å",1f,10,1f,1,0,0.25f,2f,1),
+        new SkillBase(1,20,"¼A¬å",1f,10,1f,1,0,0.15f,2f,1),
         new SkillBase(2,20,"½Ä¨ë",2.4f,0,1f,1,0,0,2f,1),//size=¦ì²¾¶ZÂ÷
         new SkillBase(3,0,"­µ²Å",1f,10,1f,1,0,0,2f,1),
         new SkillBase(4,20,"°{²{",0.5f,0f,1f,1,3f,0f,2f,1),
         new SkillBase(5,40,"·s¤ë±Ù",1.8f,6,0.8f,1,0f,0.1f,2f,1),
         new SkillBase(6,0,"©¶¤ë±Ù",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"©ú¤ë±Ù",1.8f,20,1.4f,1,0f,0.1f,2f,1),
-        new SkillBase(8,20,"The³àÄÁ",4f,0,1f,1,2,0f,2f,1),
+        new SkillBase(8,20,"The³àÄÁ",4f,100f,1f,1,2,0f,2f,1),
         new SkillBase(9,20,"­¸½b",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"¤ôÃn",0.5f,0f,1f,1,0f,0f,2f,1),
     };
@@ -727,7 +727,7 @@ public class ValueData : MonoBehaviour
         {
             if (Rage > 0)
             {
-                GetRage(-value);
+                GetRage(-value*5);
                 yield return new WaitForSeconds(value);
             }
             else

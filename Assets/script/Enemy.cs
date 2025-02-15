@@ -68,7 +68,7 @@ public class Enemy : MonoBehaviour
     {
         target = ValueData.Instance.Player.transform;
         agent = GetComponent<NavMeshAgent>();
-        if (enemyType == EnemyType.Melee || enemyType == EnemyType.Tank)
+        if (enemyType == EnemyType.Melee || enemyType == EnemyType.Tank || enemyType == EnemyType.Warrior)
         {
             AttackCollider = transform.Find("AttackCollider").gameObject;
             NoticeRange = transform.Find("NoticeRange").gameObject;
@@ -162,7 +162,7 @@ public class Enemy : MonoBehaviour
             float size = ValueData.Instance.SkillField[id].Size;
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();
-            atk.dmg = -Dmg * 1.2f;
+            atk.dmg = -Dmg * ValueData.Instance.SkillField[id].Damage / 100;
             atk.passTarget.Add(this.gameObject);
             bellCD = 0.1f;
             StartCoroutine(BellCD());
@@ -217,6 +217,7 @@ public class Enemy : MonoBehaviour
     {
         if (other.tag == "EnemyAttack")
         {
+            // 被鯡魚王吃掉
             if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion && other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
             {
                 other.GetComponent<EnemyAttack>().enemy.Hurt(500); // boss回血
@@ -341,7 +342,7 @@ public class Enemy : MonoBehaviour
     //動畫事件
     public void StartAttack()
     {
-        if (enemyType == EnemyType.Melee)
+        if (enemyType == EnemyType.Melee || enemyType == EnemyType.Warrior)
         {
             AttackCollider.SetActive(true);
             m_Animator.SetBool("Attack", false);
@@ -401,12 +402,19 @@ public class Enemy : MonoBehaviour
         }
         canMove = true;
         agent.isStopped = false;
-        if(move == null)
+        if (enemyType == EnemyType.Warrior)
         {
-            move = StartCoroutine(_Move());
+            AttackCollider.SetActive(false);
+            StartCoroutine(Runaway());
         }
-        if(attackCD == null)
-            attackCD = StartCoroutine(_AttackCD());
+        else
+        {
+            if (move == null)
+                move = StartCoroutine(_Move());
+            if (attackCD == null)
+                attackCD = StartCoroutine(_AttackCD());
+        }
+        
     }
     public void EndBehit() {
         m_Animator.SetBool("BeHit", false);
@@ -446,6 +454,7 @@ public class Enemy : MonoBehaviour
     {
         if (time <= 0)
             yield return 0;
+        hpUI.gameObject.SetActive(true);
         float nowtime = time;
         while(nowtime > 0.1f)
         {
@@ -453,9 +462,10 @@ public class Enemy : MonoBehaviour
             nowtime -= 0.1f;
             yield return new WaitForSeconds(0.1f);
         }
-        if(nowtime > 0)
+        hpUI.value = nowtime / time;
+        if (nowtime > 0)
             yield return new WaitForSeconds(nowtime);
-        hpUI.transform.parent.gameObject.SetActive(false);
+        hpUI.gameObject.SetActive(false);
     }
 
     // 衝刺
@@ -479,7 +489,7 @@ public class Enemy : MonoBehaviour
         StopAction();
     }
 
-    //招喚小怪鯡魚
+    // 招喚小怪鯡魚
     IEnumerator CallHerring(int count)
     {
         if (MinionPosition.Length == 0 || count <= 0)
@@ -506,7 +516,35 @@ public class Enemy : MonoBehaviour
         StopAction();
     }
 
-    //中斷動作用
+    // 逃離
+    IEnumerator Runaway()
+    {
+        float moveRange = Random.Range(1f, 3f);
+
+        // 計算逃跑方向（朝遠離目標的方向）
+        Vector3 fleeDirection = (transform.position - target.position).normalized;
+        Vector3 newDestination = transform.position + fleeDirection * moveRange;
+
+        // 確保目標點在 NavMesh 上
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(newDestination, out hit, moveRange, NavMesh.AllAreas))
+        {
+            agent.SetDestination(hit.position);
+        }
+
+        // 還沒走到目標位置
+        while (agent.pathPending || agent.remainingDistance > agent.stoppingDistance)
+        {
+            yield return new WaitForNextFrameUnit();
+        }
+        // 回到移動階段
+        if (move == null)
+            move = StartCoroutine(_Move());
+        if (attackCD == null)
+            attackCD = StartCoroutine(_AttackCD());
+    }
+
+    // 中斷動作用
     public void StopAction()
     {
         if(enemyType == EnemyType.Tank)
@@ -534,6 +572,7 @@ public enum EnemyType
     Barrel, // 桶子
     Minion, // 招喚物 (鐘)
     Tank, // 近戰 鯡魚
+    Warrior, // 高機動
 }
 public enum EnemyRarity
 {

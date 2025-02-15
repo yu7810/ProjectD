@@ -64,33 +64,34 @@ public class PlayerCtrl : MonoBehaviour
         canAttack = true;
         isReload = false;
         valuedata.canBehurt = true;
+        
+        //初始武器
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(0);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(1);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(2);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(3);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(4);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(5);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(6);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(7);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(8);
         //初始技能
         UICtrl.Instance.ChangeSkill_ID[1] = 0;//初始技能等級
         UICtrl.Instance.ChangeSkill_ID[0] = 0;
-        UICtrl.Instance.SelectSkillChangeField(0);
+        UICtrl.Instance.DoChangeSkill(0);
         UICtrl.Instance.ChangeSkill_ID[0] = 0;
-        UICtrl.Instance.SelectSkillChangeField(1);
+        UICtrl.Instance.DoChangeSkill(1);
         UICtrl.Instance.ChangeSkill_ID[0] = 0;
-        UICtrl.Instance.SelectSkillChangeField(2);
-        //初始武器
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(0);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(1);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(2);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(3);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(4);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(5);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(6);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(7);
-        UICtrl.Instance.ChangeWeapon_ID = 0;
-        UICtrl.Instance.SelectWeaponChangeField(8);
+        UICtrl.Instance.DoChangeSkill(2);
         startPosition = Character.transform.localPosition;
     }
 

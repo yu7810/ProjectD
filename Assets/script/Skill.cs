@@ -21,6 +21,7 @@ public class Skill : MonoBehaviour
     int UsedTime = 0; // 紀錄技能連續使用次數
     Coroutine useSkillStop; // 攻擊停頓
     float stopTime; // 剩餘停頓時間
+    Coroutine _CastOnCritical; // 暴擊時施放的冷卻
 
     void Awake()
     {
@@ -335,4 +336,19 @@ public class Skill : MonoBehaviour
         Destroy(b, 1f);
     }
 
+    public bool CastOnCritical() // 判斷暴擊時施放是否在冷卻
+    {
+        if(_CastOnCritical == null)
+        {
+            _CastOnCritical = StartCoroutine(COC());
+            return true;
+        }
+        else
+            return false;
+    }
+    IEnumerator COC()
+    {
+        yield return new WaitForSecondsRealtime(0.25f);
+        _CastOnCritical = null;
+    }
 }
