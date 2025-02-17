@@ -449,6 +449,7 @@ public class UICtrl : MonoBehaviour
     }
 
     public void gameover() {
+        ValueData.Instance.immortal = true;
         UIUpdate();
         Time.timeScale = 0;
         GameOverUI.SetActive(true);

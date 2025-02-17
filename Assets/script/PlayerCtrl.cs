@@ -284,9 +284,10 @@ public class PlayerCtrl : MonoBehaviour
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", new Color(0.6f, 0, 0));
         //yield return new WaitForSeconds(0.3f);
         //Mesh.transform.GetComponent<SkinnedMeshRenderer>().material.SetColor("_EmissionColor", Color.black);
-        yield return new WaitForSeconds(0.4f);
+        yield return new WaitForSecondsRealtime(0.4f);
         if (UICtrl.Instance.vignette != null)
             UICtrl.Instance.vignette.color.value = UICtrl.Instance.vignetteColor;
+        yield return new WaitForSecondsRealtime(0.2f);
         valuedata.canBehurt = true;
     }
 

@@ -64,27 +64,27 @@ public class LevelCtrl : MonoBehaviour
 
         switch (nowPrize) {
             case PrizeBase.None:
-                Debug.Log("未設定獎勵");
+                //Debug.Log("未設定獎勵");
                 return;
             case PrizeBase.PassivePoin:
-                Debug.Log("天賦點");
+                //Debug.Log("天賦點");
                 GameObject _itemPassivepoint = Instantiate(itemPassivepoint, p, itemPassivepoint.transform.rotation);
                 npc = _itemPassivepoint.GetComponent<Npc>();
                 npc.passivepoint = 2;
                 npc.showName();
                 return;
             case PrizeBase.Skill:
-                Debug.Log("技能商店");
+                //Debug.Log("技能商店");
                 GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(p.x, skillstorePrefab.transform.position.y, p.z), skillstorePrefab.transform.rotation);
                 skillstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Weapon:
-                Debug.Log("武器商店");
+                //Debug.Log("武器商店");
                 GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(p.x, weaponstorePrefab.transform.position.y, p.z), weaponstorePrefab.transform.rotation);
                 weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
-                Debug.Log("金幣");
+                //Debug.Log("金幣");
                 int min = 10 + 12 * nowclass;
                 int max = 15 + 12 * nowclass;
                 int _money = Random.Range(min, max);
@@ -168,6 +168,7 @@ public class LevelCtrl : MonoBehaviour
         ValueData.Instance.GetAp(ValueData.Instance.maxAP);
 
         PlayerCtrl.Instance.canMove = true;
+        ValueData.Instance.immortal = false;
 
         //畫面淡入
         for (float i = 1; i >= 0; i-=0.05f)

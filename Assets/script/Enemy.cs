@@ -24,7 +24,6 @@ public class Enemy : MonoBehaviour
 
     public GameObject Mesh;
     public Slider hpUI;
-    public GameObject Bullet; // 遠程用的子彈
     private Color C;
     public bool canBeHit; //受擊時短暫無敵，避免重複判定
     Animator m_Animator;
@@ -75,7 +74,7 @@ public class Enemy : MonoBehaviour
             canAttack = true;
             canMove = true;
         }
-        else if (enemyType == EnemyType.Ranged)
+        else if (enemyType == EnemyType.Ranged || enemyType == EnemyType.Mage)
         {
             NoticeRange = transform.Find("NoticeRange").gameObject;
             canAttack = true;
@@ -349,7 +348,7 @@ public class Enemy : MonoBehaviour
         }
         else if (enemyType == EnemyType.Ranged)
         {
-            GameObject bullet = Instantiate(Bullet, transform.position, transform.rotation);
+            GameObject bullet = Instantiate(Skill.Instance.Skill_Squidarrow, transform.position, transform.rotation);
             bullet.transform.GetChild(0).GetComponent<EnemyAttack>().enemy = this;
             m_Animator.SetBool("Attack", false);
         }
@@ -389,6 +388,11 @@ public class Enemy : MonoBehaviour
             }
                 
         }
+        else if(enemyType == EnemyType.Mage)
+        {
+            int _time = Random.Range(3, 6);
+            StartCoroutine(Mageattack(_time));
+        }
         canAttack = false;
     }
     public void EndAttack()
@@ -425,7 +429,7 @@ public class Enemy : MonoBehaviour
         float attackcd = AttackCD;
         if(attackcd != 0)
         {
-            float rng = Random.Range(0.5f, 2f);
+            float rng = Random.Range(0.7f, 1.7f);
             attackcd *= rng;
         }
         yield return new WaitForSeconds(attackcd);
@@ -544,6 +548,36 @@ public class Enemy : MonoBehaviour
             attackCD = StartCoroutine(_AttackCD());
     }
 
+    IEnumerator Mageattack(int time)
+    {
+        if (time <= 0)
+            yield break;
+        else
+        {
+            for (int i = 0; i < time; i++)
+            {
+                yield return new WaitForSecondsRealtime(0.5f);
+                StartCoroutine(Magicexplode());
+            }
+            m_Animator.SetBool("Attack", false);
+            EndAttack();
+        }
+    }
+
+    // 法師遠距離範圍攻擊
+    IEnumerator Magicexplode()
+    {
+        float offset = 1.5f;
+        Vector3 playerpos = PlayerCtrl.Instance.transform.position;
+        Vector3 _offset = new (playerpos.x + Random.Range(-offset, offset), 0, playerpos.z + Random.Range(-offset, offset));
+        GameObject a = Instantiate(Skill.Instance.Skill_Magicexplode1, _offset, Skill.Instance.Skill_Magicexplode1.transform.rotation);
+        yield return new WaitForSecondsRealtime(1.5f);
+        Destroy(a);
+        GameObject b = Instantiate(Skill.Instance.Skill_Magicexplode2, _offset, Skill.Instance.Skill_Magicexplode2.transform.rotation);
+        b.transform.Find("Collider").GetComponent<EnemyAttack>().enemy = this;
+        Destroy(b, 0.5f);
+    }
+
     // 中斷動作用
     public void StopAction()
     {
@@ -573,6 +607,7 @@ public enum EnemyType
     Minion, // 招喚物 (鐘)
     Tank, // 近戰 鯡魚
     Warrior, // 高機動
+    Mage, // 遠程法師 (範圍)
 }
 public enum EnemyRarity
 {

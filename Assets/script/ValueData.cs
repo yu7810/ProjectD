@@ -10,6 +10,7 @@ public class ValueData : MonoBehaviour
     public GameObject Player;
     private static ValueData instance;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
+    public bool immortal; // 無敵狀態
     public bool isUIopen;//開關 tab UI
     public CinemachineVirtualCamera virtualCamera;//鏡頭
     public GameObject moneyPrefab;
@@ -521,7 +522,7 @@ public class ValueData : MonoBehaviour
         }
         else // 扣血
         {
-            if (!canBehurt)
+            if (!canBehurt || immortal)
                 return;
             value *= (1 - Damagereduction);
             /*if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // MOM

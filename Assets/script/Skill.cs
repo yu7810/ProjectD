@@ -7,6 +7,7 @@ public class Skill : MonoBehaviour
 {
     private static Skill instance;
     Rigidbody m_Rigidbody;
+    // 玩家技能
     public GameObject Skill_A;
     public GameObject Skill_Bell;
     public GameObject Skill_Bellattack;
@@ -15,6 +16,10 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Waterball_2;
     public GameObject Skill_DashTrail;
     public GameObject Skill_FlashTrail;
+    // 敵人技能
+    public GameObject Skill_Squidarrow;
+    public GameObject Skill_Magicexplode1;
+    public GameObject Skill_Magicexplode2;
     LayerMask maskFloor = (1 << 7);
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
     Quaternion startRot = new Quaternion(0, 0, 0,0);
