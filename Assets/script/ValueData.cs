@@ -101,15 +101,16 @@ public class ValueData : MonoBehaviour
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//無
         new SkillBase(1,20,"劈砍",1f,10,1f,1,0,0.15f,2f,1),
-        new SkillBase(2,20,"衝刺",2.4f,0,1f,1,0,0,2f,1),//size=位移距離
+        new SkillBase(2,20,"衝刺",2.4f,0,1f,1,1f,0,2f,1),//size=位移距離
         new SkillBase(3,0,"音符",1f,10,1f,1,0,0,2f,1),
         new SkillBase(4,20,"閃現",0.5f,0f,1f,1,3f,0f,2f,1),
         new SkillBase(5,40,"新月斬",1.8f,6,0.8f,1,0f,0.1f,2f,1),
         new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),
-        new SkillBase(8,20,"The喪鐘",4f,100f,1f,1,2,0f,2f,1),
+        new SkillBase(8,20,"The喪鐘",6f,100f,1f,1,2,0f,2f,1),
         new SkillBase(9,20,"飛箭",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
+        new SkillBase(11,40,"衝撞",5f, 30, 1, 1, 1f, 0.1f, 2f, 1),
     };
     //技能介紹
     [NonSerialized]
@@ -125,22 +126,24 @@ public class ValueData : MonoBehaviour
         "生成一個持續6秒的喪鐘，你對喪鐘造成的傷害會被放大 20% 後，被喪鐘以圓形造成範圍傷害",
         "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
         "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害",
+        "衝撞",
     };
     //技能標籤
     [NonSerialized]
     public SkillTagType[][] SkillTag = new SkillTagType[][]
     {
         new SkillTagType[]{ } ,
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能1
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Range } , //技能1
         new SkillTagType[]{ SkillTagType.Movement } , //技能2
         new SkillTagType[]{ SkillTagType.Spell } , //技能3
         new SkillTagType[]{ SkillTagType.Movement, SkillTagType.Spell } , //技能4
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能5
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能6
-        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Physical, SkillTagType.Range } , //技能7
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Range } , //技能5
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Range } , //技能6
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Range } , //技能7
         new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range } , //技能8
         new SkillTagType[]{ SkillTagType.Projectile, SkillTagType.Physical } , //技能9
         new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range, SkillTagType.Cold } , //技能10
+        new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Movement, SkillTagType.Range } , //技能11
     };
 
     //已裝備技能欄位
@@ -379,10 +382,10 @@ public class ValueData : MonoBehaviour
                 GetRage(0);
                 break;
             case 1:
-                add_Cooldown -= 0.08f;
+                add_Cooldown -= 0.05f;
                 break;
             case 2:
-                add_Cooldown -= 0.08f;
+                add_Cooldown -= 0.05f;
                 break;
             case 3:
                 add_maxRage -= 15;
@@ -687,9 +690,9 @@ public class ValueData : MonoBehaviour
         if (PassiveSkills[6])
             add_RageCritdmg = mRage * 0.04f;
         if (PassiveSkills[10])
-            add_RageCooldown = mRage * -0.02f;
+            add_RageCooldown = mRage * -0.01f;
         if(PassiveSkills[11])
-            add_RageMovespeed = mRage * 0.03f;
+            add_RageMovespeed = mRage * 0.015f;
         if (value != 0) // 避免死迴圈
         {
             PlayerValueUpdate();

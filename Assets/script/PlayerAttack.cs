@@ -189,8 +189,9 @@ public class PlayerAttack : MonoBehaviour
             {
                 _fidleid = value;
                 thisSkill = ValueData.Instance.SkillField[fidleid];
-                dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
                 crit = thisSkill.Crit;
+                if(dmg == 0)
+                    dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
             }
         }
     }

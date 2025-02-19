@@ -41,6 +41,7 @@ public class LevelCtrl : MonoBehaviour
         new string[]{ "Level_8_1", },
         new string[]{ "Level_9_1", },
         new string[]{ "Level_10_1", },
+        new string[]{ "Level_11_1", },
     };
 
     //½T»{³Ñ¾l¼Ä¤H

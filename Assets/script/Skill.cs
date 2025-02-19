@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.AI;
 
 public class Skill : MonoBehaviour
 {
@@ -27,6 +28,7 @@ public class Skill : MonoBehaviour
     Coroutine useSkillStop; // 攻擊停頓
     float stopTime; // 剩餘停頓時間
     Coroutine _CastOnCritical; // 暴擊時施放的冷卻
+    Coroutine _Charge; // 衝刺攻擊
 
     void Awake()
     {
@@ -121,6 +123,9 @@ public class Skill : MonoBehaviour
             case 10:
                 Waterball(Fieldid);
                 break;
+            case 11:
+                Waterball(Fieldid);
+                break;
         }
 
         if(ValueData.Instance.isHaveweaponid(Fieldid, 7)) //武器7的效果
@@ -211,7 +216,7 @@ public class Skill : MonoBehaviour
             newpos.y = 0.3f;
             trail.transform.position = newpos;
 
-            yield return new WaitForSeconds(0.005f);
+            yield return new WaitForSecondsRealtime(0.005f);
         }
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         PlayerCtrl.Instance.canMove = true;
@@ -220,12 +225,13 @@ public class Skill : MonoBehaviour
 
     void Flash()
     {
-        GameObject trail = Instantiate(Skill_FlashTrail, startPos, startRot);
+        Instantiate(Skill_FlashTrail, startPos, startRot); // 特效
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
             Vector3 targetPos = floorhit.point;
-            PlayerCtrl.Instance.gameObject.transform.position = new Vector3(targetPos.x, PlayerCtrl.Instance.gameObject.transform.position.y, targetPos.z);
+            if(NavMesh.SamplePosition(targetPos, out NavMeshHit hit, 100f, NavMesh.AllAreas))
+                PlayerCtrl.Instance.gameObject.transform.position = new Vector3(hit.position.x, PlayerCtrl.Instance.gameObject.transform.position.y, hit.position.z);
         }
     }
 
@@ -316,18 +322,20 @@ public class Skill : MonoBehaviour
     }
     void Waterball(int Fieldid)
     {
-        float _cost = ValueData.Instance.AP/2 * (1 + ValueData.Instance.Cost + ValueData.Instance.WeaponField[Fieldid * 3].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Cost);
-        ValueData.Instance.GetAp(-_cost);
-        ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
         StartCoroutine(waterball(Fieldid));
     }
     IEnumerator waterball(int Fieldid)
     {
+        float _cost = ValueData.Instance.AP / 2 * (1 + ValueData.Instance.Cost + ValueData.Instance.WeaponField[Fieldid * 3].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Cost + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Cost);
+        ValueData.Instance.GetAp(-_cost);
+        //ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+
         Vector3 targetPos = ValueData.Instance.Player.transform.position;
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
-            targetPos = floorhit.point;
+            if (NavMesh.SamplePosition(floorhit.point, out NavMeshHit hit, 100, NavMesh.AllAreas))
+                targetPos = hit.position;
             targetPos.y = 0.7f;
         }
         GameObject a = Instantiate(Skill_Waterball_1, targetPos, Skill_Waterball_1.transform.rotation);
@@ -337,8 +345,42 @@ public class Skill : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         GameObject b = Instantiate(Skill_Waterball_2, targetPos, Skill_Waterball_2.transform.rotation);
         b.transform.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        b.transform.GetComponent<PlayerAttack>().dmg = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
         b.transform.localScale = new Vector3(b.transform.localScale.x * _size, b.transform.localScale.y * _size, b.transform.localScale.z * _size);
         Destroy(b, 1f);
+    }
+
+    void Charge(int Fieldid)
+    {
+        if(_Charge == null)
+            _Charge = StartCoroutine(charge(Fieldid));
+    }
+
+    IEnumerator charge(int Fieldid)
+    {
+        PlayerCtrl.Instance.canMove = false;
+        ValueData.Instance.canBehurt = false;
+        GameObject trail = Instantiate(Skill_DashTrail, startPos, startRot);
+        Vector3 m_Input;
+        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
+            m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+        else
+            m_Input = ValueData.Instance.Player.transform.forward;
+        for (int i = 0; i < 20; i++)
+        {
+            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 30);
+            m_Rigidbody.MovePosition(m);
+
+            //更新托尾效果
+            Vector3 newpos = PlayerCtrl.Instance.transform.position;
+            newpos.y = 0.3f;
+            trail.transform.position = newpos;
+
+            yield return new WaitForSecondsRealtime(0.005f);
+        }
+        trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
+        PlayerCtrl.Instance.canMove = true;
+        ValueData.Instance.canBehurt = true;
     }
 
     public bool CastOnCritical() // 判斷暴擊時施放是否在冷卻

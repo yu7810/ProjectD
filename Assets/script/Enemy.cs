@@ -570,9 +570,13 @@ public class Enemy : MonoBehaviour
         float offset = 1.5f;
         Vector3 playerpos = PlayerCtrl.Instance.transform.position;
         Vector3 _offset = new (playerpos.x + Random.Range(-offset, offset), 0, playerpos.z + Random.Range(-offset, offset));
-        GameObject a = Instantiate(Skill.Instance.Skill_Magicexplode1, _offset, Skill.Instance.Skill_Magicexplode1.transform.rotation);
+        GameObject a = null;
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(_offset, out hit, 1, NavMesh.AllAreas))
+            a = Instantiate(Skill.Instance.Skill_Magicexplode1, hit.position, Skill.Instance.Skill_Magicexplode1.transform.rotation);
         yield return new WaitForSecondsRealtime(1.5f);
-        Destroy(a);
+        if(a != null)
+            Destroy(a);
         GameObject b = Instantiate(Skill.Instance.Skill_Magicexplode2, _offset, Skill.Instance.Skill_Magicexplode2.transform.rotation);
         b.transform.Find("Collider").GetComponent<EnemyAttack>().enemy = this;
         Destroy(b, 0.5f);
