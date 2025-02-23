@@ -161,7 +161,7 @@ public class Enemy : MonoBehaviour
             float size = ValueData.Instance.SkillField[id].Size;
             a.transform.localScale = new Vector3(a.transform.localScale.x * size, a.transform.localScale.y * size, a.transform.localScale.z * size);
             PlayerAttack atk = a.GetComponent<PlayerAttack>();
-            atk.dmg = -Dmg * ValueData.Instance.SkillField[id].Damage / 100;
+            atk.dmg = -Dmg * ValueData.Instance.SkillField[id].Damage;
             atk.passTarget.Add(this.gameObject);
             bellCD = 0.1f;
             StartCoroutine(BellCD());

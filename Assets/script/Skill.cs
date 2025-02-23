@@ -17,11 +17,13 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Waterball_2;
     public GameObject Skill_DashTrail;
     public GameObject Skill_FlashTrail;
+    public GameObject Skill_Charge;
     // 敵人技能
     public GameObject Skill_Squidarrow;
     public GameObject Skill_Magicexplode1;
     public GameObject Skill_Magicexplode2;
     LayerMask maskFloor = (1 << 7);
+    LayerMask enemyLayer = (1 << 8 | 1 << 11);
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
     Quaternion startRot = new Quaternion(0, 0, 0,0);
     int UsedTime = 0; // 紀錄技能連續使用次數
@@ -124,7 +126,7 @@ public class Skill : MonoBehaviour
                 Waterball(Fieldid);
                 break;
             case 11:
-                Waterball(Fieldid);
+                Charge(Fieldid);
                 break;
         }
 
@@ -206,10 +208,11 @@ public class Skill : MonoBehaviour
             m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
         else
             m_Input = ValueData.Instance.Player.transform.forward;
-        for(int i =0;i<14;i++)
+        for(int i =0;i<15;i++)
         {
-            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 15);
-            m_Rigidbody.MovePosition(m);
+            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 20);
+            if (NavMesh.SamplePosition(m, out NavMeshHit _hit, 10f, NavMesh.AllAreas))
+                m_Rigidbody.MovePosition(_hit.position);
 
             //更新托尾效果
             Vector3 newpos = PlayerCtrl.Instance.transform.position;
@@ -218,6 +221,7 @@ public class Skill : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(0.005f);
         }
+        m_Rigidbody.velocity = Vector3.zero;
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
@@ -360,27 +364,49 @@ public class Skill : MonoBehaviour
     {
         PlayerCtrl.Instance.canMove = false;
         ValueData.Instance.canBehurt = false;
+        m_Rigidbody.isKinematic = true;
         GameObject trail = Instantiate(Skill_DashTrail, startPos, startRot);
-        Vector3 m_Input;
-        if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-            m_Input = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-        else
-            m_Input = ValueData.Instance.Player.transform.forward;
-        for (int i = 0; i < 20; i++)
+        Vector3 m_Input = ValueData.Instance.Player.transform.forward;
+        Vector3 m = PlayerCtrl.Instance.transform.position;
+
+        for (int i = 0; i < 10; i++)
         {
-            Vector3 m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 30);
-            m_Rigidbody.MovePosition(m);
+            Vector3 rayPos = PlayerCtrl.Instance.transform.position + new Vector3(0, 1f, 0);
+            //Debug.DrawRay(rayPos, PlayerCtrl.Instance.transform.forward * 1.5f, Color.red, 1f);
 
-            //更新托尾效果
-            Vector3 newpos = PlayerCtrl.Instance.transform.position;
-            newpos.y = 0.3f;
-            trail.transform.position = newpos;
+            if (Physics.Raycast(rayPos, PlayerCtrl.Instance.transform.forward, out RaycastHit hit, 0.8f, enemyLayer))
+            {
+                m.y = 1.3f;
+                GameObject a = Instantiate(Skill_Charge, m, startRot);
+                PlayerAttack atk = a.GetComponent<PlayerAttack>();
+                atk.fidleid = Fieldid;
+                //int _id = ValueData.Instance.SkillField[Fieldid].ID;
+                //atk.dmg = ValueData.Instance.Skill[_id].Damage * (ValueData.Instance.SkillField[Fieldid].Speed + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+                float _size = ValueData.Instance.SkillField[Fieldid].Size;
+                a.transform.localScale *= _size;
 
-            yield return new WaitForSecondsRealtime(0.005f);
+                break;
+            }
+            else
+            {
+                m = Vector3.MoveTowards(ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.position + m_Input, Time.fixedDeltaTime * ValueData.Instance.SkillField[Fieldid].Speed * 30);
+                if (NavMesh.SamplePosition(m, out NavMeshHit _hit, 10f, NavMesh.AllAreas))
+                    m_Rigidbody.MovePosition(_hit.position);
+
+                //更新托尾效果
+                Vector3 newpos = PlayerCtrl.Instance.transform.position;
+                newpos.y = 0.3f;
+                trail.transform.position = newpos;
+                yield return new WaitForSecondsRealtime(0.005f);
+            }
         }
+        
+        m_Rigidbody.isKinematic = false;
+        m_Rigidbody.velocity = Vector3.zero;
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
+        _Charge = null;
     }
 
     public bool CastOnCritical() // 判斷暴擊時施放是否在冷卻

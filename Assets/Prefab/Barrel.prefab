@@ -45,7 +45,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7128687770488311714}
-  - component: {fileID: 3994261888817969570}
   - component: {fileID: 4343416763915994939}
   - component: {fileID: 6505739581597095094}
   - component: {fileID: 1592826719241346225}
@@ -73,28 +72,6 @@ Transform:
   - {fileID: 8280837296858087573}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!64 &3994261888817969570
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 440814806139389431}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 6041198253373444045, guid: 6945333d61bdd7947aa155c3bb49911f, type: 3}
 --- !u!114 &4343416763915994939
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -108,6 +85,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 2
+  enemyRarity: 0
   immortal: 0
   notMove: 0
   Hp: 0
@@ -121,10 +99,11 @@ MonoBehaviour:
   money: 0000000001000000
   Mesh: {fileID: 505971442272338187}
   hpUI: {fileID: 1380247593393322548}
-  Bullet: {fileID: 0}
   canBeHit: 0
   canAttack: 0
   canMove: 0
+  BossStage: 0
+  MinionPosition: []
 --- !u!65 &6505739581597095094
 BoxCollider:
   m_ObjectHideFlags: 0

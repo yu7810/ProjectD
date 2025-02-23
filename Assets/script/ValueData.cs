@@ -107,10 +107,10 @@ public class ValueData : MonoBehaviour
         new SkillBase(5,40,"新月斬",1.8f,6,0.8f,1,0f,0.1f,2f,1),
         new SkillBase(6,0,"弦月斬",1.8f,12,1.1f,1,0f,0.1f,2f,1),
         new SkillBase(7,0,"明月斬",1.8f,20,1.4f,1,0f,0.1f,2f,1),
-        new SkillBase(8,20,"The喪鐘",6f,100f,1f,1,2,0f,2f,1),
+        new SkillBase(8,20,"The喪鐘",6f,1f,1f,1,2,0f,2f,1),
         new SkillBase(9,20,"飛箭",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
-        new SkillBase(11,40,"衝撞",5f, 30, 1, 1, 1f, 0.1f, 2f, 1),
+        new SkillBase(11,40,"衝撞", 1f, 30, 1, 1, 2f, 0.1f, 2f, 1),
     };
     //技能介紹
     [NonSerialized]
@@ -317,12 +317,12 @@ public class ValueData : MonoBehaviour
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
             SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown) * (1 + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
-            SkillField[id].Damage = Skill[SkillField[id].ID].Damage * (1 + Power) * (1 + WeaponField[id * 3].Damage + WeaponField[id * 3 + 1].Damage + WeaponField[id * 3 + 2].Damage);
+            SkillField[id].Damage = countDamage(id);
             float add_CostSize = 1;
             if (PassiveSkills[32])
                 add_CostSize = (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
             SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size) * add_CostSize;
-            SkillField[id].Speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+            SkillField[id].Speed = countSpeed(id);
             SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
             SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
             SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
@@ -344,6 +344,24 @@ public class ValueData : MonoBehaviour
             else
                 Debug.Log("技能等級不在預設範圍內");
         }
+    }
+
+    float countDamage(int fieldid)
+    {
+        float dmg = 0;
+        if(SkillField[fieldid].ID == 11) // 衝撞的傷害要加上速度
+            dmg = Skill[SkillField[fieldid].ID].Damage * (1 + Power) * (countSpeed(fieldid) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+        else
+            dmg = Skill[SkillField[fieldid].ID].Damage * (1 + Power) * (1 + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+
+        return dmg;
+    }
+    float countSpeed(int id)
+    {
+        float speed;
+        speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+
+        return speed;
     }
 
     //單例實體
