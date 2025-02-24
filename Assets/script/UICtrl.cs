@@ -104,7 +104,8 @@ public class UICtrl : MonoBehaviour
     public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
-    public Image[] WeaponFieldIcon = new Image[3];//已裝備技能icon
+    public CanvasGroup[] SkillFieldCanvasgroup = new CanvasGroup[3];//已裝備技能icon的CanvasGroup
+    public Image[] WeaponFieldIcon = new Image[3];//已裝備武器icon
     public GameObject _passiveskill;
     public PassiveSkill[] passiveskill;
     public Color BtnColor_Have;//有天賦時的天賦點顏色
@@ -152,6 +153,10 @@ public class UICtrl : MonoBehaviour
         UpdateMoneyUI();
         volume.profile.TryGetSettings(out vignette);
         GarbageCan.SetActive(false);
+        for (int i = 0; i < 3; i++)
+        {
+            SkillFieldCanvasgroup[i] = SkillFieldIcon[i].GetComponent<CanvasGroup>();
+        }
     }
 
     private void FixedUpdate()
@@ -278,7 +283,7 @@ public class UICtrl : MonoBehaviour
                 Tip_Crit.color = valueColor_normal;
                 Tip_CritDmg.color = valueColor_normal;
 
-                Tip_Cd.text = _tipinfo.Cd.ToString("0.0") + " s";
+                Tip_Cd.text = _tipinfo.Cd.ToString("0.00") + " s";
                 Tip_Cost.text = _tipinfo.Cost.ToString("0.0");
                 Tip_Dmg.text = _tipinfo.Dmg.ToString("0");
                 Tip_Size.text = _tipinfo.Size.ToString("0.0");

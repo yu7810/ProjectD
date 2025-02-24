@@ -18,10 +18,13 @@ public class Skill : MonoBehaviour
     public GameObject Skill_DashTrail;
     public GameObject Skill_FlashTrail;
     public GameObject Skill_Charge;
+    
     // 敵人技能
     public GameObject Skill_Squidarrow;
     public GameObject Skill_Magicexplode1;
     public GameObject Skill_Magicexplode2;
+    public GameObject Skill_Herringhealth; // 鯡魚王的回血特效
+
     LayerMask maskFloor = (1 << 7);
     LayerMask enemyLayer = (1 << 8 | 1 << 11);
     Vector3 startPos = new Vector3(0, 0, 0); // 技能發射位置
@@ -60,7 +63,11 @@ public class Skill : MonoBehaviour
 
         if (UsedTime == 0 && !ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement)) // 位移技及多次施放不會有攻擊停頓
         {
-            float skillspeed = 0.1f * (ValueData.Instance.SkillField[Fieldid].maxCD / ValueData.Instance.Skill[Skillid].maxCD);
+            float skillspeed = 0.1f * ValueData.Instance.SkillField[Fieldid].maxCD;
+            if (skillspeed > 0.15f)
+                skillspeed = 0.15f;
+            else if (skillspeed < 0.03f)
+                skillspeed = 0.03f;
 
             //攻擊停頓
             if (useSkillStop == null)

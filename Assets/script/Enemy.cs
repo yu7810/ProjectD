@@ -145,12 +145,13 @@ public class Enemy : MonoBehaviour
             if (maxHp > Dmg + Hp)
             {
                 Hp += Dmg;
+                hpUI.value = Hp / maxHp;
             }
             else
             {
                 Hp = maxHp;
+                hpUI.value = 1;
             }
-            hpUI.value = Hp / maxHp;
         }
 
         if (gameObject.tag == "Bell" && bellCD == 0)
@@ -219,6 +220,7 @@ public class Enemy : MonoBehaviour
             // 被鯡魚王吃掉
             if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion && other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
             {
+                Instantiate(Skill.Instance.Skill_Herringhealth, transform.position, Skill.Instance.Skill_Herringhealth.transform.rotation);
                 other.GetComponent<EnemyAttack>().enemy.Hurt(500); // boss回血
                 Destroy(gameObject);
             }

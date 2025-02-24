@@ -219,7 +219,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> skillstorePool = new List<int>()
     {
-        1,2,4,8,9,10
+        1,2,4,8,9,10,11
     };
     //裝備商店池
     [NonSerialized]
@@ -275,6 +275,8 @@ public class ValueData : MonoBehaviour
         Cost = (base_Cost + add_Cost);
         if (PassiveSkills[31])
             add_ManaCrit = Mathf.FloorToInt(maxAP) * 0.03f;
+        else
+            add_ManaCrit = 0;
         Crit = base_Crit + add_Crit + add_ReloadCrit + add_ManaCrit;
         CritDmg = base_CritDmg + add_CritDmg + add_RageCritdmg;
         if (PassiveSkills[22]) // 天賦22
@@ -602,6 +604,18 @@ public class ValueData : MonoBehaviour
                     Reload(true);
             }
         }
+
+        // 魔力不足時技能icon的表現
+        for(int i=0; i<3; i++)
+        {
+            if(UICtrl.Instance.SkillFieldCanvasgroup[i])
+            {
+                if (SkillField[i].Cost > AP)
+                    UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = 0.1f;
+                else
+                    UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = 1f;
+            }
+        }
     }
 
     //自動回魔
@@ -610,14 +624,7 @@ public class ValueData : MonoBehaviour
         while(true)
         {
             float value = RestoreAP / 50;
-            if (AP >= maxAP - value)
-            {
-                AP = maxAP;
-            }
-            else
-            {
-                AP += value;
-            }
+            GetAp(value);
             yield return new WaitForSeconds(0.02f);
         }
     }
