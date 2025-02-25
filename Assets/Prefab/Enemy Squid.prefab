@@ -447,7 +447,6 @@ MonoBehaviour:
   money: 0100000003000000
   Mesh: {fileID: 2216843740710908176}
   hpUI: {fileID: 918749404404996826}
-  Bullet: {fileID: 1727009018326101683, guid: 59a252423576f1f4eb81451a24a0de4f, type: 3}
   canBeHit: 0
   canAttack: 0
   canMove: 0
@@ -465,7 +464,7 @@ GameObject:
   - component: {fileID: 710664917283568367}
   - component: {fileID: 5484900819687260220}
   - component: {fileID: 6253755962153272925}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: NoticeRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}

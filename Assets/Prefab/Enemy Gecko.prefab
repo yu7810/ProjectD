@@ -182,7 +182,7 @@ GameObject:
   - component: {fileID: 412971745338083145}
   - component: {fileID: 5056415895198248249}
   - component: {fileID: 3014324162181988774}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: NoticeRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1018,7 +1018,6 @@ MonoBehaviour:
   money: 0200000003000000
   Mesh: {fileID: 9218854589415559279}
   hpUI: {fileID: 1591893874202063537}
-  Bullet: {fileID: 0}
   canBeHit: 0
   canAttack: 0
   canMove: 0

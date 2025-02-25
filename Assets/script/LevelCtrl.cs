@@ -42,12 +42,19 @@ public class LevelCtrl : MonoBehaviour
         new string[]{ "Level_9_1", },
         new string[]{ "Level_10_1", },
         new string[]{ "Level_11_1", },
+        new string[]{ "Level_12_1", },
+        new string[]{ "Level_13_1", },
     };
 
     //½T»{³Ñ¾l¼Ä¤H
-    public void enemycheck() {
-        if (leftEnemy > 0)
+    public void enemycheck(int reduce = 0) {
+
+        if (reduce > 0 && leftEnemy > 0)
+            leftEnemy -= reduce;
+
+        if(leftEnemy > 0)
             return;
+
         getPrize();
         ExitDoors = GameObject.Find("ExitDoors");
         foreach (Transform child in ExitDoors.transform) 

@@ -1054,7 +1054,7 @@ GameObject:
   - component: {fileID: 5171055070842014229}
   - component: {fileID: 7739169570584878843}
   - component: {fileID: 3071012854210649935}
-  m_Layer: 11
+  m_Layer: 0
   m_Name: NoticeRange
   m_TagString: Untagged
   m_Icon: {fileID: 0}
