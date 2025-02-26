@@ -162,7 +162,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(3,RarityType.Normal,20,"鐵斧", 0, 0.2f, 0.35f, -0.2f, 0.3f, 0.15f, 0),
         new WeaponBase(4,RarityType.Magic,20,"守財犬", 0, -0.1f, 0, 0, 0, 0, 0),
         new WeaponBase(5,RarityType.Rare,60,"無盡", 0.4f, 0.2f, -0.3f, -0.3f, 1f, 0.2f, 0.5f),
-        new WeaponBase(6,RarityType.Rare,60,"風暴", 0.5f, 0, -0.2f, -0.2f, 1f, 0, 0),
+        new WeaponBase(6,RarityType.Rare,60,"「滄浪」", 0.5f, 0, -0.2f, -0.2f, 1f, 0, 0),
         new WeaponBase(7,RarityType.Rare,60,"賽博義肢", 0, -0.1f, -0.5f, 1f, 0.2f, 0, 0),
         new WeaponBase(8,RarityType.Rare,60,"漩渦", -0.2f, 1f, 1f, 0, 0, 0, 0),
         new WeaponBase(9,RarityType.Magic,20,"招財貓", 0, -0.1f, 0, 0, 0, 0, 0),
@@ -170,12 +170,14 @@ public class ValueData : MonoBehaviour
         new WeaponBase(11,RarityType.Rare,60,"分裂", 0, 0, 0, 0.2f, -0.1f, 0, 0),
         new WeaponBase(12,RarityType.Rare,60,"狙擊", 0, 0, -0.2f, 0.4f, 0, 0, 0),
         new WeaponBase(13,RarityType.Rare,60,"暴擊冷卻", 0, -0.1f, 0, 0, 0.25f, 0.2f, 0),
-        new WeaponBase(14,RarityType.Rare,60,"虛空妖刃", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(14,RarityType.Rare,60,"「虛空」", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(15,RarityType.Normal,20,"布鞋", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(16,RarityType.Normal,20,"魔力鞋", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(17,RarityType.Normal,20,"初新者匕首", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(18,RarityType.Rare,60,"紫晶戒指", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(19,RarityType.Normal,20,"學徒法書", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(20,RarityType.Rare,80,"白鐵劍", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(21,RarityType.Rare,80,"「清風」", 0, 0, 0, 0, 0, 0, 0),
     };
     //裝備介紹
     [NonSerialized]
@@ -200,6 +202,8 @@ public class ValueData : MonoBehaviour
         "17",
         "18",
         "19",
+        "20",
+        "21",
     };
 
     //已裝備裝備

@@ -243,9 +243,9 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u98A8\u66B4"
+      - "\u300C\u6EC4\u6D6A\u300D"
       - 
-      - "\u98CE\u66B4"
+      - "\u300C\u6CA7\u6D6A\u300D"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Name 7
@@ -1470,9 +1470,9 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u865B\u7A7A"
+      - "\u300C\u865B\u7A7A\u300D"
       - 
-      - "\u865A\u7A7A"
+      - "\u300C\u865A\u7A7A\u300D"
       Flags: 000000
       Languages_Touch: []
     - Term: UI/New Game
@@ -1608,6 +1608,42 @@ MonoBehaviour:
       - "\u885D\u649E"
       - Charge
       - "\u51B2\u649E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 20
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 21
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 20
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u767D\u9435\u528D"
+      - 
+      - "\u767D\u94C1\u5251"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 21
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u75BE\u98A8\u300D"
+      - 
+      - "\u300C\u75BE\u98CE\u300D"
       Flags: 000000
       Languages_Touch: []
     CaseInsensitiveTerms: 0
