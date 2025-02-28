@@ -28,7 +28,7 @@ public class CSVReader : MonoBehaviour
             {
                 string value = values[j].Trim(); // 去掉多餘的空格
 
-                if(headers[j] == "ID" || headers[j] == "Price") // int
+                if (headers[j] == "ID" || headers[j] == "Price") // int
                 {
                     if (int.TryParse(value, out int intValue))
                     {
@@ -57,7 +57,7 @@ public class CSVReader : MonoBehaviour
             foreach (var pair in row)
             {
                 //Debug.Log($"{pair.Key}: {pair.Value}");
-                switch (pair.Key)
+                switch (pair.Key.Trim())
                 {
                     case "ID":
                         ValueData.Instance.Weapon[num].ID = (int)pair.Value;
@@ -95,8 +95,9 @@ public class CSVReader : MonoBehaviour
                         break;
                     case "Crit":
                         ValueData.Instance.Weapon[num].Crit = (float)pair.Value;
+                        //Debug.Log("暴率 " + (float)pair.Value);
                         break;
-                    case "Crit Damage":
+                    case "CritDamage":
                         ValueData.Instance.Weapon[num].CritDmg = (float)pair.Value;
                         break;
                 }

@@ -375,6 +375,7 @@ public class Skill : MonoBehaviour
         GameObject trail = Instantiate(Skill_DashTrail, startPos, startRot);
         Vector3 m_Input = ValueData.Instance.Player.transform.forward;
         Vector3 m = PlayerCtrl.Instance.transform.position;
+        Vector3 startpos = m; // ªì©l¦ì¸m¡A­pºâ¶Ë®`¥Î
 
         for (int i = 0; i < 10; i++)
         {
@@ -387,8 +388,11 @@ public class Skill : MonoBehaviour
                 GameObject a = Instantiate(Skill_Charge, m, startRot);
                 PlayerAttack atk = a.GetComponent<PlayerAttack>();
                 atk.fidleid = Fieldid;
-                //int _id = ValueData.Instance.SkillField[Fieldid].ID;
-                //atk.dmg = ValueData.Instance.Skill[_id].Damage * (ValueData.Instance.SkillField[Fieldid].Speed + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+
+                // ¨Ì½Ä¨ë¶ZÂ÷¨M©w¶Ë®`
+                float distance = Vector3.Distance(startpos, PlayerCtrl.Instance.transform.position);
+                atk.dmg = ValueData.Instance.SkillField[Fieldid].Damage + distance * 3;
+
                 float _size = ValueData.Instance.SkillField[Fieldid].Size;
                 a.transform.localScale *= _size;
 

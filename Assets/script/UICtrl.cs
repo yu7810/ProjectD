@@ -52,6 +52,7 @@ public class UICtrl : MonoBehaviour
     public TextMeshProUGUI nowrageUI;
     public TextMeshProUGUI maxrageUI;
     public TMP_Dropdown LanguageDropdown; // 語言選項下拉UI
+    public TMP_Dropdown ClassDropdown; // 關卡選項下拉UI
     public Transform UIDrogParent; // 存放當前拖曳的UI，使其不被其他UI覆蓋
     public GameObject GarbageCan;
 
@@ -121,6 +122,10 @@ public class UICtrl : MonoBehaviour
     public Color valueColor_normal;//技能數值的顏色
     public Color vignetteColor; // Global Volume裡vignette的初始顏色
     public Color vignetteBehurtColor;
+    public Color weaponIconRarity_Normal;
+    public Color weaponIconRarity_Magic;
+    public Color weaponIconRarity_Rare;
+    public Color weaponIconRarity_Unique;
     public PostProcessVolume volume; // 鏡頭渲染
     public Vignette vignette;
     public Line line;
@@ -682,7 +687,20 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.WeaponField[Field].Crit = ValueData.Instance.Weapon[ChangeWeapon_ID].Crit;
         ValueData.Instance.WeaponField[Field].CritDmg = ValueData.Instance.Weapon[ChangeWeapon_ID].CritDmg;
         WeaponFieldIcon[Field].sprite = ValueData.Instance.WeaponIcon[ChangeWeapon_ID];
+        WeaponFieldIcon[Field].SetNativeSize();
         WeaponFieldIcon[Field].tag = "UI";
+
+        // 稀有度背景顏色
+        Image _BG = WeaponFieldIcon[Field].transform.parent.Find("BG").GetComponent<Image>();
+        if (ValueData.Instance.Weapon[ChangeWeapon_ID].Rarity == RarityType.Normal)
+            _BG.color = weaponIconRarity_Normal;
+        else if (ValueData.Instance.Weapon[ChangeWeapon_ID].Rarity == RarityType.Magic)
+            _BG.color = weaponIconRarity_Magic;
+        else if (ValueData.Instance.Weapon[ChangeWeapon_ID].Rarity == RarityType.Rare)
+            _BG.color = weaponIconRarity_Rare;
+        else if (ValueData.Instance.Weapon[ChangeWeapon_ID].Rarity == RarityType.Unique)
+            _BG.color = weaponIconRarity_Unique;
+
         WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
         ChangeWeapon_ID = -1;
@@ -847,7 +865,15 @@ public class UICtrl : MonoBehaviour
             {
                 Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
                 icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-                //icon.SetNativeSize();
+                icon.SetNativeSize();
+                if (weapon.Rarity == RarityType.Normal)
+                    newButton.GetComponent<Image>().color = weaponIconRarity_Normal;
+                else if(weapon.Rarity == RarityType.Magic)
+                    newButton.GetComponent<Image>().color = weaponIconRarity_Magic;
+                else if (weapon.Rarity == RarityType.Rare)
+                    newButton.GetComponent<Image>().color = weaponIconRarity_Rare;
+                else if (weapon.Rarity == RarityType.Unique)
+                    newButton.GetComponent<Image>().color = weaponIconRarity_Unique;
             }
             int x = i;
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, true,  x));
@@ -874,7 +900,15 @@ public class UICtrl : MonoBehaviour
                 {
                     Image icon = newButton.transform.Find("Icon").GetComponent<Image>();
                     icon.sprite = ValueData.Instance.WeaponIcon[weapon.ID];
-                    //icon.SetNativeSize();
+                    icon.SetNativeSize();
+                    if (weapon.Rarity == RarityType.Normal)
+                        newButton.GetComponent<Image>().color = weaponIconRarity_Normal;
+                    else if (weapon.Rarity == RarityType.Magic)
+                        newButton.GetComponent<Image>().color = weaponIconRarity_Magic;
+                    else if (weapon.Rarity == RarityType.Rare)
+                        newButton.GetComponent<Image>().color = weaponIconRarity_Rare;
+                    else if (weapon.Rarity == RarityType.Unique)
+                        newButton.GetComponent<Image>().color = weaponIconRarity_Unique;
                 }
                 int x = i;
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, false, x));
@@ -1051,6 +1085,31 @@ public class UICtrl : MonoBehaviour
             LanguageDropdown.value = 1;
         else if (LocalizationManager.CurrentLanguage == "Chinese (Simplified)")
             LanguageDropdown.value = 2;
+    }
+
+    // 語系選擇
+    public void SelectClass()
+    {
+        int index = ClassDropdown.value;
+        string selectedOption = ClassDropdown.options[index].text;
+        int _class;
+
+        if (selectedOption == "據點")
+            _class = 0;
+        else if (selectedOption == "1-1")
+            _class = 1;
+        else if (selectedOption == "1-10 BOSS")
+            _class = 10;
+        else if (selectedOption == "2-1")
+            _class = 11;
+        else if (selectedOption == "2-3")
+            _class = 13;
+        else
+            return;
+
+        settingUI.SetActive(false);
+        Time.timeScale = 1;
+        LevelCtrl.Instance.NextLevel(_class);
     }
 
 }

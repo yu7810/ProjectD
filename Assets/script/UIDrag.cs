@@ -34,6 +34,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             eventData.pointerDrag = null;
         else
         {
+            PlayerCtrl.Instance.canAttack = false;
             canvasGroup.alpha = 0.7f;  // 拖曳時半透明
             canvasGroup.blocksRaycasts = false; // 防止拖曳過程中遮擋其他 UI 互動
             transform.SetParent(UICtrl.Instance.UIDrogParent);
@@ -49,6 +50,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        PlayerCtrl.Instance.canAttack = true;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
 

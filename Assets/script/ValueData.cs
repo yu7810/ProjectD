@@ -110,7 +110,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(8,20,"The喪鐘",6f,1f,1f,1,2,0f,2f,1),
         new SkillBase(9,20,"飛箭",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
-        new SkillBase(11,40,"衝撞", 1f, 30, 1, 1, 2f, 0.1f, 2f, 1),
+        new SkillBase(11,40,"衝撞", 1f, 10, 1, 1, 2f, 0.1f, 2f, 1),
     };
     //技能介紹
     [NonSerialized]
@@ -176,8 +176,13 @@ public class ValueData : MonoBehaviour
         new WeaponBase(17,RarityType.Normal,20,"初新者匕首", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(18,RarityType.Rare,60,"紫晶戒指", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(19,RarityType.Normal,20,"學徒法書", 0, 0, 0, 0, 0, 0, 0),
-        new WeaponBase(20,RarityType.Rare,80,"白鐵劍", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(20,RarityType.Magic,40,"白鐵劍", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(21,RarityType.Rare,80,"「清風」", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(22,RarityType.Magic,40,"數值弓", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(23,RarityType.Magic,40,"數值斧", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(24,RarityType.Magic,40,"數值匕", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(25,RarityType.Magic,40,"數值鞋", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(26,RarityType.Magic,40,"數值書", 0, 0, 0, 0, 0, 0, 0),
     };
     //裝備介紹
     [NonSerialized]
@@ -204,6 +209,11 @@ public class ValueData : MonoBehaviour
         "19",
         "20",
         "21",
+        "22",
+        "23",
+        "24",
+        "25",
+        "26",
     };
 
     //已裝備裝備
@@ -229,7 +239,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,
     };
 
     //每次加減天賦時呼叫，更新所有數值

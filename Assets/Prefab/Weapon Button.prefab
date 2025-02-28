@@ -290,8 +290,10 @@ MonoBehaviour:
   Cost: 0
   Dmg: 0
   Crit: 0
+  CritDmg: 0
   Size: 0
   Speed: 0
+  Level: 0
   Intro: 
   Price: {fileID: 4071248683717313829}
 --- !u!1 &7150416433216756773
@@ -321,7 +323,7 @@ RectTransform:
   m_GameObject: {fileID: 7150416433216756773}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.155, y: 0.155, z: 0.155}
+  m_LocalScale: {x: 0.07, y: 0.07, z: 0.07}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 3368675494877857463}

@@ -220,7 +220,7 @@ public class Enemy : MonoBehaviour
             if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion && other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
             {
                 Instantiate(Skill.Instance.Skill_Herringhealth, transform.position, Skill.Instance.Skill_Herringhealth.transform.rotation);
-                other.GetComponent<EnemyAttack>().enemy.Hurt(500); // boss回血
+                other.GetComponent<EnemyAttack>().enemy.Hurt(100); // boss回血
                 Destroy(gameObject);
             }
         }
@@ -476,14 +476,14 @@ public class Enemy : MonoBehaviour
     // 衝刺
     IEnumerator Sprint()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.25f);
         AttackCollider.SetActive(true);
 
         float _time;
         if (enemyRarity == EnemyRarity.Boss)
-            _time = 1f;
+            _time = 0.8f;
         else
-            _time = 0.6f;
+            _time = 0.5f;
         while (Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
@@ -557,7 +557,7 @@ public class Enemy : MonoBehaviour
         {
             for (int i = 0; i < time; i++)
             {
-                yield return new WaitForSecondsRealtime(0.5f);
+                yield return new WaitForSeconds(0.5f);
                 StartCoroutine(Magicexplode());
             }
             m_Animator.SetBool("Attack", false);
@@ -575,7 +575,7 @@ public class Enemy : MonoBehaviour
         NavMeshHit hit;
         if (NavMesh.SamplePosition(_offset, out hit, 1, NavMesh.AllAreas))
             a = Instantiate(Skill.Instance.Skill_Magicexplode1, hit.position, Skill.Instance.Skill_Magicexplode1.transform.rotation);
-        yield return new WaitForSecondsRealtime(1.5f);
+        yield return new WaitForSeconds(1.5f);
         if(a != null)
             Destroy(a);
         GameObject b = Instantiate(Skill.Instance.Skill_Magicexplode2, _offset, Skill.Instance.Skill_Magicexplode2.transform.rotation);
