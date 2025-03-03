@@ -84,6 +84,19 @@ public class PlayerCtrl : MonoBehaviour
         UICtrl.Instance.DoChangeWeapon(7);
         UICtrl.Instance.ChangeWeapon_ID = 0;
         UICtrl.Instance.DoChangeWeapon(8);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(9);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(10);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(11);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(12);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(13);
+        UICtrl.Instance.ChangeWeapon_ID = 0;
+        UICtrl.Instance.DoChangeWeapon(14);
+        
         //初始技能
         UICtrl.Instance.ChangeSkill_ID[1] = 0;//初始技能等級
         UICtrl.Instance.ChangeSkill_ID[0] = 0;

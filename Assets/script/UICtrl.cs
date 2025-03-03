@@ -40,6 +40,7 @@ public class UICtrl : MonoBehaviour
     public GameObject StoreweaponbuttonPrefab;
     public GameObject SkillfieldUI;
     public GameObject WeaponfieldUI;
+    public GameObject WeaponbagdUI;
     public TextMeshPro DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
     public TextMeshProUGUI MoneyValue;
@@ -55,6 +56,7 @@ public class UICtrl : MonoBehaviour
     public TMP_Dropdown ClassDropdown; // 關卡選項下拉UI
     public Transform UIDrogParent; // 存放當前拖曳的UI，使其不被其他UI覆蓋
     public GameObject GarbageCan;
+    public GameObject ButtontipUI; // 按鈕提示UI
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -135,6 +137,7 @@ public class UICtrl : MonoBehaviour
     public Npc nowWeaponstore;
     public int nowSelectitem; // 當前選擇item的list編號
     public GameObject settingUI;
+    public TextMeshProUGUI classUI; // 關卡名稱/編號UI
 
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
@@ -155,9 +158,11 @@ public class UICtrl : MonoBehaviour
         PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
+        WeaponbagdUI.SetActive(false);
         UpdateMoneyUI();
         volume.profile.TryGetSettings(out vignette);
         GarbageCan.SetActive(false);
+        ButtontipUI.SetActive(true);
         for (int i = 0; i < 3; i++)
         {
             SkillFieldCanvasgroup[i] = SkillFieldIcon[i].GetComponent<CanvasGroup>();
@@ -178,21 +183,27 @@ public class UICtrl : MonoBehaviour
             {
                 PassiveskilltreeUI.SetActive(false);
                 ValueUI.SetActive(false);
+                ButtontipUI.SetActive(true);
                 ChangeSkill_ID = new int[] { -1, 0 };
                 ChangeWeapon_ID = 0;
                 ValueData.Instance.isUIopen = false;
                 if(!SkillStoreUI.activeSelf && !WeaponStoreUI.activeSelf)
+                {
                     WeaponfieldUI.SetActive(false);
+                    WeaponbagdUI.SetActive(false);
+                }
                 if(!GameOverUI.activeSelf)
                     Time.timeScale = 1;
             }
             else {
                 ValueUI.SetActive(true);
+                ButtontipUI.SetActive(false);
                 PassiveskilltreeUI.SetActive(true);
                 UpdatePassiveSkill();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
                 WeaponfieldUI.SetActive(true);
+                WeaponbagdUI.SetActive(true);
                 Time.timeScale = 0;
             }
         }
@@ -701,7 +712,8 @@ public class UICtrl : MonoBehaviour
         else if (ValueData.Instance.Weapon[ChangeWeapon_ID].Rarity == RarityType.Unique)
             _BG.color = weaponIconRarity_Unique;
 
-        WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
+        WeaponFieldIcon[Field].GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
+        //WeaponfieldUI.transform.GetChild(Field).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[Field].ID, ValueData.Instance.WeaponField[Field].Name, ValueData.Instance.WeaponField[Field].Cooldown, ValueData.Instance.WeaponField[Field].Cost, ValueData.Instance.WeaponField[Field].Damage, ValueData.Instance.WeaponField[Field].Crit, ValueData.Instance.WeaponField[Field].CritDmg, ValueData.Instance.WeaponField[Field].Size, ValueData.Instance.WeaponField[Field].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[Field].ID]);
         ValueData.Instance.SkillFieldValueUpdate();
         ChangeWeapon_ID = -1;
     }
@@ -778,6 +790,8 @@ public class UICtrl : MonoBehaviour
             //ChangeSkill_ID[0] = -1;
             //ChangeSkill_ID[1] = 0;
             WeaponfieldUI.SetActive(true);
+            WeaponbagdUI.SetActive(true);
+            ButtontipUI.SetActive(false);
         }
         else
         {
@@ -786,7 +800,12 @@ public class UICtrl : MonoBehaviour
             //ChangeSkill_ID[0] = -1;
             //ChangeSkill_ID[1] = 0;
             if (!ValueData.Instance.isUIopen)
+            {
                 WeaponfieldUI.SetActive(false);
+                WeaponbagdUI.SetActive(false);
+                ButtontipUI.SetActive(true);
+            }
+                
         }
     }
 
@@ -836,6 +855,8 @@ public class UICtrl : MonoBehaviour
             UpdateWeaponStore(itemID);
             //ChangeWeapon_ID = -1;
             WeaponfieldUI.SetActive(true);
+            WeaponbagdUI.SetActive(true);
+            ButtontipUI.SetActive(false);
         }
         else
         {
@@ -843,7 +864,11 @@ public class UICtrl : MonoBehaviour
             WeaponFieldSelectUI.SetActive(false);
             //ChangeWeapon_ID = -1;
             if(!ValueData.Instance.isUIopen)
+            {
                 WeaponfieldUI.SetActive(false);
+                WeaponbagdUI.SetActive(false);
+                ButtontipUI.SetActive(true);
+            }
         }
         
     }
@@ -1037,21 +1062,21 @@ public class UICtrl : MonoBehaviour
             SkillStoreUI.SetActive(false);
             //WeaponFieldSelectUI.SetActive(false);
             UpdateBox(itemID, itemLv);
-            //ChangeWeapon_ID = -1;
-            //ChangeSkill_ID[0] = -1;
-            //ChangeSkill_ID[1] = 0;
             WeaponfieldUI.SetActive(true);
+            WeaponbagdUI.SetActive(true);
+            ButtontipUI.SetActive(false);
         }
         else
         {
             BoxUI.SetActive(false);
             WeaponFieldSelectUI.SetActive(false);
             SkillFieldSelectUI.SetActive(false);
-            //ChangeWeapon_ID = -1;
-            //ChangeSkill_ID[0] = -1;
-            //ChangeSkill_ID[1] = 0;
             if (!ValueData.Instance.isUIopen)
+            {
                 WeaponfieldUI.SetActive(false);
+                WeaponbagdUI.SetActive(false);
+                ButtontipUI.SetActive(true);
+            }
         }
 
     }
@@ -1074,6 +1099,14 @@ public class UICtrl : MonoBehaviour
         
         if (LocalizationManager.HasLanguage(targetLanguage))
             LocalizationManager.CurrentLanguage = targetLanguage;
+
+        // 據點名稱UI
+        if(LevelCtrl.Instance.nowLevel == 0)
+        {
+            LocalizationManager.TryGetTranslation("UI/Home", out string classname);
+            UICtrl.Instance.classUI.text = classname;
+        }
+        
     }
 
     // 語系下拉式選單初始化

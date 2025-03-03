@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using I2.Loc;
 
 public class LevelCtrl : MonoBehaviour
 {
@@ -158,18 +159,28 @@ public class LevelCtrl : MonoBehaviour
         }
         // 加載完成後執行某些操作
         //Debug.Log("場景加載完成！");
-        nowLevel = level;
-        if (level == 1)
-            nowclass += 1;
+        nowclass = level % 10;
+        nowLevel = level / 10 + 1;
         if (level != 0) // 戰鬥關卡抓取敵人
         {
             Enemys = GameObject.Find("Enemys");
             leftEnemy = Enemys.transform.childCount;
+
+            if(nowclass == 0) // Boss關
+            {
+                nowLevel -= 1;
+                UICtrl.Instance.classUI.text = "Boss " + nowLevel;
+            }
+            else // 小怪關
+                UICtrl.Instance.classUI.text = "Class " + nowLevel + "-" + nowclass;
         }
         else // 回據點回滿生命
         {
             if (ValueData.Instance.HP != ValueData.Instance.maxHP)
                 ValueData.Instance.GetHp(ValueData.Instance.maxHP);
+
+            LocalizationManager.TryGetTranslation("UI/Home", out string classname);
+            UICtrl.Instance.classUI.text = classname;
         }
 
         // 每次進關卡回滿魔力

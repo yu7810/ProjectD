@@ -66,10 +66,10 @@ public class ValueData : MonoBehaviour
     public float add_ManaPower; // 天賦23給予的額外傷害
     public float add_ManaCrit; // 天賦31給予的額外暴率
 
-    //局外數值(預留)
+    // 局外數值(預留)
 
 
-    //當前總數值
+    // 當前總數值
     public bool[] PassiveSkills; //當前各天賦點的加點
     public float AP;
     public float maxAP;
@@ -96,7 +96,7 @@ public class ValueData : MonoBehaviour
     public Sprite[] SkillIcon;//技能icon
     public Sprite[] WeaponIcon;//武器icon
 
-    //技能總表
+    // 技能總表
     [NonSerialized]
     public SkillBase[] Skill = new SkillBase[] {
         new SkillBase(0,0,"-",0,0,0,0,0,0,0f,1),//無
@@ -112,7 +112,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
         new SkillBase(11,40,"衝撞", 1f, 10, 1, 1, 2f, 0.1f, 2f, 1),
     };
-    //技能介紹
+    // 技能介紹
     [NonSerialized]
     public string[] SkillIntro = new string[] {
         "-",
@@ -128,7 +128,7 @@ public class ValueData : MonoBehaviour
         "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害",
         "衝撞",
     };
-    //技能標籤
+    // 技能標籤
     [NonSerialized]
     public SkillTagType[][] SkillTag = new SkillTagType[][]
     {
@@ -146,14 +146,14 @@ public class ValueData : MonoBehaviour
         new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Movement, SkillTagType.Range } , //技能11
     };
 
-    //已裝備技能欄位
+    // 已裝備技能欄位
     public SkillFieldBase[] SkillField = new SkillFieldBase[] {
         new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//滑鼠L
         new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//滑鼠R
         new SkillFieldBase(0,"-",0f,1,1,1,1,0,0,0,1),//空白鍵
     };
 
-    //裝備總表
+    // 裝備總表
     [NonSerialized]
     public WeaponBase[] Weapon = new WeaponBase[] {
         new WeaponBase(0,RarityType.Normal,0,"空手", 0, 0, 0, 0, 0, 0, 0),//Dmg、CD、Size、Speed、Cost皆是倍率，1f=100%
@@ -184,7 +184,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(25,RarityType.Magic,40,"數值鞋", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(26,RarityType.Magic,40,"數值書", 0, 0, 0, 0, 0, 0, 0),
     };
-    //裝備介紹
+    // 裝備介紹
     [NonSerialized]
     public string[] WeaponIntro = new string[] {
         "-",
@@ -216,15 +216,21 @@ public class ValueData : MonoBehaviour
         "26",
     };
 
-    //已裝備裝備
+    // 已裝備裝備、裝備背包
     public WeaponFieldBase[] WeaponField = new WeaponFieldBase[] {
-        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//滑鼠L
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0), // 滑鼠L
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
-        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//滑鼠R
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0), // 滑鼠R
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
-        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),//空白鍵
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0), // 空白鍵
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0), // 背包
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
+        new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
     };

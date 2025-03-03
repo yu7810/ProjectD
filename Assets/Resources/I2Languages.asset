@@ -1745,6 +1745,33 @@ MonoBehaviour:
       - "\u5173\u5361\u4F20\u9001"
       Flags: 000000
       Languages_Touch: []
+    - Term: UI/Bag
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u80CC\u5305"
+      - Bag
+      - "\u80CC\u5305"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/PassiveTree
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u5929\u8CE6\u6A39"
+      - PassiveTree
+      - "\u5929\u8D4B\u6811"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Home
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u64DA\u9EDE"
+      - Stronghold
+      - "\u636E\u70B9"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: App_Name

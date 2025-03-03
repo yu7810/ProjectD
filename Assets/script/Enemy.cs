@@ -221,7 +221,7 @@ public class Enemy : MonoBehaviour
             {
                 Instantiate(Skill.Instance.Skill_Herringhealth, transform.position, Skill.Instance.Skill_Herringhealth.transform.rotation);
                 other.GetComponent<EnemyAttack>().enemy.Hurt(100); // boss回血
-                Destroy(gameObject);
+                Die();
             }
         }
     }
