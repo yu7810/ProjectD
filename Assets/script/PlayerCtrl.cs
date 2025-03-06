@@ -52,8 +52,6 @@ public class PlayerCtrl : MonoBehaviour
             // 如果已經存在一個實例，銷毀當前物件
             Destroy(gameObject);
         }
-        int L = UICtrl.Instance._passiveskill.transform.childCount;
-        valuedata.PassiveSkills = new bool[L];
     }
     public void Start()
     {

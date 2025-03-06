@@ -57,6 +57,8 @@ public class UICtrl : MonoBehaviour
     public Transform UIDrogParent; // 存放當前拖曳的UI，使其不被其他UI覆蓋
     public GameObject GarbageCan;
     public GameObject ButtontipUI; // 按鈕提示UI
+    public GameObject passivetreeSelectUI; // 天賦樹選擇UI
+    public GameObject[] passivetreePrefab;
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -102,15 +104,16 @@ public class UICtrl : MonoBehaviour
 
     public int[] UpgradeBtn;
     [NonSerialized]
-    public int[] ChangeSkill_ID = new int[] {0,0};//更換技能的ID暫存 (技能ID, 技能等級)
+    public int[] ChangeSkill_ID = new int[] { 0, 0 };//更換技能的ID暫存 (技能ID, 技能等級)
     public int ChangeWeapon_ID;//更換裝備的ID暫存
     public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
     public CanvasGroup[] SkillFieldCanvasgroup = new CanvasGroup[3];//已裝備技能icon的CanvasGroup
     public Image[] WeaponFieldIcon = new Image[3];//已裝備武器icon
-    public GameObject _passiveskill;
-    public PassiveSkill[] passiveskill;
+    //public GameObject _passiveskill;
+    public GameObject[] passivetree; // 天賦樹
+    public PassiveSkill[] passiveskill; // 天賦點
     public Color BtnColor_Have;//有天賦時的天賦點顏色
     public Color BtnColor_Normal;//無天賦時的
     public Color DamagetextColor_Normal;//傷害數字顏色
@@ -148,13 +151,12 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.AP = ValueData.Instance.maxAP;
         ValueData.Instance.EXP = 0;
         UpgradeBtn = new int[3] { 0, 0, 0 };
-        passiveskill = _passiveskill.GetComponentsInChildren<PassiveSkill>();
         eventSystem = EventSystem.current;
         graphicRaycaster = canvas.GetComponent<GraphicRaycaster>();
         ValueData.Instance.isUIopen = false;
         SkillStoreUI.SetActive(false);
         WeaponStoreUI.SetActive(false);
-        UpdatePassiveSkill();
+        //UpdatePassiveSkill();
         PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
@@ -224,6 +226,10 @@ public class UICtrl : MonoBehaviour
                 if (!ValueData.Instance.isUIopen && !GameOverUI.activeSelf)
                     Time.timeScale = 1;
             }
+        }
+        else if(Input.GetKeyDown(KeyCode.Z))
+        {
+            callPassivetreeSelect();
         }
 
         //Tip彈窗
@@ -721,10 +727,15 @@ public class UICtrl : MonoBehaviour
     public void UpdatePassiveSkill() {
         passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
         for (int i = 0; i < passiveskill.Length; i++) { //重製所有天賦，避免出錯
-            passiveskill[i].Btn.interactable = false;
-            passiveskill[i].Img.color = BtnColor_Normal;
+            if(passiveskill[i].gameObject.activeInHierarchy == true)
+            {
+                passiveskill[i].Btn.interactable = false;
+                passiveskill[i].Img.color = BtnColor_Normal;
+            }
         }
         for (int i = 0; i < passiveskill.Length; i++) {
+            if (passiveskill[i].gameObject.activeInHierarchy == false)
+                break;
             if(passiveskill[i].top.Length == 0)
                 passiveskill[i].Btn.interactable = true; //開放初始天賦
             if (ValueData.Instance.PassiveSkills[i]) //若已有當前天賦
@@ -1143,6 +1154,81 @@ public class UICtrl : MonoBehaviour
         settingUI.SetActive(false);
         Time.timeScale = 1;
         LevelCtrl.Instance.NextLevel(_class);
+    }
+
+    public void callPassivetreeSelect()
+    {
+        // 將未解鎖的天賦樹放進treepool
+        List<int> treepool = new List<int>();
+        for(int i = 0 ; i< ValueData.Instance.PassiveTree.Length ; i++)
+        {
+            if (ValueData.Instance.PassiveTree[i] == false)
+            {
+                treepool.Add(i);
+            }
+        }
+        if(treepool.Count == 0)
+        {
+            Debug.Log("沒有能解鎖的天賦樹了");
+            return;
+        }
+        
+        Time.timeScale = 0;
+        passivetreeSelectUI.SetActive(true);
+        GameObject[] _button = new GameObject[3];
+
+        // 清除3個按鈕底下的天賦樹
+        for (int n = 0 ; n < 3 ; n ++)
+        {
+            _button[n] = passivetreeSelectUI.transform.Find("Button " + n).gameObject;
+            foreach (Transform child in _button[n].transform)
+            {
+                Destroy(child.gameObject);
+            }
+        }
+
+        // 生成選項
+        for(int x =0; x < 3 ; x ++)
+        {
+            if(treepool.Count > 0)
+            {
+                int rng = UnityEngine.Random.Range(0, treepool.Count);
+                if (passivetreePrefab.Length > rng)
+                {
+                    _button[x].SetActive(true);
+                    int _treeID = treepool[rng];
+                    _button[x].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
+                    _button[x].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => selectPassivetree(_treeID));
+                    GameObject _tree = Instantiate(passivetreePrefab[treepool[rng]], _button[x].transform);
+                    _tree.transform.localPosition = Vector3.zero;
+                    treepool.RemoveAt(rng);
+                }
+                else
+                    Debug.Log("天賦樹prefab數量 小於 valuedata的天賦樹bool數量");
+            }
+            else
+                _button[x].SetActive(false);
+        }
+    }
+
+    public void selectPassivetree(int treeID)
+    {
+        if(ValueData.Instance.PassiveTree.Length <= treeID)
+        {
+            Debug.Log("選項ID超出天賦樹數量");
+        }
+        else if(ValueData.Instance.PassiveTree[treeID] == true)
+        {
+            Debug.Log("重複解鎖天賦樹");
+        }
+        else
+        {
+            ValueData.Instance.PassiveTree[treeID] = true;
+            passivetree[treeID].SetActive(true);
+            passivetree[treeID].transform.SetAsLastSibling();
+        }
+        Time.timeScale = 1;
+        passivetreeSelectUI.SetActive(false);
     }
 
 }

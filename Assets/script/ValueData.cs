@@ -70,6 +70,7 @@ public class ValueData : MonoBehaviour
 
 
     // 當前總數值
+    public bool[] PassiveTree; //當前各天賦樹的解鎖狀態
     public bool[] PassiveSkills; //當前各天賦點的加點
     public float AP;
     public float maxAP;
@@ -403,6 +404,8 @@ public class ValueData : MonoBehaviour
     }
     private void Start()
     {
+        PassiveTree = new bool[UICtrl.Instance.passivetree.Length];
+        PassiveSkills = new bool[UICtrl.Instance.passiveskill.Length];
         _restoreAP = StartCoroutine(restoreAP());
         Reload(false);
     }

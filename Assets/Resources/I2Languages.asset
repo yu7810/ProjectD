@@ -1772,6 +1772,15 @@ MonoBehaviour:
       - "\u636E\u70B9"
       Flags: 000000
       Languages_Touch: []
+    - Term: UI/SelectpassivetreeInfo
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u89E3\u9396\u5929\u8CE6\u6A39"
+      - Unlock passive tree
+      - "\u89E3\u9501\u5929\u8D4B\u6811"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: App_Name
