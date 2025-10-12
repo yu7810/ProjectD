@@ -118,7 +118,7 @@ public class Npc : MonoBehaviour
             int randomIndex = Random.Range(0, _pool.Count);
             _item.Add(_pool[randomIndex]);
             _pool.RemoveAt(randomIndex);
-            itemlevel.Add(Random.Range(1, LevelCtrl.Instance.nowclass + 1));
+            itemlevel.Add(Random.Range(1, LevelCtrl.Instance.nowLevel + 1));
         }
 
         item.Clear();

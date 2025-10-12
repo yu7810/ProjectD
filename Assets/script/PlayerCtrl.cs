@@ -126,7 +126,7 @@ public class PlayerCtrl : MonoBehaviour
             }
             if (Input.GetKeyUp(KeyCode.W) || Input.GetKeyUp(KeyCode.A) || Input.GetKeyUp(KeyCode.S) || Input.GetKeyUp(KeyCode.D))
             {
-                m_Rigidbody.velocity = Vector3.zero;
+                m_Rigidbody.linearVelocity = Vector3.zero;
             }
             //3D角色轉向
             Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);

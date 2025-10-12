@@ -295,7 +295,7 @@ public class Enemy : MonoBehaviour
             {
                 // 停下並轉向玩家
                 agent.isStopped = true;
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
                 m_Animator.SetBool("isMoving", false);
 
                 // 計算目標方向
@@ -487,7 +487,7 @@ public class Enemy : MonoBehaviour
         while (Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
-            rb.velocity = transform.forward * 2.5f * agent.speed;
+            rb.linearVelocity = transform.forward * 2.5f * agent.speed;
             _time -= Time.fixedDeltaTime;
         }
 
@@ -592,7 +592,7 @@ public class Enemy : MonoBehaviour
             {
                 StopCoroutine(sprint);
                 sprint = null;
-                rb.velocity = Vector3.zero;
+                rb.linearVelocity = Vector3.zero;
             }
             if(call != null)
             {

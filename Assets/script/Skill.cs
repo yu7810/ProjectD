@@ -8,7 +8,7 @@ public class Skill : MonoBehaviour
 {
     private static Skill instance;
     Rigidbody m_Rigidbody;
-    // ª±®a§Þ¯à
+    // ï¿½ï¿½ï¿½aï¿½Þ¯ï¿½
     public GameObject Skill_A;
     public GameObject Skill_Bell;
     public GameObject Skill_Bellattack;
@@ -19,25 +19,25 @@ public class Skill : MonoBehaviour
     public GameObject Skill_FlashTrail;
     public GameObject Skill_Charge;
     
-    // ¼Ä¤H§Þ¯à
+    // ï¿½Ä¤Hï¿½Þ¯ï¿½
     public GameObject Skill_Squidarrow;
     public GameObject Skill_Magicexplode1;
     public GameObject Skill_Magicexplode2;
-    public GameObject Skill_Herringhealth; // óÖ³½¤ýªº¦^¦å¯S®Ä
+    public GameObject Skill_Herringhealth; // ï¿½Ö³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½^ï¿½ï¿½Sï¿½ï¿½
 
     LayerMask maskFloor = (1 << 7);
     LayerMask enemyLayer = (1 << 8 | 1 << 11);
-    Vector3 startPos = new Vector3(0, 0, 0); // §Þ¯àµo®g¦ì¸m
+    Vector3 startPos = new Vector3(0, 0, 0); // ï¿½Þ¯ï¿½oï¿½gï¿½ï¿½m
     Quaternion startRot = new Quaternion(0, 0, 0,0);
-    int UsedTime = 0; // ¬ö¿ý§Þ¯à³sÄò¨Ï¥Î¦¸¼Æ
-    Coroutine useSkillStop; // §ðÀ»°±¹y
-    float stopTime; // ³Ñ¾l°±¹y®É¶¡
-    Coroutine _CastOnCritical; // ¼ÉÀ»®É¬I©ñªº§N«o
-    Coroutine _Charge; // ½Ä¨ë§ðÀ»
+    int UsedTime = 0; // ï¿½ï¿½ï¿½ï¿½ï¿½Þ¯ï¿½sï¿½ï¿½Ï¥Î¦ï¿½ï¿½ï¿½
+    Coroutine useSkillStop; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½y
+    float stopTime; // ï¿½Ñ¾lï¿½ï¿½ï¿½yï¿½É¶ï¿½
+    Coroutine _CastOnCritical; // ï¿½ï¿½ï¿½ï¿½ï¿½É¬Iï¿½ñªº§Nï¿½o
+    Coroutine _Charge; // ï¿½Ä¨ï¿½ï¿½ï¿½ï¿½
 
     void Awake()
     {
-        // ¦pªG¹ê¨Ò©|¥¼¦s¦b¡A³]¸m¦¹ª«¥ó¬°°ß¤@¹ê¨Ò¨Ã«O¯d¦b³õ´º¤Á´«¤¤
+        // ï¿½pï¿½Gï¿½ï¿½Ò©|ï¿½ï¿½ï¿½sï¿½bï¿½Aï¿½]ï¿½mï¿½ï¿½ï¿½ï¿½ï¿½ó¬°°ß¤@ï¿½ï¿½Ò¨Ã«Oï¿½dï¿½bï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         if (instance == null)
         {
             instance = this;
@@ -45,7 +45,7 @@ public class Skill : MonoBehaviour
         }
         else
         {
-            // ¦pªG¤w¸g¦s¦b¤@­Ó¹ê¨Ò¡A¾P·´·í«eª«¥ó
+            // ï¿½pï¿½Gï¿½wï¿½gï¿½sï¿½bï¿½@ï¿½Ó¹ï¿½Ò¡Aï¿½Pï¿½ï¿½ï¿½ï¿½ï¿½eï¿½ï¿½ï¿½ï¿½
             Destroy(gameObject);
         }
     }
@@ -61,7 +61,7 @@ public class Skill : MonoBehaviour
     public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
         UsedTime = usedTime;
 
-        if (UsedTime == 0 && !ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement)) // ¦ì²¾§Þ¤Î¦h¦¸¬I©ñ¤£·|¦³§ðÀ»°±¹y
+        if (UsedTime == 0 && !ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement)) // ï¿½ì²¾ï¿½Þ¤Î¦hï¿½ï¿½ï¿½Iï¿½ñ¤£·|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½y
         {
             float skillspeed = 0.1f * ValueData.Instance.SkillField[Fieldid].maxCD;
             if (skillspeed > 0.15f)
@@ -69,7 +69,7 @@ public class Skill : MonoBehaviour
             else if (skillspeed < 0.03f)
                 skillspeed = 0.03f;
 
-            //§ðÀ»°±¹y
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½y
             if (useSkillStop == null)
             {
                 stopTime = skillspeed;
@@ -82,7 +82,7 @@ public class Skill : MonoBehaviour
             }
         }
 
-        if (ValueData.Instance.isHaveweaponid(Fieldid, 14)) //ªZ¾¹14 ±q·Æ¹«®y¼Ð§ðÀ»
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 14)) //ï¿½Zï¿½ï¿½14 ï¿½qï¿½Æ¹ï¿½ï¿½yï¿½Ð§ï¿½ï¿½ï¿½
         {
             startPos = ValueData.Instance.Player.transform.position;
             Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -137,9 +137,9 @@ public class Skill : MonoBehaviour
                 break;
         }
 
-        if(ValueData.Instance.isHaveweaponid(Fieldid, 7)) //ªZ¾¹7ªº®ÄªG
+        if(ValueData.Instance.isHaveweaponid(Fieldid, 7)) //ï¿½Zï¿½ï¿½7ï¿½ï¿½ï¿½ÄªG
         {
-            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//·í«e¬I©ñªº»Ý¬°¦ì²¾§Þ
+            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//ï¿½ï¿½ï¿½eï¿½Iï¿½ñªº»Ý¬ï¿½ï¿½ì²¾ï¿½ï¿½
             {
                 int _id = ValueData.Instance.SkillField[0].ID;
                 if (ValueData.Instance.SkillTag[_id].Contains(SkillTagType.Movement))
@@ -151,20 +151,20 @@ public class Skill : MonoBehaviour
                 UseSkill(ValueData.Instance.SkillField[0].ID, 0, startPos, startRot);
             }
         }
-        if (ValueData.Instance.isHaveweaponid(Fieldid, 6) && usedTime < 2) //ªZ¾¹6®ÄªG
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 6) && usedTime < 2) //ï¿½Zï¿½ï¿½6ï¿½ÄªG
         {
             StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
         }
-        if (ValueData.Instance.isHaveweaponid(Fieldid, 16)) //ªZ¾¹16ªº®ÄªG
+        if (ValueData.Instance.isHaveweaponid(Fieldid, 16)) //ï¿½Zï¿½ï¿½16ï¿½ï¿½ï¿½ÄªG
         {
-            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//·í«e¬I©ñªº»Ý¬°¦ì²¾§Þ
+            if (ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement))//ï¿½ï¿½ï¿½eï¿½Iï¿½ñªº»Ý¬ï¿½ï¿½ì²¾ï¿½ï¿½
             {
                 ValueData.Instance.GetAp((ValueData.Instance.maxAP - ValueData.Instance.AP) / 2);
             }
         }
     }
 
-    // §ðÀ»®É¤£¥i²¾°Ê
+    // ï¿½ï¿½ï¿½ï¿½ï¿½É¤ï¿½ï¿½iï¿½ï¿½ï¿½ï¿½
     IEnumerator UseSkillStop()
     {
         if (stopTime <= 0)
@@ -184,7 +184,7 @@ public class Skill : MonoBehaviour
         useSkillStop = null;
     }
 
-    //§Þ¯àµo®gÂI
+    //ï¿½Þ¯ï¿½oï¿½gï¿½I
     Vector3 attackPoint(float distance = 1f)
     {
         Vector3 newPosition = startPos + ValueData.Instance.Player.transform.forward * distance;
@@ -201,7 +201,7 @@ public class Skill : MonoBehaviour
         a.transform.localScale *= _size;
     }
 
-    void Dash(int Fieldid)  //°{Á×
+    void Dash(int Fieldid)  //ï¿½{ï¿½ï¿½
     {
         StartCoroutine(dash(Fieldid));
     }
@@ -221,14 +221,14 @@ public class Skill : MonoBehaviour
             if (NavMesh.SamplePosition(m, out NavMeshHit _hit, 10f, NavMesh.AllAreas))
                 m_Rigidbody.MovePosition(_hit.position);
 
-            //§ó·s¦«§À®ÄªG
+            //ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ÄªG
             Vector3 newpos = PlayerCtrl.Instance.transform.position;
             newpos.y = 0.3f;
             trail.transform.position = newpos;
 
             yield return new WaitForSecondsRealtime(0.005f);
         }
-        m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.linearVelocity = Vector3.zero;
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
@@ -236,7 +236,7 @@ public class Skill : MonoBehaviour
 
     void Flash()
     {
-        Instantiate(Skill_FlashTrail, startPos, startRot); // ¯S®Ä
+        Instantiate(Skill_FlashTrail, startPos, startRot); // ï¿½Sï¿½ï¿½
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(camRay, out RaycastHit floorhit, 30f, maskFloor))
         {
@@ -257,7 +257,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 6;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
-            ValueData.Instance.SkillField[Fieldid].ID = 0; // Á×¶}´À´«§Þ¯à®É¥Í¦¨¹D¨ã
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // ï¿½×¶}ï¿½ï¿½ï¿½ï¿½ï¿½Þ¯ï¿½É¥Í¦ï¿½ï¿½Dï¿½ï¿½
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -273,7 +273,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 7;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
-            ValueData.Instance.SkillField[Fieldid].ID = 0; // Á×¶}´À´«§Þ¯à®É¥Í¦¨¹D¨ã
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // ï¿½×¶}ï¿½ï¿½ï¿½ï¿½ï¿½Þ¯ï¿½É¥Í¦ï¿½ï¿½Dï¿½ï¿½
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -289,7 +289,7 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.ChangeSkill_ID[0] = 5;
             UICtrl.Instance.ChangeSkill_ID[1] = ValueData.Instance.SkillField[Fieldid].Level;
             UICtrl.Instance.isSpendmoney = false;
-            ValueData.Instance.SkillField[Fieldid].ID = 0; // Á×¶}´À´«§Þ¯à®É¥Í¦¨¹D¨ã
+            ValueData.Instance.SkillField[Fieldid].ID = 0; // ï¿½×¶}ï¿½ï¿½ï¿½ï¿½ï¿½Þ¯ï¿½É¥Í¦ï¿½ï¿½Dï¿½ï¿½
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
             StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
@@ -304,7 +304,7 @@ public class Skill : MonoBehaviour
     void Bell(int Fieldid) 
     {
         Vector3 targetpos;
-        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // ¸Ë³Æ14·|Åý¤¤ªº¦ì¸m§ï¨ì·Æ¹«¦ì¸m
+        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // ï¿½Ë³ï¿½14ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½m
             targetpos = attackPoint(1.5f);
         else
             targetpos = startPos;
@@ -314,12 +314,12 @@ public class Skill : MonoBehaviour
     }
     void Magicarrow(int Fieldid)
     {
-        //¯B°Ê¨¤«×
+        //ï¿½Bï¿½Ê¨ï¿½ï¿½ï¿½
         float rngAngle = Random.Range(0f, 6f);
         Quaternion currentRotation = startRot * Quaternion.Euler(0, rngAngle, 0);
 
         GameObject a;
-        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // ¸Ë³Æ14·|Åý¤¤ªº¦ì¸m§ï¨ì·Æ¹«¦ì¸m
+        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // ï¿½Ë³ï¿½14ï¿½|ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½mï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½m
             a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
         else
             a = Instantiate(Skill_Magicarrow, startPos, currentRotation);
@@ -375,7 +375,7 @@ public class Skill : MonoBehaviour
         GameObject trail = Instantiate(Skill_DashTrail, startPos, startRot);
         Vector3 m_Input = ValueData.Instance.Player.transform.forward;
         Vector3 m = PlayerCtrl.Instance.transform.position;
-        Vector3 startpos = m; // ªì©l¦ì¸m¡A­pºâ¶Ë®`¥Î
+        Vector3 startpos = m; // ï¿½ï¿½lï¿½ï¿½mï¿½Aï¿½pï¿½ï¿½Ë®`ï¿½ï¿½
 
         for (int i = 0; i < 10; i++)
         {
@@ -389,7 +389,7 @@ public class Skill : MonoBehaviour
                 PlayerAttack atk = a.GetComponent<PlayerAttack>();
                 atk.fidleid = Fieldid;
 
-                // ¨Ì½Ä¨ë¶ZÂ÷¨M©w¶Ë®`
+                // ï¿½Ì½Ä¨ï¿½Zï¿½ï¿½ï¿½Mï¿½wï¿½Ë®`
                 float distance = Vector3.Distance(startpos, PlayerCtrl.Instance.transform.position);
                 atk.dmg = ValueData.Instance.SkillField[Fieldid].Damage + distance * 3;
 
@@ -404,7 +404,7 @@ public class Skill : MonoBehaviour
                 if (NavMesh.SamplePosition(m, out NavMeshHit _hit, 10f, NavMesh.AllAreas))
                     m_Rigidbody.MovePosition(_hit.position);
 
-                //§ó·s¦«§À®ÄªG
+                //ï¿½ï¿½sï¿½ï¿½ï¿½ï¿½ï¿½ÄªG
                 Vector3 newpos = PlayerCtrl.Instance.transform.position;
                 newpos.y = 0.3f;
                 trail.transform.position = newpos;
@@ -413,14 +413,14 @@ public class Skill : MonoBehaviour
         }
         
         m_Rigidbody.isKinematic = false;
-        m_Rigidbody.velocity = Vector3.zero;
+        m_Rigidbody.linearVelocity = Vector3.zero;
         trail.transform.GetChild(0).GetComponent<ParticleSystem>().Stop();
         PlayerCtrl.Instance.canMove = true;
         ValueData.Instance.canBehurt = true;
         _Charge = null;
     }
 
-    public bool CastOnCritical() // §PÂ_¼ÉÀ»®É¬I©ñ¬O§_¦b§N«o
+    public bool CastOnCritical() // ï¿½Pï¿½_ï¿½ï¿½ï¿½ï¿½ï¿½É¬Iï¿½ï¿½Oï¿½_ï¿½bï¿½Nï¿½o
     {
         if(_CastOnCritical == null)
         {

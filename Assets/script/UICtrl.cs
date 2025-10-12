@@ -735,9 +735,11 @@ public class UICtrl : MonoBehaviour
         }
         for (int i = 0; i < passiveskill.Length; i++) {
             if (passiveskill[i].gameObject.activeInHierarchy == false)
-                break;
+                continue;
             if(passiveskill[i].top.Length == 0)
+            {
                 passiveskill[i].Btn.interactable = true; //開放初始天賦
+            }
             if (ValueData.Instance.PassiveSkills[i]) //若已有當前天賦
             {
                 passiveskill[i].Btn.interactable = true; //開放點擊(後悔天賦)

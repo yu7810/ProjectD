@@ -311,12 +311,26 @@ public class ValueData : MonoBehaviour
         UICtrl.Instance.UpdateValueUI();
         GetRage(0);
         virtualCamera.m_Lens.FieldOfView = Vision;
-        //天賦0
-        if (!PassiveSkills[0])
+        //盛怒UI初始化
+        if (maxRage > 0)
+        {
+            if (UICtrl.Instance.UI_Rage.activeSelf)
+                return;
+            UICtrl.Instance.UI_Rage.SetActive(true);
+            if (_rageCount != null)
+                StopCoroutine(_rageCount);
+            _rageCount = StartCoroutine(rageCount());
+            GetRage(0);
+        }
+        else
         {
             UICtrl.Instance.UI_Rage.SetActive(false);
             if (_rageCount != null)
+            {
                 StopCoroutine(_rageCount);
+                _rageCount = null;
+            }
+                
         }
         //天賦14
         if (PassiveSkills[14])
@@ -415,32 +429,25 @@ public class ValueData : MonoBehaviour
         switch (id)
         {
             case 0:
-                add_maxRage += 20;
-                if (UICtrl.Instance.UI_Rage.activeSelf)
-                    return;
-                UICtrl.Instance.UI_Rage.SetActive(true);
-                if (_rageCount != null)
-                    StopCoroutine(_rageCount);
-                _rageCount = StartCoroutine(rageCount());
-                GetRage(0);
+                add_maxRage += 10;
                 break;
             case 1:
-                add_Cooldown -= 0.05f;
+                add_Crit += 0.05f;
                 break;
             case 2:
-                add_Cooldown -= 0.05f;
+                add_Crit += 0.05f;
                 break;
             case 3:
-                add_maxRage -= 15;
+                add_maxRage += 5;
                 break;
             case 4:
-                add_CritDmg += 0.1f;
+                add_Cooldown -= 0.05f;
                 break;
             case 5:
-                add_CritDmg += 0.1f;
+                add_Power += 0.1f;
                 break;
             case 6:
-                
+                add_maxRage += 5;
                 break;
             case 7:
                 add_maxRage += 5;
@@ -729,11 +736,11 @@ public class ValueData : MonoBehaviour
                 Rage = 0;
         }
         float valueRage = Rage / maxRage;
+        float mRage = Mathf.Floor(Rage);
         UICtrl.Instance.Value_Rage.fillAmount = valueRage;
         UICtrl.Instance.maxrageUI.text = maxRage.ToString("0");
-        UICtrl.Instance.nowrageUI.text = Rage.ToString("0");
+        UICtrl.Instance.nowrageUI.text = mRage.ToString("0");
 
-        float mRage = Mathf.Floor(Rage);
         add_RagePower = mRage * 0.05f;
         if (PassiveSkills[6])
             add_RageCritdmg = mRage * 0.04f;

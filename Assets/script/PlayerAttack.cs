@@ -152,7 +152,7 @@ public class PlayerAttack : MonoBehaviour
         {
             UICtrl.Instance.ShowDamage(_dmg, target.transform.position, false);
             if(ValueData.Instance.PassiveSkills[3])
-                ValueData.Instance.GetRage(1);
+                ValueData.Instance.GetRage(0.2f);
         }
 
         if (target.transform.tag == "Barrel" || target.transform.tag == "Enemy" || target.transform.tag == "Bell")
