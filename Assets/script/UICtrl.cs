@@ -178,6 +178,7 @@ public class UICtrl : MonoBehaviour
 
     void Update()
     {
+        UpdateSkillCooldowns(Time.deltaTime);
         if (Input.GetKeyDown(KeyCode.Tab)) { // 天賦介面 Tab
             if (settingUI.activeSelf)
                 return;
@@ -493,23 +494,24 @@ public class UICtrl : MonoBehaviour
         Application.Quit();
     }
 
-    public IEnumerator SkillCD(int FieldID) {
-        if (ValueData.Instance.SkillField[FieldID].nowCD <= 0) {
-            ValueData.Instance.SkillField[FieldID].nowCD = 0;
-            UpdateSkillCD();
-        }
-        else if (ValueData.Instance.SkillField[FieldID].nowCD <= 0.02f) {
-            yield return new WaitForSeconds(ValueData.Instance.SkillField[FieldID].nowCD);
-            ValueData.Instance.SkillField[FieldID].nowCD = 0;
-            UpdateSkillCD();
-        }
-        else {
-            yield return new WaitForSeconds(0.01f);
-            ValueData.Instance.SkillField[FieldID].nowCD -= 0.02f;
-            UpdateSkillCD();
-            StartCoroutine(SkillCD(FieldID));
+    private void UpdateSkillCooldowns(float deltaTime)
+    {
+        if (deltaTime <= 0f)
+            return;
+
+        bool updated = false;
+        for (int i = 0; i < ValueData.Instance.SkillField.Length; i++)
+        {
+            SkillFieldBase field = ValueData.Instance.SkillField[i];
+            if (field.nowCD == 0f)
+                continue;
+
+            field.nowCD = Mathf.Max(0f, field.nowCD - deltaTime);
+            updated = true;
         }
 
+        if (updated)
+            UpdateSkillCD();
     }
 
     public void UpdateSkillCD() {
@@ -561,6 +563,7 @@ public class UICtrl : MonoBehaviour
         if (nowSkillstore != null && ChangeSkill_ID[0] != 0 && !nowSkillstore.unlimited) // 如果當前為開啟技能商店，則從該商店移除該商品
         {
             nowSkillstore.item.RemoveAt(nowSelectitem);
+            nowSkillstore.itemlevel.RemoveAt(nowSelectitem);
             nowSkillstore.doNpc(true);
             if (nowSkillstore.npcType == NpcType.Skill) // 如果是寶箱，且已無內容物，則刪除寶箱
             {
@@ -613,7 +616,6 @@ public class UICtrl : MonoBehaviour
         if (ValueData.Instance.SkillField[Field].nowCD == 0)
         {
             ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.Skill[ChangeSkill_ID[0]].maxCD;
-            StartCoroutine(SkillCD(Field));
         }
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID[0]];
         SkillFieldIcon[Field].SetNativeSize();
@@ -622,6 +624,7 @@ public class UICtrl : MonoBehaviour
         else
             SkillFieldIcon[Field].tag = "UI";
         ValueData.Instance.SkillFieldValueUpdate();
+        UpdateSkillCD();
 
         ChangeSkill_ID[0] = -1;
         ChangeSkill_ID[1] = 0;
@@ -1020,7 +1023,7 @@ public class UICtrl : MonoBehaviour
 
     public void resetlevel()
     {
-        LevelCtrl.Instance.NextLevel(LevelCtrl.Instance.nowLevel);
+        LevelCtrl.Instance.NextLevel(LevelCtrl.Instance.CurrentLevelIndex);
         settingUI.SetActive(false);
         Time.timeScale = 1;
     }
@@ -1049,21 +1052,74 @@ public class UICtrl : MonoBehaviour
         nowSkillstore.RandomItem();
         nowSkillstore.doNpc(true);
     }
-    public void Newplayer() // 展場用
+    public void Newplayer()
     {
-        LevelCtrl.Instance.NextLevel(0);
-        settingUI.SetActive(false);
         Time.timeScale = 1;
-        for(int i=0;i< ValueData.Instance.PassiveSkills.Length;i++)
-        {
-            ValueData.Instance.PassiveSkills[i] = false;
-        }
-        ValueData.Instance.money = 0;
+        LevelCtrl.Instance.ResetRun();
+        Skill.Instance.ResetRun();
+        PlayerCtrl.Instance.ResetRun();
+        ResetRunUI();
+        ValueData.Instance.ResetRun();
+        ResetLoadout();
         UpdateMoneyUI();
-        ValueData.Instance.passiveskillPoint = 0;
-        ValueData.Instance.PlayerValueUpdate();
-        PlayerCtrl.Instance.Start();
+        UpdatePassiveSkill();
+        LevelCtrl.Instance.NextLevel(0);
     }
+
+    private void ResetRunUI()
+    {
+        nowSkillstore = null;
+        nowWeaponstore = null;
+        nowSelectitem = 0;
+        ChangeSkill_ID[0] = -1;
+        ChangeSkill_ID[1] = 0;
+        ChangeWeapon_ID = -1;
+        isSpendmoney = false;
+        UpgradeBtn = new int[3];
+        foreach (GameObject tree in passivetree)
+            tree.SetActive(false);
+        settingUI.SetActive(false);
+        GameOverUI.SetActive(false);
+        Upgrade.SetActive(false);
+        SkillStoreUI.SetActive(false);
+        WeaponStoreUI.SetActive(false);
+        BoxUI.SetActive(false);
+        SkillFieldSelectUI.SetActive(false);
+        WeaponFieldSelectUI.SetActive(false);
+        PassiveskilltreeUI.SetActive(false);
+        ValueUI.SetActive(false);
+        WeaponfieldUI.SetActive(false);
+        WeaponbagdUI.SetActive(false);
+        passivetreeSelectUI.SetActive(false);
+        Tip.SetActive(false);
+        GarbageCan.SetActive(false);
+        ButtontipUI.SetActive(true);
+        if (vignette != null)
+            vignette.color.value = vignetteColor;
+    }
+
+    private void ResetLoadout()
+    {
+        for (int i = 0; i < ValueData.Instance.WeaponField.Length; i++)
+        {
+            ValueData.Instance.WeaponField[i].ID = 0;
+            ChangeWeapon_ID = 0;
+            DoChangeWeapon(i);
+        }
+        for (int i = 0; i < ValueData.Instance.SkillField.Length; i++)
+        {
+            SkillFieldBase field = ValueData.Instance.SkillField[i];
+            field.ID = 0;
+            field.Level = 0;
+            field.nowCD = 0;
+            ChangeSkill_ID[0] = 0;
+            ChangeSkill_ID[1] = 0;
+            DoChangeSkill(i);
+        }
+        ValueData.Instance.GetAp(0);
+    }
+
+
 
     // 開啟地上的裝備寶箱時
     public void showBox(bool Switch, List<int> itemID = null, List<int> itemLv = null)

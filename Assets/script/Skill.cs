@@ -53,6 +53,18 @@ public class Skill : MonoBehaviour
     {
         get => instance;
     }
+    public void ResetRun()
+    {
+        StopAllCoroutines();
+        useSkillStop = null;
+        _CastOnCritical = null;
+        _Charge = null;
+        stopTime = 0;
+        UsedTime = 0;
+        startPos = Vector3.zero;
+        startRot = Quaternion.identity;
+    }
+
     private void Start()
     {
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
@@ -259,7 +271,6 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.isSpendmoney = false;
             ValueData.Instance.SkillField[Fieldid].ID = 0; // �׶}�����ޯ�ɥͦ��D��
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
-            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
     }
     void Quartermoon(int Fieldid)
@@ -275,7 +286,6 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.isSpendmoney = false;
             ValueData.Instance.SkillField[Fieldid].ID = 0; // �׶}�����ޯ�ɥͦ��D��
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
-            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
     }
     void Fullmoon(int Fieldid)
@@ -291,7 +301,6 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.isSpendmoney = false;
             ValueData.Instance.SkillField[Fieldid].ID = 0; // �׶}�����ޯ�ɥͦ��D��
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
-            StartCoroutine(UICtrl.Instance.SkillCD(Fieldid));
         }
     }
 

@@ -106,6 +106,23 @@ public class PlayerCtrl : MonoBehaviour
         startPosition = Character.transform.localPosition;
     }
 
+    public void ResetRun()
+    {
+        StopAllCoroutines();
+        canMove = true;
+        canAttack = true;
+        isReload = false;
+        valuedata.canBehurt = true;
+        ontriggerTarget = null;
+        openedTarget = null;
+        interactableObjects.Clear();
+        playerToMouse = Vector3.zero;
+        Move = false;
+        m_Animator.SetBool("Move", false);
+        m_Rigidbody.isKinematic = false;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+    }
+
     void FixedUpdate()
     {
         if (canMove)
@@ -274,7 +291,6 @@ public class PlayerCtrl : MonoBehaviour
                 valuedata.GetAp(-valuedata.SkillField[Field].Cost);
             valuedata.SkillField[Field].nowCD = valuedata.SkillField[Field].maxCD;
             UICtrl.Instance.UpdateSkillCD();
-            StartCoroutine(UICtrl.Instance.SkillCD(Field));
             skill.UseSkill(valuedata.SkillField[Field].ID, Field);
         }
         else if (valuedata.AP < valuedata.SkillField[Field].Cost)

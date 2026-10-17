@@ -9,6 +9,7 @@ public class ValueData : MonoBehaviour
 {
     public GameObject Player;
     private static ValueData instance;
+    private float initialMaxEXP;
     public bool canBehurt;//可被攻擊，用於受傷無敵幀
     public bool immortal; // 無敵狀態
     public bool isUIopen;//開關 tab UI
@@ -31,6 +32,9 @@ public class ValueData : MonoBehaviour
     public float base_EnemyTimer = 1;
     public float base_AttackSize = 1;
     public float base_Cooldown = 0;
+    [Range(0f, 1f)]
+    [Tooltip("Minimum cooldown as a fraction of the skill's base cooldown (0.1 = 10%).")]
+    public float minimumSkillCooldownRatio = 0.1f;
     public float base_Cost = 0;
     public float base_Crit = 0;
     public float base_CritDmg = 0;
@@ -283,6 +287,7 @@ public class ValueData : MonoBehaviour
             maxHP *= 0.5f;
         }
         maxRage = base_maxRage + add_maxRage;
+        GetRage(0);
         if (PassiveSkills[23]) // 天賦23
             add_ManaPower = Mathf.FloorToInt(maxAP) * 0.05f;
         else
@@ -309,18 +314,14 @@ public class ValueData : MonoBehaviour
         Vision = base_Vision + add_Vision;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
-        GetRage(0);
         virtualCamera.m_Lens.FieldOfView = Vision;
         //盛怒UI初始化
         if (maxRage > 0)
         {
-            if (UICtrl.Instance.UI_Rage.activeSelf)
-                return;
-            UICtrl.Instance.UI_Rage.SetActive(true);
-            if (_rageCount != null)
-                StopCoroutine(_rageCount);
-            _rageCount = StartCoroutine(rageCount());
-            GetRage(0);
+            if (!UICtrl.Instance.UI_Rage.activeSelf)
+                UICtrl.Instance.UI_Rage.SetActive(true);
+            if (_rageCount == null)
+                _rageCount = StartCoroutine(rageCount());
         }
         else
         {
@@ -350,10 +351,21 @@ public class ValueData : MonoBehaviour
         GetAp(0);
     }
 
+    private float CalculateSkillCooldown(int fieldId)
+    {
+        float baseCooldown = Mathf.Max(0f, Skill[SkillField[fieldId].ID].maxCD);
+        float weaponCooldown = WeaponField[fieldId * 3].Cooldown
+            + WeaponField[fieldId * 3 + 1].Cooldown
+            + WeaponField[fieldId * 3 + 2].Cooldown;
+        float cooldown = baseCooldown * (1f + Cooldown) * (1f + weaponCooldown);
+        float minimumCooldown = baseCooldown * Mathf.Clamp01(minimumSkillCooldownRatio);
+        return Mathf.Max(minimumCooldown, cooldown);
+    }
+
     //更換武器、技能時呼叫，呼叫前請確保有更新過PlayerValue
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
-            SkillField[id].maxCD = Skill[SkillField[id].ID].maxCD * (1 + Cooldown) * (1 + WeaponField[id * 3].Cooldown + WeaponField[id * 3 + 1].Cooldown + WeaponField[id * 3 + 2].Cooldown);
+            SkillField[id].maxCD = CalculateSkillCooldown(id);
             SkillField[id].Damage = countDamage(id);
             float add_CostSize = 1;
             if (PassiveSkills[32])
@@ -416,8 +428,38 @@ public class ValueData : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(gameObject);
     }
+    public void ResetRun()
+    {
+        StopAllCoroutines();
+        _restoreAP = null;
+        _reloadAP = null;
+        _lostRage = null;
+        _rageCount = null;
+
+        Array.Clear(PassiveTree, 0, PassiveTree.Length);
+        Array.Clear(PassiveSkills, 0, PassiveSkills.Length);
+        money = 0;
+        passiveskillPoint = 0;
+        EXP = 0;
+        maxEXP = initialMaxEXP;
+        Rage = 0;
+        RageTime = 0;
+        add_ReloadCrit = 0;
+        add_ReloadMovespeed = 0;
+        HP = 0;
+        AP = 0;
+        isUIopen = false;
+        canBehurt = true;
+        immortal = true;
+
+        PlayerValueUpdate();
+        GetHp(maxHP);
+        GetAp(maxAP);
+    }
+
     private void Start()
     {
+        initialMaxEXP = maxEXP;
         PassiveTree = new bool[UICtrl.Instance.passivetree.Length];
         PassiveSkills = new bool[UICtrl.Instance.passiveskill.Length];
         _restoreAP = StartCoroutine(restoreAP());
@@ -735,19 +777,17 @@ public class ValueData : MonoBehaviour
             else
                 Rage = 0;
         }
-        float valueRage = Rage / maxRage;
+        Rage = Mathf.Clamp(Rage, 0f, maxRage);
+        float valueRage = maxRage > 0f ? Rage / maxRage : 0f;
         float mRage = Mathf.Floor(Rage);
         UICtrl.Instance.Value_Rage.fillAmount = valueRage;
         UICtrl.Instance.maxrageUI.text = maxRage.ToString("0");
         UICtrl.Instance.nowrageUI.text = mRage.ToString("0");
 
         add_RagePower = mRage * 0.05f;
-        if (PassiveSkills[6])
-            add_RageCritdmg = mRage * 0.04f;
-        if (PassiveSkills[10])
-            add_RageCooldown = mRage * -0.01f;
-        if(PassiveSkills[11])
-            add_RageMovespeed = mRage * 0.015f;
+        add_RageCritdmg = PassiveSkills[6] ? mRage * 0.04f : 0f;
+        add_RageCooldown = PassiveSkills[10] ? mRage * -0.01f : 0f;
+        add_RageMovespeed = PassiveSkills[11] ? mRage * 0.015f : 0f;
         if (value != 0) // 避免死迴圈
         {
             PlayerValueUpdate();

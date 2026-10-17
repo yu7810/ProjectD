@@ -9,6 +9,7 @@ using I2.Loc;
 public class LevelCtrl : MonoBehaviour
 {
     private static LevelCtrl instance;
+    public int CurrentLevelIndex { get; private set; } = 0;
     public int nowclass = 0; // 當前章節編號
     public int nowLevel = 0; // 當前關卡編號
     public PrizeBase nowPrize; // 當前關卡通關後會獲得的獎勵
@@ -105,6 +106,16 @@ public class LevelCtrl : MonoBehaviour
         }
     }
 
+    public void ResetRun()
+    {
+        StopAllCoroutines();
+        if (Enemys)
+            Enemys.SetActive(false);
+        Enemys = null;
+        leftEnemy = 0;
+        nowPrize = PrizeBase.None;
+    }
+
     public void NextLevel(int level) {
         StartCoroutine(LoadSceneWithProgress(level));
     }
@@ -159,6 +170,7 @@ public class LevelCtrl : MonoBehaviour
         }
         // 加載完成後執行某些操作
         //Debug.Log("場景加載完成！");
+        CurrentLevelIndex = level;
         nowclass = level % 10;
         nowLevel = level / 10 + 1;
         if (level != 0) // 戰鬥關卡抓取敵人
