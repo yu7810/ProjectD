@@ -41,6 +41,7 @@ public class UICtrl : MonoBehaviour
     public GameObject SkillfieldUI;
     public GameObject WeaponfieldUI;
     public GameObject WeaponbagdUI;
+    public GameObject WeaponBagSelectUI;
     public TextMeshPro DamagetextPrefab;//傷害數字
     public GameObject DamagetextParent;//傷害數字的父物件
     public TextMeshProUGUI MoneyValue;
@@ -142,6 +143,10 @@ public class UICtrl : MonoBehaviour
     public GameObject settingUI;
     public TextMeshProUGUI classUI; // 關卡名稱/編號UI
 
+    [SerializeField]
+    private Color dragDestinationColor = new Color(1f, 1f, 1f, 0.39215687f);
+    private readonly Dictionary<Image, Color> dragDestinationColors = new Dictionary<Image, Color>();
+
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
 
@@ -161,6 +166,7 @@ public class UICtrl : MonoBehaviour
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
         WeaponbagdUI.SetActive(false);
+        SetWeaponSelectionActive(false);
         UpdateMoneyUI();
         volume.profile.TryGetSettings(out vignette);
         GarbageCan.SetActive(false);
@@ -188,7 +194,9 @@ public class UICtrl : MonoBehaviour
                 ValueUI.SetActive(false);
                 ButtontipUI.SetActive(true);
                 ChangeSkill_ID = new int[] { -1, 0 };
-                ChangeWeapon_ID = 0;
+                ChangeWeapon_ID = -1;
+                SkillFieldSelectUI.SetActive(false);
+                SetWeaponSelectionActive(false);
                 ValueData.Instance.isUIopen = false;
                 if(!SkillStoreUI.activeSelf && !WeaponStoreUI.activeSelf)
                 {
@@ -528,6 +536,126 @@ public class UICtrl : MonoBehaviour
         }
     }
 
+    public void BeginDragHighlights(TipType type, int sourceField = -1)
+    {
+        EndDragHighlights();
+        if (type == TipType.SkillField)
+            type = TipType.Skill;
+        else if (type == TipType.WeaponField)
+            type = TipType.Weapon;
+        if (type != TipType.Skill && type != TipType.Weapon)
+            return;
+
+        Image[] icons = type == TipType.Skill ? SkillFieldIcon : WeaponFieldIcon;
+        for (int i = 0; i < icons.Length; i++)
+        {
+            if (i == sourceField || !IsPurchaseDestinationAvailable(type, i))
+                continue;
+            Transform background = icons[i].transform.parent.Find("BG");
+            if (background == null || !background.TryGetComponent<Image>(out Image image))
+                continue;
+            dragDestinationColors[image] = image.color;
+            image.color = dragDestinationColor;
+        }
+    }
+
+    public void EndDragHighlights()
+    {
+        foreach (KeyValuePair<Image, Color> entry in dragDestinationColors)
+        {
+            if (entry.Key != null)
+                entry.Key.color = entry.Value;
+        }
+        dragDestinationColors.Clear();
+    }
+
+    public void CancelStoreItemSelection()
+    {
+        ChangeSkill_ID[0] = -1;
+        ChangeSkill_ID[1] = 0;
+        ChangeWeapon_ID = -1;
+        SkillFieldSelectUI.SetActive(false);
+        SetWeaponSelectionActive(false);
+    }
+
+    public bool CanPurchaseStoreItem(TipType type, int id, int level, int index, bool paid, Npc store)
+    {
+        if (store == null || index < 0 || index >= store.item.Count || store.item[index] != id || id <= 0)
+            return false;
+        if (type == TipType.Skill)
+        {
+            if (store != nowSkillstore || id >= ValueData.Instance.Skill.Length ||
+                index >= store.itemlevel.Count || store.itemlevel[index] != level)
+                return false;
+            if (paid ? (!SkillStoreUI.activeInHierarchy || store.npcType != NpcType.Skillstore)
+                     : (!BoxUI.activeInHierarchy || store.npcType != NpcType.Skill))
+                return false;
+            return !paid || ValueData.Instance.money >= ValueData.Instance.Skill[id].Price;
+        }
+        if (type == TipType.Weapon)
+        {
+            if (store != nowWeaponstore || id >= ValueData.Instance.Weapon.Length)
+                return false;
+            if (paid ? (!WeaponStoreUI.activeInHierarchy || store.npcType != NpcType.Weaponstore)
+                     : (!BoxUI.activeInHierarchy || store.npcType != NpcType.Weapon))
+                return false;
+            return !paid || ValueData.Instance.money >= ValueData.Instance.Weapon[id].Price;
+        }
+        return false;
+    }
+
+    private bool IsPurchaseDestinationAvailable(TipType type, int field)
+    {
+        Image[] icons = type == TipType.Skill ? SkillFieldIcon : WeaponFieldIcon;
+        return (type == TipType.Skill || type == TipType.Weapon) && field >= 0 && field < icons.Length &&
+            icons[field] != null && icons[field].transform.parent.gameObject.activeInHierarchy;
+    }
+
+    public bool TryGetPurchaseDropField(GameObject hit, TipType type, out int field)
+    {
+        field = -1;
+        if (hit == null || (type != TipType.Skill && type != TipType.Weapon))
+            return false;
+        Image[] icons = type == TipType.Skill ? SkillFieldIcon : WeaponFieldIcon;
+        for (int i = 0; i < icons.Length; i++)
+        {
+            if (!IsPurchaseDestinationAvailable(type, i))
+                continue;
+            Transform buttons = type == TipType.Skill ? SkillFieldSelectUI.transform :
+                (i < WeaponfieldUI.transform.childCount ? WeaponFieldSelectUI.transform :
+                    (WeaponBagSelectUI != null ? WeaponBagSelectUI.transform : null));
+            int buttonIndex = type == TipType.Weapon && i >= WeaponfieldUI.transform.childCount ?
+                i - WeaponfieldUI.transform.childCount : i;
+            if (hit.transform.IsChildOf(icons[i].transform.parent) ||
+                (buttons != null && buttonIndex < buttons.childCount &&
+                 hit.transform.IsChildOf(buttons.GetChild(buttonIndex))))
+            {
+                field = i;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public bool PurchaseDraggedStoreItem(TipType type, int id, int level, int index, bool paid, Npc store, int field)
+    {
+        if (!CanPurchaseStoreItem(type, id, level, index, paid, store) ||
+            !IsPurchaseDestinationAvailable(type, field))
+            return false;
+        CancelStoreItemSelection();
+        if (type == TipType.Skill)
+        {
+            ChangeSkill(id, level, paid, index);
+            SelectSkillChangeField(field);
+        }
+        else
+        {
+            ChangeWeapon(id, paid, index);
+            SelectWeaponChangeField(field);
+        }
+        return true;
+    }
+
     // 點擊商店的商品時
     public void ChangeSkill(int target , int level, bool isCostmoney = true, int itemListID = 0) {
         if (target < 0)
@@ -537,6 +665,8 @@ public class UICtrl : MonoBehaviour
             Debug.Log("金幣不足");
             return;
         }
+        SetWeaponSelectionActive(false);
+        ChangeWeapon_ID = -1;
         if (ChangeSkill_ID[0] == target && ChangeSkill_ID[1] == level) {
             ChangeSkill_ID[0] = -1;
             ChangeSkill_ID[1] = 0;
@@ -555,6 +685,10 @@ public class UICtrl : MonoBehaviour
     }
     // 點擊要放的欄位時
     public void SelectSkillChangeField(int Field) {
+        if (ChangeSkill_ID[0] < 0 || Field < 0 || Field >= ValueData.Instance.SkillField.Length)
+            return;
+        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > ValueData.Instance.money)
+            return;
        
         if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > 0)
         {
@@ -639,9 +773,12 @@ public class UICtrl : MonoBehaviour
             Debug.Log("金幣不足");
             return;
         }
+        SkillFieldSelectUI.SetActive(false);
+        ChangeSkill_ID[0] = -1;
+        ChangeSkill_ID[1] = 0;
         if (ChangeWeapon_ID == target){
             ChangeWeapon_ID = -1;
-            WeaponFieldSelectUI.SetActive(false);
+            SetWeaponSelectionActive(false);
         }
         else {
             ChangeWeapon_ID = target;
@@ -650,7 +787,7 @@ public class UICtrl : MonoBehaviour
                 isSpendmoney = true;
             else
                 isSpendmoney = false;
-            WeaponFieldSelectUI.SetActive(true);
+            SetWeaponSelectionActive(true);
             // 顯示已有裝備欄位的選擇UI
             int nowweaponfield = WeaponfieldUI.transform.childCount;
             for (int i = 0; i < nowweaponfield; i++)
@@ -661,9 +798,20 @@ public class UICtrl : MonoBehaviour
             }
         }
     }
+    private void SetWeaponSelectionActive(bool active)
+    {
+        WeaponFieldSelectUI.SetActive(active);
+        if (WeaponBagSelectUI != null)
+            WeaponBagSelectUI.SetActive(active);
+    }
+
     // 點擊要放的欄位時
     public void SelectWeaponChangeField(int Field)
     {
+        if (ChangeWeapon_ID < 0 || Field < 0 || Field >= ValueData.Instance.WeaponField.Length)
+            return;
+        if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > ValueData.Instance.money)
+            return;
         if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > 0)
         {
             ValueData.Instance.GetMoney(-ValueData.Instance.Weapon[ChangeWeapon_ID].Price);
@@ -691,7 +839,7 @@ public class UICtrl : MonoBehaviour
 
     public void DoChangeWeapon(int Field)
     {
-        WeaponFieldSelectUI.SetActive(false);
+        SetWeaponSelectionActive(false);
         // 被擠掉的裝備變成裝備寶箱
         if (ValueData.Instance.WeaponField[Field].ID != 0)
         {
@@ -801,7 +949,7 @@ public class UICtrl : MonoBehaviour
             SkillStoreUI.SetActive(true);
             WeaponStoreUI.SetActive(false);
             BoxUI.SetActive(false);
-            WeaponFieldSelectUI.SetActive(false);
+            SetWeaponSelectionActive(false);
             UpdateSkillStore(itemID, itemlevel);
             //ChangeSkill_ID[0] = -1;
             //ChangeSkill_ID[1] = 0;
@@ -848,6 +996,7 @@ public class UICtrl : MonoBehaviour
             int lv = itemlevel[i];
             int x = i;
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID, lv, true, x));
+            newButton.AddComponent<UIStoreDrag>().Configure(TipType.Skill, skill.ID, lv, x, true);
         }
         /*foreach (SkillBase skill in ValueData.Instance.Skill) {
             if (skill.ID != 0) {
@@ -867,7 +1016,7 @@ public class UICtrl : MonoBehaviour
             WeaponStoreUI.SetActive(true);
             SkillStoreUI.SetActive(false);
             BoxUI.SetActive(false);
-            WeaponFieldSelectUI.SetActive(false);
+            SetWeaponSelectionActive(false);
             UpdateWeaponStore(itemID);
             //ChangeWeapon_ID = -1;
             WeaponfieldUI.SetActive(true);
@@ -877,7 +1026,7 @@ public class UICtrl : MonoBehaviour
         else
         {
             WeaponStoreUI.SetActive(false);
-            WeaponFieldSelectUI.SetActive(false);
+            SetWeaponSelectionActive(false);
             //ChangeWeapon_ID = -1;
             if(!ValueData.Instance.isUIopen)
             {
@@ -918,6 +1067,7 @@ public class UICtrl : MonoBehaviour
             }
             int x = i;
             newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, true,  x));
+            newButton.AddComponent<UIStoreDrag>().Configure(TipType.Weapon, weapon.ID, 0, x, true);
         }
     }
     public void UpdateBox(List<int> itemID, List<int> itemlevel = null)
@@ -953,6 +1103,7 @@ public class UICtrl : MonoBehaviour
                 }
                 int x = i;
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeWeapon(weapon.ID, false, x));
+                newButton.AddComponent<UIStoreDrag>().Configure(TipType.Weapon, weapon.ID, 0, x, false);
             }
             else  // 物品類型為技能
             {
@@ -969,6 +1120,7 @@ public class UICtrl : MonoBehaviour
                 int lv = itemlevel[i];
                 int x = i;
                 newButton.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => ChangeSkill(skill.ID, lv, false, x));
+                newButton.AddComponent<UIStoreDrag>().Configure(TipType.Skill, skill.ID, lv, x, false);
             }
 
         }
@@ -1085,7 +1237,7 @@ public class UICtrl : MonoBehaviour
         WeaponStoreUI.SetActive(false);
         BoxUI.SetActive(false);
         SkillFieldSelectUI.SetActive(false);
-        WeaponFieldSelectUI.SetActive(false);
+        SetWeaponSelectionActive(false);
         PassiveskilltreeUI.SetActive(false);
         ValueUI.SetActive(false);
         WeaponfieldUI.SetActive(false);
@@ -1129,7 +1281,7 @@ public class UICtrl : MonoBehaviour
             BoxUI.SetActive(true);
             WeaponStoreUI.SetActive(false);
             SkillStoreUI.SetActive(false);
-            //WeaponFieldSelectUI.SetActive(false);
+            //SetWeaponSelectionActive(false);
             UpdateBox(itemID, itemLv);
             WeaponfieldUI.SetActive(true);
             WeaponbagdUI.SetActive(true);
@@ -1138,7 +1290,7 @@ public class UICtrl : MonoBehaviour
         else
         {
             BoxUI.SetActive(false);
-            WeaponFieldSelectUI.SetActive(false);
+            SetWeaponSelectionActive(false);
             SkillFieldSelectUI.SetActive(false);
             if (!ValueData.Instance.isUIopen)
             {

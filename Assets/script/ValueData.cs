@@ -588,7 +588,7 @@ public class ValueData : MonoBehaviour
             {
                 WeaponField[i].Damage = 1 + (money * 0.01f);
                 SkillFieldValueUpdate();
-                UICtrl.Instance.WeaponfieldUI.transform.GetChild(i).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Cost, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].CritDmg, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
+                UICtrl.Instance.WeaponFieldIcon[i].GetComponent<TipInfo>().UpdateInfo(TipType.Weapon, ValueData.Instance.WeaponField[i].ID, ValueData.Instance.WeaponField[i].Name, ValueData.Instance.WeaponField[i].Cooldown, ValueData.Instance.WeaponField[i].Cost, ValueData.Instance.WeaponField[i].Damage, ValueData.Instance.WeaponField[i].Crit, ValueData.Instance.WeaponField[i].CritDmg, ValueData.Instance.WeaponField[i].Size, ValueData.Instance.WeaponField[i].Speed, 0, ValueData.Instance.WeaponIntro[ValueData.Instance.WeaponField[i].ID]);
             }
         }
     }

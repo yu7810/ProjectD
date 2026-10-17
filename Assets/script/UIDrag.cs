@@ -12,6 +12,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     private Transform startParent; // 初始父物件
     public TipType Type;
     public int ID;
+    private bool dragging;
 
     private void Start()
     {
@@ -34,6 +35,9 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             eventData.pointerDrag = null;
         else
         {
+            dragging = true;
+            UICtrl.Instance.CancelStoreItemSelection();
+            UICtrl.Instance.BeginDragHighlights(Type, ID);
             PlayerCtrl.Instance.canAttack = false;
             canvasGroup.alpha = 0.7f;  // 拖曳時半透明
             canvasGroup.blocksRaycasts = false; // 防止拖曳過程中遮擋其他 UI 互動
@@ -42,14 +46,44 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         }
     }
 
+    private void OnDisable()
+    {
+        if (!dragging)
+            return;
+        dragging = false;
+        if (canvasGroup != null)
+        {
+            canvasGroup.alpha = 1f;
+            canvasGroup.blocksRaycasts = true;
+        }
+        if (startParent != null)
+        {
+            transform.SetParent(startParent);
+            if (Type == TipType.SkillField && startParent.childCount > 2)
+                transform.SetSiblingIndex(1);
+            rectTransform.anchoredPosition = startPosition;
+        }
+        if (UICtrl.Instance != null)
+        {
+            UICtrl.Instance.EndDragHighlights();
+            UICtrl.Instance.GarbageCan.SetActive(false);
+        }
+        if (PlayerCtrl.Instance != null)
+            PlayerCtrl.Instance.canAttack = true;
+    }
+
     public void OnDrag(PointerEventData eventData)
     {
-        if (canvas == null) return;
+        if (!dragging || canvas == null) return;
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        if (!dragging)
+            return;
+        dragging = false;
+        UICtrl.Instance.EndDragHighlights();
         PlayerCtrl.Instance.canAttack = true;
         canvasGroup.alpha = 1f;
         canvasGroup.blocksRaycasts = true;
@@ -63,7 +97,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         GameObject hoveredObject = eventData.pointerEnter;
         if (hoveredObject != null)
         {
-            if(hoveredObject.TryGetComponent<UIDrag>(out UIDrag target))
+            if(hoveredObject.TryGetComponent<UIDrag>(out UIDrag target) && target != this)
             {
                 if(Type == TipType.WeaponField && target.Type == TipType.WeaponField) // 武器欄位
                 {
