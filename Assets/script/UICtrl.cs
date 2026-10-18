@@ -1368,11 +1368,19 @@ public class UICtrl : MonoBehaviour
 
     public void callPassivetreeSelect()
     {
+        TryCallPassivetreeSelect();
+    }
+
+    public bool TryCallPassivetreeSelect()
+    {
+        if (passivetreeSelectUI.activeSelf)
+            return false;
         // 將未解鎖的天賦樹放進treepool
         List<int> treepool = new List<int>();
         for(int i = 0 ; i< ValueData.Instance.PassiveTree.Length ; i++)
         {
-            if (ValueData.Instance.PassiveTree[i] == false)
+            if (!ValueData.Instance.PassiveTree[i] && i < passivetreePrefab.Length &&
+                i < passivetree.Length && passivetreePrefab[i] != null)
             {
                 treepool.Add(i);
             }
@@ -1380,7 +1388,7 @@ public class UICtrl : MonoBehaviour
         if(treepool.Count == 0)
         {
             Debug.Log("沒有能解鎖的天賦樹了");
-            return;
+            return false;
         }
         
         Time.timeScale = 0;
@@ -1403,7 +1411,7 @@ public class UICtrl : MonoBehaviour
             if(treepool.Count > 0)
             {
                 int rng = UnityEngine.Random.Range(0, treepool.Count);
-                if (passivetreePrefab.Length > rng)
+                if (passivetreePrefab.Length > treepool[rng])
                 {
                     _button[x].SetActive(true);
                     int _treeID = treepool[rng];
@@ -1419,6 +1427,7 @@ public class UICtrl : MonoBehaviour
             else
                 _button[x].SetActive(false);
         }
+        return true;
     }
 
     public void selectPassivetree(int treeID)

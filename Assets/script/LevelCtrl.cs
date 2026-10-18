@@ -14,6 +14,8 @@ public class LevelCtrl : MonoBehaviour
     public int nowLevel = 0; // 當前關卡編號
     public PrizeBase nowPrize; // 當前關卡通關後會獲得的獎勵
     public GameObject Enemys;
+    private readonly HashSet<Enemy> requiredEnemies = new HashSet<Enemy>();
+    private bool stageCompleted = true;
     GameObject ExitDoors;
     public int leftEnemy; // 剩餘敵人數量
 
@@ -21,6 +23,7 @@ public class LevelCtrl : MonoBehaviour
     public GameObject weaponstorePrefab;
     public GameObject itemMoney;
     public GameObject itemPassivepoint;
+    public GameObject itemPassiveTree;
     public GameObject itemWeapon;
     public GameObject itemSkill;
     public CanvasGroup ScreenMask;
@@ -49,20 +52,45 @@ public class LevelCtrl : MonoBehaviour
     };
 
     //確認剩餘敵人
-    public void enemycheck(int reduce = 0) {
+    private void ClearStageEnemies()
+    {
+        stageCompleted = true;
+        requiredEnemies.Clear();
+        leftEnemy = 0;
+    }
 
-        if (reduce > 0 && leftEnemy > 0)
-            leftEnemy -= reduce;
+    private void InitializeStageEnemies()
+    {
+        requiredEnemies.Clear();
+        if (Enemys != null)
+        {
+            foreach (Enemy enemy in Enemys.GetComponentsInChildren<Enemy>())
+            {
+                if (enemy.enemyType != EnemyType.Barrel && enemy.enemyRarity != EnemyRarity.Minion)
+                    requiredEnemies.Add(enemy);
+            }
+        }
+        leftEnemy = requiredEnemies.Count;
+        stageCompleted = false;
+    }
 
-        if(leftEnemy > 0)
+    public void enemycheck(Enemy enemy)
+    {
+        if (stageCompleted || enemy == null || !requiredEnemies.Remove(enemy))
             return;
 
+        leftEnemy = requiredEnemies.Count;
+        if (leftEnemy > 0)
+            return;
+
+        // Mark completion before spawning rewards so duplicate notifications cannot settle twice.
+        stageCompleted = true;
         getPrize();
         ExitDoors = GameObject.Find("ExitDoors");
-        foreach (Transform child in ExitDoors.transform) 
-        {
+        if (ExitDoors == null)
+            return;
+        foreach (Transform child in ExitDoors.transform)
             child.gameObject.SetActive(true);
-        }
     }
 
     //領獎
@@ -71,6 +99,12 @@ public class LevelCtrl : MonoBehaviour
         Vector3 p = ValueData.Instance.Player.transform.position;
         p.y = 0;
         Npc npc;
+
+        if (CurrentLevelIndex > 0 && CurrentLevelIndex % 10 == 0)
+        {
+            DropBossRewards(p);
+            return;
+        }
 
         switch (nowPrize) {
             case PrizeBase.None:
@@ -106,9 +140,27 @@ public class LevelCtrl : MonoBehaviour
         }
     }
 
+    private void DropBossRewards(Vector3 position)
+    {
+        GameObject points = Instantiate(itemPassivepoint, position + Vector3.left * 1.25f,
+            itemPassivepoint.transform.rotation);
+        Npc pointReward = points.GetComponent<Npc>();
+        pointReward.passivepoint = 2;
+        pointReward.showName();
+
+        GameObject treePrefab = itemPassiveTree != null ? itemPassiveTree : itemPassivepoint;
+        GameObject tree = Instantiate(treePrefab, position + Vector3.right * 1.25f,
+            treePrefab.transform.rotation);
+        Npc treeReward = tree.GetComponent<Npc>();
+        treeReward.npcType = NpcType.Passivetree;
+        treeReward.passivepoint = 0;
+        treeReward.showName();
+    }
+
     public void ResetRun()
     {
         StopAllCoroutines();
+        ClearStageEnemies();
         if (Enemys)
             Enemys.SetActive(false);
         Enemys = null;
@@ -122,6 +174,7 @@ public class LevelCtrl : MonoBehaviour
 
     IEnumerator LoadSceneWithProgress(int level)
     {
+        ClearStageEnemies();
         if(PlayerCtrl.Instance)
             PlayerCtrl.Instance.canMove = false;
 
@@ -176,7 +229,7 @@ public class LevelCtrl : MonoBehaviour
         if (level != 0) // 戰鬥關卡抓取敵人
         {
             Enemys = GameObject.Find("Enemys");
-            leftEnemy = Enemys.transform.childCount;
+            InitializeStageEnemies();
 
             if(nowclass == 0) // Boss關
             {

@@ -12,6 +12,7 @@ public class Npc : MonoBehaviour
     [Header("通關獎勵")] 
     public int money;
     public int passivepoint;
+    private bool rewardConsumed;
 
     [Header("商店 / 道具")]
     public bool startRandom; // 使否在生成時隨機商品
@@ -25,8 +26,20 @@ public class Npc : MonoBehaviour
 
     private void OnEnable()
     {
+        LocalizationManager.OnLocalizeEvent += RefreshLocalizedName;
         if (startRandom)
             RandomItem();
+    }
+
+    private void OnDisable()
+    {
+        LocalizationManager.OnLocalizeEvent -= RefreshLocalizedName;
+    }
+
+    private void RefreshLocalizedName()
+    {
+        if (NameUI != null && NameUI.gameObject.activeInHierarchy)
+            showName();
     }
 
     public void doNpc(bool Switch) {
@@ -70,12 +83,22 @@ public class Npc : MonoBehaviour
                 }
                 break;
             case NpcType.Passivepoint:
-                if (Switch)
+                if (Switch && !rewardConsumed)
                 {
+                    rewardConsumed = true;
                     ValueData.Instance.passiveskillPoint += passivepoint;
                     UICtrl.Instance.passiveskillPoint.text = ValueData.Instance.passiveskillPoint.ToString();
                     if (gameObject.TryGetComponent<Collider>(out Collider _box)) // 因為Destroy不會觸發OnTriggerExit，所以手動呼叫
                         PlayerCtrl.Instance.OnTriggerExit(_box);
+                    Destroy(gameObject);
+                }
+                break;
+            case NpcType.Passivetree:
+                if (Switch && !rewardConsumed && UICtrl.Instance.TryCallPassivetreeSelect())
+                {
+                    rewardConsumed = true;
+                    if (gameObject.TryGetComponent<Collider>(out Collider treeCollider))
+                        PlayerCtrl.Instance.OnTriggerExit(treeCollider);
                     Destroy(gameObject);
                 }
                 break;
@@ -144,6 +167,8 @@ public class Npc : MonoBehaviour
             LocalizationManager.TryGetTranslation("NPC/Item Passivepoint Name", out _name);
             _name = passivepoint + " " + _name;
         }
+        else if (npcType == NpcType.Passivetree)
+            LocalizationManager.TryGetTranslation("NPC/Item Passivetree Name", out _name);
         else if (npcType == NpcType.Weapon)
             LocalizationManager.TryGetTranslation("Weapon/Weapon Name " + item[0], out _name);
         else if (npcType == NpcType.Skill)
@@ -165,4 +190,5 @@ public enum NpcType{
     Passivepoint,
     Weapon,
     Skill,
+    Passivetree,
 }

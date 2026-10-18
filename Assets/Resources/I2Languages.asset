@@ -17,26 +17,13 @@ MonoBehaviour:
     UserAgreesToHaveItInsideThePluginsFolder: 0
     GoogleLiveSyncIsUptoDate: 1
     mTerms:
-    - Term: Passiveskill/Passiveskill Info 0
+    - Term: UI/Title
       TermType: 0
       Description: 
       Languages:
-      - "\u66B4\u64CA\u6642\u7372\u5F97 1 \u5C64\u76DB\u6012\uFF0C\u6700\u9AD8 20
-        \u5C64<BR>3 \u79D2\u5167\u672A\u7372\u5F97\u76DB\u6012\u6703\u96A8\u6642\u9593\u6E1B\u5C11\u3002<BR>\u6BCF\u5C64\u76DB\u6012\u63D0\u4F9B
-        5% \u50B7\u5BB3"
-      - 
-      - "\u66B4\u51FB\u65F6\u83B7\u5F97 1 \u5C42\u76DB\u6012\uFF0C\u6700\u9AD8 20
-        \u5C42<BR>3 \u79D2\u5185\u672A\u83B7\u5F97\u76DB\u6012\u4F1A\u968F\u65F6\u95F4\u51CF\u5C11\u3002
-        <BR>\u6BCF\u5C42\u76DB\u6012\u63D0\u4F9B 5% \u4F24\u5BB3"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Skill/Skill Info 0
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u2013"
-      - "\u2013"
-      - "\u2013"
+      - "\u9084\u6C92\u60F3\u597D\u904A\u6232\u540D\u7A31"
+      - "\u82F1\u6587\u7684\u4E5F\u9084\u6C92\u60F3\u597D"
+      - "\u8FD8\u6CA1\u60F3\u597D\u6E38\u620F\u540D\u79F0"
       Flags: 000000
       Languages_Touch: []
     - Term: UI/Remastered Levels
@@ -55,6 +42,87 @@ MonoBehaviour:
       - "\u9078\u64C7\u8A9E\u8A00"
       - Select Language
       - "\u9009\u62E9\u8BED\u8A00"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Exit
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u96E2\u958B\u904A\u6232"
+      - Exit Game
+      - "\u79BB\u5F00\u6E38\u620F"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/New Game
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u65B0\u904A\u6232"
+      - New Game
+      - "\u65B0\u6E38\u620F"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Garbage Can
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u4E1F\u68C4"
+      - Throw
+      - "\u4E22\u5F03"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Setting
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u8A2D\u5B9A"
+      - Setting
+      - "\u8BBE\u7F6E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Select Class
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u95DC\u5361\u50B3\u9001"
+      - Select Class
+      - "\u5173\u5361\u4F20\u9001"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Bag
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u80CC\u5305"
+      - Bag
+      - "\u80CC\u5305"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/PassiveTree
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u5929\u8CE6\u6A39"
+      - PassiveTree
+      - "\u5929\u8D4B\u6811"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Home
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u64DA\u9EDE"
+      - Stronghold
+      - "\u636E\u70B9"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/SelectpassivetreeInfo
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u89E3\u9396\u5929\u8CE6\u6A39"
+      - Unlock passive tree
+      - "\u89E3\u9501\u5929\u8D4B\u6811"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Info 0
@@ -91,33 +159,6 @@ MonoBehaviour:
       - "\u2013"
       - "\u2013"
       - "\u2013"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 0
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u2013"
-      - "\u2013"
-      - "\u2013"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 1
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u521D\u65B0\u8005\u528D"
-      - Empty
-      - "\u521D\u65B0\u8005\u5251"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 2
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u521D\u65B0\u8005\u5F13"
-      - Empty
-      - "\u521D\u65B0\u8005\u5F13"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Info 4
@@ -210,6 +251,150 @@ MonoBehaviour:
       - "\u66B4\u64CA\u6642\u964D\u4F4E\u5176\u4ED6\u6280\u80FD\u51B7\u537B 1 \u79D2"
       - 
       - "\u66B4\u51FB\u65F6\u964D\u4F4E\u5176\u4ED6\u6280\u80FD\u51B7\u5374 1 \u79D2"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 14
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6280\u80FD\u5F9E\u6ED1\u9F20\u5EA7\u6A19\u65BD\u653E<BR>\u300C\u5341\u5927\u540D\u528D\u300D"
+      - 
+      - "\u6280\u80FD\u4ECE\u6ED1\u9F20\u5EA7\u6807\u65BD\u653E<BR>\u300C\u5341\u5927\u540D\u5251\u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 15
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
+      - 
+      - "\u300C\u9ED1\u732B\u9B54\u6CD5\u5B66\u9662 \u6D3E\u53D1\u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 16
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u4F7F\u7528\u4F4D\u79FB\u6280\u5F8C\uFF0C\u6062\u5FA950%\u5931\u53BB\u9B54\u529B"
+      - 
+      - "\u4F7F\u7528\u4F4D\u79FB\u6280\u540E\uFF0C\u6062\u590D50%\u5931\u53BB\u9B54\u529B"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 17
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u5C45\u5BB6\u65C5\u884C\u3001\u6BBA\u4EBA\u6EC5\u53E3\u5FC5\u5099\u300D"
+      - 
+      - "\u300C\u5C45\u5BB6\u65C5\u884C\u3001\u6740\u4EBA\u706D\u53E3\u5FC5\u5907\u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 18
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u4E0D\u80FD\u4E3B\u52D5\u4F7F\u7528\u8A72\u6280\u80FD\uFF0C\u5176\u4ED6\u6280\u80FD\u66B4\u64CA\u6642\u81EA\u52D5\u65BD\u653E"
+      - 
+      - "\u4E0D\u80FD\u4E3B\u52A8\u4F7F\u7528\u8BE5\u6280\u80FD\uFF0C\u5176\u4ED6\u6280\u80FD\u66B4\u51FB\u65F6\u81EA\u52A8\u65BD\u653E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 19
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u5B78\u9662\u898F\u5247\u7B2C\u4E00\u689D\uFF1A\u7981\u6B62\u651C\u5E36\u9BE1\u9B5A\u7F50\u982D\u9032\u5165\u6821\u5340\u300D"
+      - 
+      - "\u300C\u5B66\u9662\u89C4\u5219\u7B2C\u4E00\u6761\uFF1A\u7981\u6B62\u643A\u5E26\u9CB1\u9C7C\u7F50\u5934\u8FDB\u5165\u6821\u533A\u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 20
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 21
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 22
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 23
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 24
+      TermType: 0
+      Description: 
+      Languages:
+      - 
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 25
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 26
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
+      - 
+      - 
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 0
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u2013"
+      - "\u2013"
+      - "\u2013"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 1
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u521D\u65B0\u8005\u528D"
+      - 
+      - "\u521D\u65B0\u8005\u5251"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 2
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u521D\u65B0\u8005\u5F13"
+      - 
+      - "\u521D\u65B0\u8005\u5F13"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Name 3
@@ -311,6 +496,132 @@ MonoBehaviour:
       - "\u6C34\u6676\u5315\u9996"
       Flags: 000000
       Languages_Touch: []
+    - Term: Weapon/Weapon Name 14
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C \u865B\u7A7A \u300D"
+      - 
+      - "\u300C \u865A\u7A7A \u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 15
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u5B78\u5F92\u6CD5\u9774"
+      - 
+      - "\u5B66\u5F92\u6CD5\u9774"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 16
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u7CBE\u795E\u6CD5\u9774"
+      - 
+      - "\u7CBE\u795E\u6CD5\u9774"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 17
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u521D\u65B0\u8005\u5315\u9996"
+      - 
+      - "\u521D\u65B0\u8005\u5315\u9996"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 18
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u7D2B\u6676\u6212\u6307"
+      - 
+      - "\u7D2B\u6676\u6212\u6307"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 19
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u5B78\u5F92\u6CD5\u66F8"
+      - 
+      - "\u5B66\u5F92\u6CD5\u4E66"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 20
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u767D\u9435\u528D"
+      - 
+      - "\u767D\u94C1\u5251"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 21
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u300C \u75BE\u98A8 \u300D"
+      - 
+      - "\u300C \u75BE\u98CE \u300D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 22
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u767D\u9435\u5F13"
+      - 
+      - "\u767D\u94C1\u5F13"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 23
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u767D\u9435\u65A7"
+      - 
+      - "\u767D\u94C1\u65A7"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 24
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u767D\u9435\u5315\u9996"
+      - 
+      - "\u767D\u94C1\u5315\u9996"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 25
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u77E5\u8B58\u6CD5\u9774"
+      - 
+      - "\u77E5\u8BC6\u6CD5\u9774"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 26
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u77E5\u8B58\u6CD5\u66F8"
+      - 
+      - "\u77E5\u8BC6\u6CD5\u4E66"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Skill/Skill Info 0
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u2013"
+      - "\u2013"
+      - "\u2013"
+      Flags: 000000
+      Languages_Touch: []
     - Term: Skill/Skill Info 1
       TermType: 0
       Description: 
@@ -405,6 +716,15 @@ MonoBehaviour:
       - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u4E00\u500B\u6C34\u7403\uFF0C\u4E00\u6BB5\u6642\u9593\u5F8C\u7206\u70B8\uFF0C\u6D88\u8017\u4E00\u534A\u7576\u524D\u9B54\u529B\u4E26\u9020\u6210(\u6D88\u8017\u91CF\xD710)\u50B7\u5BB3"
       - 
       - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u4E00\u4E2A\u6C34\u7403\uFF0C\u4E00\u6BB5\u65F6\u95F4\u540E\u7206\u70B8\uFF0C\u6D88\u8017\u4E00\u534A\u5F53\u524D\u9B54\u529B\u5E76\u9020\u6210(\u6D88\u8017\u91CF\xD710)\u4F24\u5BB3"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Skill/Skill Info 11
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u5411\u524D\u885D\u523A\uFF0C\u649E\u5230\u7B2C\u4E00\u500B\u76EE\u6A19\u5F8C\u505C\u4E0B\u4E26\u9020\u6210\u7BC4\u570D\u50B7\u5BB3\uFF0C\u901F\u5EA6\u548C\u885D\u523A\u8DDD\u96E2\u6703\u63D0\u5347\u50B7\u5BB3\u3002"
+      - 
+      - "\u5411\u524D\u51B2\u523A\uFF0C\u649E\u5230\u7B2C\u4E00\u4E2A\u76EE\u6807\u540E\u505C\u4E0B\u5E76\u9020\u6210\u8303\u56F4\u4F24\u5BB3\uFF0C\u901F\u5EA6\u548C\u51B2\u523A\u8DDD\u79BB\u4F1A\u63D0\u5347\u4F24\u5BB3\u3002"
       Flags: 000000
       Languages_Touch: []
     - Term: Skill/Skill Name 0
@@ -506,60 +826,78 @@ MonoBehaviour:
       - "\u6C34\u66DD"
       Flags: 000000
       Languages_Touch: []
+    - Term: Skill/Skill Name 11
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u885D\u649E"
+      - Charge
+      - "\u51B2\u649E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 0
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u66B4\u64CA\u6642\u7372\u5F97 1 \u76DB\u6012<BR>\uFF0B 10 \u76DB\u6012\u4E0A\u9650"
+      - 
+      - "\u66B4\u51FB\u65F6\u83B7\u5F97 1 \u76DB\u6012<BR>\uFF0B 10 \u76DB\u6012\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 1
       TermType: 0
       Description: 
       Languages:
-      - "- 5% \u51B7\u537B"
-      - 
-      - "- 5% \u51B7\u5374"
+      - "\uFF0B 5% \u66B4\u64CA\u6A5F\u7387"
+      - "\uFF0B 5% critical hit chance"
+      - "\uFF0B 5% \u66B4\u51FB\u673A\u7387"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 2
       TermType: 0
       Description: 
       Languages:
-      - "- 5% \u51B7\u537B"
-      - 
-      - "- 5% \u51B7\u5374"
+      - "\uFF0B 5% \u66B4\u64CA\u6A5F\u7387"
+      - "\uFF0B 5% critical hit chance"
+      - "\uFF0B 5% \u66B4\u51FB\u673A\u7387"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 3
       TermType: 0
       Description: 
       Languages:
-      - "\u672A\u66B4\u64CA\u6642\u4E5F\u80FD\u7372\u5F971\u5C64\u76DB\u6012<BR>\u76DB\u6012\u4E0A\u9650
-        -15"
+      - "\u547D\u4E2D\u7372\u5F970.2\u5C64\u76DB\u6012<BR>\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
       - 
-      - "\u672A\u66B4\u51FB\u65F6\u4E5F\u80FD\u83B7\u5F971\u5C42\u76DB\u6012<BR>\u76DB\u6012\u4E0A\u9650
-        -15"
+      - "\u547D\u4E2D\u83B7\u5F970.2\u5C42\u76DB\u6012<BR>\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 4
       TermType: 0
       Description: 
       Languages:
-      - "\uFF0B 10% \u66B4\u64CA\u50B7\u5BB3"
+      - "- 5% \u51B7\u537B"
       - 
-      - "\uFF0B 10% \u66B4\u51FB\u4F24\u5BB3"
+      - "- 5% \u51B7\u5374"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 5
       TermType: 0
       Description: 
       Languages:
-      - "\uFF0B 10% \u66B4\u64CA\u50B7\u5BB3"
+      - "\uFF0B 10% \u50B7\u5BB3"
       - 
-      - "\uFF0B 10% \u66B4\u51FB\u4F24\u5BB3"
+      - "\uFF0B 10% \u4F24\u5BB3"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 6
       TermType: 0
       Description: 
       Languages:
-      - "\u6BCF\u5C64\u76DB\u6012\u984D\u5916\u63D0\u4F9B 4% \u66B4\u50B7"
+      - "\u6BCF\u5C64\u76DB\u6012\u984D\u5916\u63D0\u4F9B 4% \u66B4\u50B7<BR>\uFF0B
+        5 \u76DB\u6012\u4E0A\u9650"
       - 
-      - "\u6BCF\u5C42\u76DB\u6012\u989D\u5916\u63D0\u4F9B 4% \u66B4\u4F24"
+      - "\u6BCF\u5C42\u76DB\u6012\u989D\u5916\u63D0\u4F9B 4% \u66B4\u4F24<BR>\uFF0B
+        5 \u76DB\u6012\u4E0A\u9650"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Info 7
@@ -804,27 +1142,27 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u76DB\u6012"
+      - "\u5C60\u622E"
       - 
-      - "\u76DB\u6012"
+      - "\u5C60\u622E"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 1
       TermType: 0
       Description: 
       Languages:
-      - "\u51B7\u537B"
-      - 
-      - "\u51B7\u5374"
+      - "\u66B4\u64CA\u6A5F\u7387"
+      - Critical chance
+      - "\u66B4\u51FB\u673A\u7387"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 2
       TermType: 0
       Description: 
       Languages:
-      - "\u51B7\u537B"
-      - 
-      - "\u51B7\u5374"
+      - "\u66B4\u64CA\u6A5F\u7387"
+      - Critical chance
+      - "\u66B4\u51FB\u673A\u7387"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 3
@@ -840,18 +1178,18 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u66B4\u64CA\u50B7\u5BB3"
+      - "\u51B7\u537B"
       - 
-      - "\u66B4\u51FB\u4F24\u5BB3"
+      - "\u51B7\u5374"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 5
       TermType: 0
       Description: 
       Languages:
-      - "\u66B4\u64CA\u50B7\u5BB3"
+      - "\u50B7\u5BB3"
       - 
-      - "\u66B4\u51FB\u4F24\u5BB3"
+      - "\u4F24\u5BB3"
       Flags: 000000
       Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 6
@@ -1358,6 +1696,15 @@ MonoBehaviour:
       - "\u6280\u80FD\u8303\u56F4"
       Flags: 000000
       Languages_Touch: []
+    - Term: Value/Rage
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u76DB\u6012"
+      - Rage
+      - "\u76DB\u6012"
+      Flags: 000000
+      Languages_Touch: []
     - Term: NPC/Weaponstore Name
       TermType: 0
       Description: 
@@ -1430,360 +1777,18 @@ MonoBehaviour:
       - "\u5929\u8D4B\u70B9"
       Flags: 000000
       Languages_Touch: []
-    - Term: Value/Rage
+    - Term: NPC/Item Passivetree Name
       TermType: 0
-      Description: 
-      Languages:
-      - "\u76DB\u6012"
-      - Rage
-      - "\u76DB\u6012"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Exit
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u96E2\u958B\u904A\u6232"
-      - Exit Game
-      - "\u79BB\u5F00\u6E38\u620F"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Garbage Can
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u4E1F\u68C4"
-      - Throw
-      - "\u4E22\u5F03"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 14
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u6280\u80FD\u5F9E\u6ED1\u9F20\u5EA7\u6A19\u65BD\u653E<BR>\u300C\u5341\u5927\u540D\u528D\u300D"
-      - 
-      - "\u6280\u80FD\u4ECE\u6ED1\u9F20\u5EA7\u6807\u65BD\u653E<BR>\u300C\u5341\u5927\u540D\u5251\u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 14
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C \u865B\u7A7A \u300D"
-      - 
-      - "\u300C \u865A\u7A7A \u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/New Game
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u65B0\u904A\u6232"
-      - New Game
-      - "\u65B0\u6E38\u620F"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Setting
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u8A2D\u5B9A"
-      - Setting
-      - "\u8BBE\u7F6E"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Title
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u9084\u6C92\u60F3\u597D\u904A\u6232\u540D\u7A31"
-      - "\u82F1\u6587\u7684\u4E5F\u9084\u6C92\u60F3\u597D"
-      - "\u8FD8\u6CA1\u60F3\u597D\u6E38\u620F\u540D\u79F0"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 15
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
-      - "\u2013"
-      - "\u300C\u9ED1\u732B\u9B54\u6CD5\u5B66\u9662 \u6D3E\u53D1\u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 16
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u4F7F\u7528\u4F4D\u79FB\u6280\u5F8C\uFF0C\u6062\u5FA950%\u5931\u53BB\u9B54\u529B"
-      - 
-      - "\u4F7F\u7528\u4F4D\u79FB\u6280\u540E\uFF0C\u6062\u590D50%\u5931\u53BB\u9B54\u529B"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 15
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u5B78\u5F92\u6CD5\u9774"
-      - 
-      - "\u5B66\u5F92\u6CD5\u9774"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 16
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u7CBE\u795E\u6CD5\u9774"
-      - 
-      - "\u7CBE\u795E\u6CD5\u9774"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 17
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C\u5C45\u5BB6\u65C5\u884C\u3001\u6BBA\u4EBA\u6EC5\u53E3\u5FC5\u5099\u300D"
-      - "\u2013"
-      - "\u300C\u5C45\u5BB6\u65C5\u884C\u3001\u6740\u4EBA\u706D\u53E3\u5FC5\u5907\u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 18
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u4E0D\u80FD\u4E3B\u52D5\u4F7F\u7528\u8A72\u6280\u80FD\uFF0C\u5176\u4ED6\u6280\u80FD\u66B4\u64CA\u6642\u81EA\u52D5\u65BD\u653E"
-      - 
-      - "\u4E0D\u80FD\u4E3B\u52A8\u4F7F\u7528\u8BE5\u6280\u80FD\uFF0C\u5176\u4ED6\u6280\u80FD\u66B4\u51FB\u65F6\u81EA\u52A8\u65BD\u653E"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 17
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u521D\u65B0\u8005\u5315\u9996"
-      - 
-      - "\u521D\u65B0\u8005\u5315\u9996"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 18
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u7D2B\u6676\u6212\u6307"
-      - 
-      - "\u7D2B\u6676\u6212\u6307"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 19
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C\u5B78\u9662\u898F\u5247\u7B2C\u4E00\u689D\uFF1A\u7981\u6B62\u651C\u5E36\u9BE1\u9B5A\u7F50\u982D\u9032\u5165\u6821\u5340\u300D"
-      - 
-      - "\u300C\u5B66\u9662\u89C4\u5219\u7B2C\u4E00\u6761\uFF1A\u7981\u6B62\u643A\u5E26\u9CB1\u9C7C\u7F50\u5934\u8FDB\u5165\u6821\u533A\u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 19
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u5B78\u5F92\u6CD5\u66F8"
-      - 
-      - "\u5B66\u5F92\u6CD5\u4E66"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Skill/Skill Info 11
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u5411\u524D\u885D\u523A\uFF0C\u649E\u5230\u7B2C\u4E00\u500B\u76EE\u6A19\u5F8C\u505C\u4E0B\u4E26\u9020\u6210\u7BC4\u570D\u50B7\u5BB3\uFF0C\u901F\u5EA6\u548C\u885D\u523A\u8DDD\u96E2\u6703\u63D0\u5347\u50B7\u5BB3\u3002"
-      - 
-      - "\u5411\u524D\u51B2\u523A\uFF0C\u649E\u5230\u7B2C\u4E00\u4E2A\u76EE\u6807\u540E\u505C\u4E0B\u5E76\u9020\u6210\u8303\u56F4\u4F24\u5BB3\uFF0C\u901F\u5EA6\u548C\u51B2\u523A\u8DDD\u79BB\u4F1A\u63D0\u5347\u4F24\u5BB3\u3002"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Skill/Skill Name 11
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u885D\u649E"
-      - Charge
-      - "\u51B2\u649E"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 20
-      TermType: 0
-      Description: 
-      Languages:
-      - 
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 21
-      TermType: 0
-      Description: 
-      Languages:
-      - 
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 20
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u767D\u9435\u528D"
-      - 
-      - "\u767D\u94C1\u5251"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 21
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C \u75BE\u98A8 \u300D"
-      - 
-      - "\u300C \u75BE\u98CE \u300D"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 22
-      TermType: 0
-      Description: 
-      Languages:
-      - 
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 23
-      TermType: 0
-      Description: 
-      Languages:
-      - 
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 24
-      TermType: 0
-      Description: 
-      Languages:
-      - 
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 25
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Info 26
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u300C\u9ED1\u8C93\u9B54\u6CD5\u5B78\u9662 \u6D3E\u767C\u300D"
-      - 
-      - 
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 22
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u767D\u9435\u5F13"
-      - 
-      - "\u767D\u94C1\u5F13"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 23
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u767D\u9435\u65A7"
-      - 
-      - "\u767D\u94C1\u65A7"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 24
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u767D\u9435\u5315\u9996"
-      - 
-      - "\u767D\u94C1\u5315\u9996"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 25
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u77E5\u8B58\u6CD5\u9774"
-      - 
-      - "\u77E5\u8BC6\u6CD5\u9774"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: Weapon/Weapon Name 26
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u77E5\u8B58\u6CD5\u66F8"
-      - 
-      - "\u77E5\u8BC6\u6CD5\u4E66"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Select Class
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u95DC\u5361\u50B3\u9001"
-      - Select Class
-      - "\u5173\u5361\u4F20\u9001"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Bag
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u80CC\u5305"
-      - Bag
-      - "\u80CC\u5305"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/PassiveTree
-      TermType: 0
-      Description: 
+      Description: "Boss \u901A\u95DC\u5F8C\u7368\u7ACB\u6389\u843D\u7684\u5929\u8CE6\u6A39\u4E09\u9078\u4E00\u734E\u52F5\u540D\u7A31"
       Languages:
       - "\u5929\u8CE6\u6A39"
-      - PassiveTree
+      - Talent Tree
       - "\u5929\u8D4B\u6811"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/Home
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u64DA\u9EDE"
-      - Stronghold
-      - "\u636E\u70B9"
-      Flags: 000000
-      Languages_Touch: []
-    - Term: UI/SelectpassivetreeInfo
-      TermType: 0
-      Description: 
-      Languages:
-      - "\u89E3\u9396\u5929\u8CE6\u6A39"
-      - Unlock passive tree
-      - "\u89E3\u9501\u5929\u8D4B\u6811"
       Flags: 000000
       Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
-    mTerm_AppName: App_Name
+    mTerm_AppName: 
     mLanguages:
     - Name: Chinese (Taiwan)
       Code: zh-TW

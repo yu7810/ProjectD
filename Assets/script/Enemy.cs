@@ -173,7 +173,7 @@ public class Enemy : MonoBehaviour
         //UICtrl.Instance.GetEXP(EXP);
         if (enemyType != EnemyType.Barrel && enemyRarity != EnemyRarity.Minion)
         {
-            LevelCtrl.Instance.enemycheck(1);
+            LevelCtrl.Instance.enemycheck(this);
         }
         if (Filed != -1)
         {

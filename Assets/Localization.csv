@@ -1,0 +1,196 @@
+Key,Type,Desc,Chinese (Taiwan),English,Chinese (Simplified)
+UI/Title,Text,,還沒想好遊戲名稱,英文的也還沒想好,还没想好游戏名称
+UI/Remastered Levels,Text,,重製關卡,Restart Levels,重制关卡
+UI/Select Language,Text,,選擇語言,Select Language,选择语言
+UI/Exit,Text,,離開遊戲,Exit Game,离开游戏
+UI/New Game,Text,,新遊戲,New Game,新游戏
+UI/Garbage Can,Text,,丟棄,Throw,丢弃
+UI/Setting,Text,,設定,Setting,设置
+UI/Select Class,Text,,關卡傳送,Select Class,关卡传送
+UI/Bag,Text,,背包,Bag,背包
+UI/PassiveTree,Text,,天賦樹,PassiveTree,天赋树
+UI/Home,Text,,據點,Stronghold,据点
+UI/SelectpassivetreeInfo,Text,,解鎖天賦樹,Unlock passive tree,解锁天赋树
+Weapon/Weapon Info 0,Text,,–,–,–
+Weapon/Weapon Info 1,Text,,–,–,–
+Weapon/Weapon Info 2,Text,,–,–,–
+Weapon/Weapon Info 3,Text,,–,–,–
+Weapon/Weapon Info 4,Text,,身上每1金幣提供1%傷害增幅,,身上每1金币提供1%伤害增幅
+Weapon/Weapon Info 5,Text,,「大力點，一下搞定」,,「大力点，一下搞定」
+Weapon/Weapon Info 6,Text,,技能額外重複2次<BR>「十大名劍」,,技能额外重复2次<BR>「十大名剑」
+Weapon/Weapon Info 7,Text,,若該技能是位移技能，施放時觸發 L 欄位上的非位移技能,,若该技能是位移技能，施放时触发 L 栏位上的非位移技能
+Weapon/Weapon Info 8,Text,,冰冷技能命中複數目標時，每個額外目標使傷害提升20%,,冰冷技能命中复数目标时，每个额外目标使伤害提升20%
+Weapon/Weapon Info 9,Text,,擊殺敵人掉落的金幣為0~3倍,,击杀敌人掉落的金币为0~3倍
+Weapon/Weapon Info 10,Text,,投射物命中牆壁時會反彈,,投射物命中墙壁时会反弹
+Weapon/Weapon Info 11,Text,,投射物命中敵人後，額外分裂出兩個,,投射物命中敌人后，额外分裂出两个
+Weapon/Weapon Info 12,Text,,技能傷害依距離提升,,技能伤害依距离提升
+Weapon/Weapon Info 13,Text,,暴擊時降低其他技能冷卻 1 秒,,暴击时降低其他技能冷却 1 秒
+Weapon/Weapon Info 14,Text,,技能從滑鼠座標施放<BR>「十大名劍」,,技能从滑鼠座标施放<BR>「十大名剑」
+Weapon/Weapon Info 15,Text,,「黑貓魔法學院 派發」,,「黑猫魔法学院 派发」
+Weapon/Weapon Info 16,Text,,使用位移技後，恢復50%失去魔力,,使用位移技后，恢复50%失去魔力
+Weapon/Weapon Info 17,Text,,「居家旅行、殺人滅口必備」,,「居家旅行、杀人灭口必备」
+Weapon/Weapon Info 18,Text,,不能主動使用該技能，其他技能暴擊時自動施放,,不能主动使用该技能，其他技能暴击时自动施放
+Weapon/Weapon Info 19,Text,,「學院規則第一條：禁止攜帶鯡魚罐頭進入校區」,,「学院规则第一条：禁止携带鲱鱼罐头进入校区」
+Weapon/Weapon Info 20,Text,,,,
+Weapon/Weapon Info 21,Text,,,,
+Weapon/Weapon Info 22,Text,,,,
+Weapon/Weapon Info 23,Text,,,,
+Weapon/Weapon Info 24,Text,,,,
+Weapon/Weapon Info 25,Text,,「黑貓魔法學院 派發」,,
+Weapon/Weapon Info 26,Text,,「黑貓魔法學院 派發」,,
+Weapon/Weapon Name 0,Text,,–,–,–
+Weapon/Weapon Name 1,Text,,初新者劍,,初新者剑
+Weapon/Weapon Name 2,Text,,初新者弓,,初新者弓
+Weapon/Weapon Name 3,Text,,初新者斧,,初新者斧
+Weapon/Weapon Name 4,Text,,黃金權杖,,黄金权杖
+Weapon/Weapon Name 5,Text,,無盡匕首,,无尽匕首
+Weapon/Weapon Name 6,Text,,「 滄浪 」,,「 沧浪 」
+Weapon/Weapon Name 7,Text,,賽博義肢,,赛博义肢
+Weapon/Weapon Name 8,Text,,漩渦法典,,漩涡法典
+Weapon/Weapon Name 9,Text,,黃金戒指,,黄金戒指
+Weapon/Weapon Name 10,Text,,彈弓,,弹弓
+Weapon/Weapon Name 11,Text,,分裂,,分裂
+Weapon/Weapon Name 12,Text,,狙擊,,狙击
+Weapon/Weapon Name 13,Text,,水晶匕首,,水晶匕首
+Weapon/Weapon Name 14,Text,,「 虛空 」,,「 虚空 」
+Weapon/Weapon Name 15,Text,,學徒法靴,,学徒法靴
+Weapon/Weapon Name 16,Text,,精神法靴,,精神法靴
+Weapon/Weapon Name 17,Text,,初新者匕首,,初新者匕首
+Weapon/Weapon Name 18,Text,,紫晶戒指,,紫晶戒指
+Weapon/Weapon Name 19,Text,,學徒法書,,学徒法书
+Weapon/Weapon Name 20,Text,,白鐵劍,,白铁剑
+Weapon/Weapon Name 21,Text,,「 疾風 」,,「 疾风 」
+Weapon/Weapon Name 22,Text,,白鐵弓,,白铁弓
+Weapon/Weapon Name 23,Text,,白鐵斧,,白铁斧
+Weapon/Weapon Name 24,Text,,白鐵匕首,,白铁匕首
+Weapon/Weapon Name 25,Text,,知識法靴,,知识法靴
+Weapon/Weapon Name 26,Text,,知識法書,,知识法书
+Skill/Skill Info 0,Text,,–,–,–
+Skill/Skill Info 1,Text,,對前方圓柱形範圍內所有敵人造成傷害,,对前方圆柱形范围内所有敌人造成伤害
+Skill/Skill Info 2,Text,,朝前方衝刺一段距離，衝刺過程不會受到傷害,,朝前方冲刺一段距离，冲刺过程不会受到伤害
+Skill/Skill Info 3,Text,,–,–,–
+Skill/Skill Info 4,Text,,閃現至滑鼠位置，沒有距離限制,,闪现至滑鼠位置，没有距离限制
+Skill/Skill Info 5,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
+Skill/Skill Info 6,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
+Skill/Skill Info 7,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
+Skill/Skill Info 8,Text,,生成一個持續3秒的喪鐘，你對喪鐘造成的傷害會被喪鐘以圓形範圍釋放，該傷害不會暴擊,,生成一个持续3秒的丧钟，你对丧钟造成的伤害会被丧钟以圆形范围释放，该伤害不会暴击
+Skill/Skill Info 9,Text,,朝滑鼠方向發射一枚飛彈，命中敵人後消失,,朝滑鼠方向发射一枚飞弹，命中敌人后消失
+Skill/Skill Info 10,Text,,在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害,,在滑鼠位置生成一个水球，一段时间后爆炸，消耗一半当前魔力并造成(消耗量×10)伤害
+Skill/Skill Info 11,Text,,向前衝刺，撞到第一個目標後停下並造成範圍傷害，速度和衝刺距離會提升傷害。,,向前冲刺，撞到第一个目标后停下并造成范围伤害，速度和冲刺距离会提升伤害。
+Skill/Skill Name 0,Text,,–,,–
+Skill/Skill Name 1,Text,,風壓,Wind Pressure,风压
+Skill/Skill Name 2,Text,,衝刺,Sprint,冲刺
+Skill/Skill Name 3,Text,,音符,Note,音符
+Skill/Skill Name 4,Text,,閃現,Flash,闪现
+Skill/Skill Name 5,Text,,新月斬,New Moon Slash,新月斩
+Skill/Skill Name 6,Text,,弦月斬,Crescent Moon Slash,弦月斩
+Skill/Skill Name 7,Text,,明月斬,Full Moon Slash,明月斩
+Skill/Skill Name 8,Text,,The喪鐘,Death Stroke,The丧钟
+Skill/Skill Name 9,Text,,飛箭,Magic Arrow,飞箭
+Skill/Skill Name 10,Text,,水曝,Water Explode,水曝
+Skill/Skill Name 11,Text,,衝撞,Charge,冲撞
+Passiveskill/Passiveskill Info 0,Text,,暴擊時獲得 1 盛怒<BR>＋ 10 盛怒上限,,暴击时获得 1 盛怒<BR>＋ 10 盛怒上限
+Passiveskill/Passiveskill Info 1,Text,,＋ 5% 暴擊機率,＋ 5% critical hit chance,＋ 5% 暴击机率
+Passiveskill/Passiveskill Info 2,Text,,＋ 5% 暴擊機率,＋ 5% critical hit chance,＋ 5% 暴击机率
+Passiveskill/Passiveskill Info 3,Text,,命中獲得0.2層盛怒<BR>＋ 5 盛怒上限,,命中获得0.2层盛怒<BR>＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 4,Text,,- 5% 冷卻,,- 5% 冷却
+Passiveskill/Passiveskill Info 5,Text,,＋ 10% 傷害,,＋ 10% 伤害
+Passiveskill/Passiveskill Info 6,Text,,每層盛怒額外提供 4% 暴傷<BR>＋ 5 盛怒上限,,每层盛怒额外提供 4% 暴伤<BR>＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 7,Text,,＋ 5 盛怒上限,,＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 8,Text,,＋ 5 盛怒上限,,＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 9,Text,,盛怒全滿時， 攻擊類技能可以命中並消滅所有來源的投射物,,盛怒全满时， 攻击类技能可以命中并消灭所有来源的投射物
+Passiveskill/Passiveskill Info 10,Text,,每層盛怒額外減少 1% 冷卻,,每层盛怒额外减少 1% 冷却
+Passiveskill/Passiveskill Info 11,Text,,每層盛怒額外提供 1.5% 移動速度,,每层盛怒额外提供 1.5% 移动速度
+Passiveskill/Passiveskill Info 12,Text,,＋ 5 視野<BR>＋ 5% 移動速度,,＋ 5 视野<BR>＋ 5% 移动速度
+Passiveskill/Passiveskill Info 13,Text,,＋ 5 視野<BR>＋ 5% 移動速度,,＋ 5 视野<BR>＋ 5% 移动速度
+Passiveskill/Passiveskill Info 14,Text,,不再自然恢復魔力，魔力不足時以 2.5 倍速度恢復至全滿，期間不能使用技能,,不再自然恢复魔力，魔力不足时以 2.5 倍速度恢复至全满，期间不能使用技能
+Passiveskill/Passiveskill Info 15,Text,,＋ 10% 傷害,,＋ 10% 伤害
+Passiveskill/Passiveskill Info 16,Text,,＋ 10% 傷害,,＋ 10% 伤害
+Passiveskill/Passiveskill Info 17,Text,,＋ 10% 傷害,,＋ 10% 伤害
+Passiveskill/Passiveskill Info 18,Text,,裝填期間獲得 20% 移動速度,,装填期间获得 20% 移动速度
+Passiveskill/Passiveskill Info 19,Text,,裝填後下一次攻擊獲得額外 100% 暴擊機率,,装填后下一次攻击获得额外 100% 暴击机率
+Passiveskill/Passiveskill Info 20,Text,,裝填速度提高為 4 倍回魔速度,,装填速度提高为 4 倍回魔速度
+Passiveskill/Passiveskill Info 21,Text,,使用技能時 50% 機率不消耗魔力,,使用技能时 50% 机率不消耗魔力
+Passiveskill/Passiveskill Info 22,Text,,獲得額外 10% 最大魔力的魔力恢復,,获得额外 10% 最大魔力的魔力恢复
+Passiveskill/Passiveskill Info 23,Text,,每 1 最大魔力 ＋ 5% 傷害<BR>＋ 50% 消耗,,每 1 最大魔力 ＋ 5% 伤害<BR>＋ 50% 消耗
+Passiveskill/Passiveskill Info 24,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 25,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 26,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 27,Text,,擊殺敵人時恢復 20% 最大魔力,,击杀敌人时恢复 20% 最大魔力
+Passiveskill/Passiveskill Info 28,Text,,＋ 50% 最大魔力<BR>- 50% 最大生命,,＋ 50% 最大魔力<BR>- 50% 最大生命
+Passiveskill/Passiveskill Info 29,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 30,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 31,Text,,每 1 魔力提升 3% 暴擊機率,,每 1 魔力提升 3% 暴击机率
+Passiveskill/Passiveskill Info 32,Text,,增減技能消耗的數值同時作用到技能範圍,,增减技能消耗的数值同时作用到技能范围
+Passiveskill/Passiveskill Name 0,Text,,屠戮,,屠戮
+Passiveskill/Passiveskill Name 1,Text,,暴擊機率,Critical chance,暴击机率
+Passiveskill/Passiveskill Name 2,Text,,暴擊機率,Critical chance,暴击机率
+Passiveskill/Passiveskill Name 3,Text,,狂熱,,狂热
+Passiveskill/Passiveskill Name 4,Text,,冷卻,,冷却
+Passiveskill/Passiveskill Name 5,Text,,傷害,,伤害
+Passiveskill/Passiveskill Name 6,Text,,殘忍,,残忍
+Passiveskill/Passiveskill Name 7,Text,,盛怒上限,,盛怒上限
+Passiveskill/Passiveskill Name 8,Text,,盛怒上限,,盛怒上限
+Passiveskill/Passiveskill Name 9,Text,,撲滅,,扑灭
+Passiveskill/Passiveskill Name 10,Text,,節奏,,节奏
+Passiveskill/Passiveskill Name 11,Text,,屠戮,,屠戮
+Passiveskill/Passiveskill Name 12,Text,,視野及移動速度,,视野及移动速度
+Passiveskill/Passiveskill Name 13,Text,,視野及移動速度,,视野及移动速度
+Passiveskill/Passiveskill Name 14,Text,,裝填,,装填
+Passiveskill/Passiveskill Name 15,Text,,傷害,,伤害
+Passiveskill/Passiveskill Name 16,Text,,傷害,,伤害
+Passiveskill/Passiveskill Name 17,Text,,傷害,,伤害
+Passiveskill/Passiveskill Name 18,Text,,戒備裝填,,戒备装填
+Passiveskill/Passiveskill Name 19,Text,,弱點射擊,,弱点射击
+Passiveskill/Passiveskill Name 20,Text,,快速裝填,,快速装填
+Passiveskill/Passiveskill Name 21,Text,,虛幻箭矢,,虚幻箭矢
+Passiveskill/Passiveskill Name 22,Text,,魔力恢復,,魔力恢复
+Passiveskill/Passiveskill Name 23,Text,,魔法,,魔法
+Passiveskill/Passiveskill Name 24,Text,,魔力,,魔力
+Passiveskill/Passiveskill Name 25,Text,,魔力,,魔力
+Passiveskill/Passiveskill Name 26,Text,,魔力,,魔力
+Passiveskill/Passiveskill Name 27,Text,,魔力吸收,,魔力吸收
+Passiveskill/Passiveskill Name 28,Text,,魔力昇華,,魔力升华
+Passiveskill/Passiveskill Name 29,Text,,魔力,,魔力
+Passiveskill/Passiveskill Name 30,Text,,魔力,,魔力
+Passiveskill/Passiveskill Name 31,Text,,魔力異常,,魔力异常
+Passiveskill/Passiveskill Name 32,Text,,魔力平衡,,魔力平衡
+Tag/tagAttack,Text,,攻擊,Attack,攻击
+Tag/tagSpell,Text,,法術,Spell,法术
+Tag/tagMovement,Text,,位移,Movement,位移
+Tag/tagProjectile,Text,,投射物,Projectile,投射物
+Tag/tagRange,Text,,範圍,Range,范围
+Tag/tagPhysical,Text,,物理,Physical,物理
+Tag/tagChaos,Text,,混沌,Chaos,混沌
+Tag/tagFire,Text,,火焰,Fire,火焰
+Tag/tagCold,Text,,冰冷,Cold,冰冷
+Tag/tagLightning,Text,,閃電,Lightning,闪电
+Affix/damage,Text,,傷害,ATK,伤害
+Affix/size,Text,,範圍,RNG,范围
+Affix/cooldown,Text,,冷卻,CD,冷却
+Affix/costdown,Text,,消耗,COST,消耗
+Affix/crit,Text,,暴率,CRIT,暴率
+Affix/crit damage,Text,,暴傷,C.ATK,暴伤
+Affix/speed,Text,,速度,SPD,速度
+Value/HP,Text,,生命值,HP,生命值
+Value/AP,Text,,魔力值,AP,魔力值
+Value/Power,Text,,傷害,Attack,伤害
+Value/Cooldown,Text,,冷卻,Cool Down,冷却
+Value/Costdown,Text,,消耗,Cost Down,消耗
+Value/RestoreAP,Text,,魔力恢復,AP Restore,魔力恢复
+Value/Crit,Text,,暴擊機率,Crit Chance,暴击机率
+Value/Crit Damage,Text,,暴擊傷害,Crit Damage,暴击伤害
+Value/Damagereduction,Text,,傷害減免,Damage Reduction,伤害减免
+Value/Move Speed,Text,,移動速度,Move Speed,移动速度
+Value/Skill Speed,Text,,投射物速度,Skill Speed,投射物速度
+Value/Attack Size,Text,,技能範圍,Attack Range,技能范围
+Value/Rage,Text,,盛怒,Rage,盛怒
+NPC/Weaponstore Name,Text,,武器商店,Weapon Store,武器商店
+NPC/Skillstore Name,Text,,技能商店,Skill Store,技能商店
+NPC/Exitdoor Money,Text,,金幣,Gold,金币
+NPC/Exitdoor Passivepoint,Text,,天賦點,Passive Point,天赋点
+NPC/Exitdoor Boss,Text,,首領,Boss,首领
+NPC/Exitdoor Store,Text,,商店,Store,商店
+NPC/Item Money Name,Text,,金幣,Gold,金币
+NPC/Item Passivepoint Name,Text,,天賦點,Passive Point,天赋点
+NPC/Item Passivetree Name,Text,Boss 通關後獨立掉落的天賦樹三選一獎勵名稱,天賦樹,Talent Tree,天赋树
