@@ -216,3 +216,5 @@ Passiveskill/Passiveskill Name 41,Text,,盛怒上限,Maximum Rage,盛怒上限
 Passiveskill/Passiveskill Name 42,Text,,野性,Wildness,野性
 Weapon/Weapon Name 27,Text,,撲滅者,Extinguisher,扑灭者
 Weapon/Weapon Info 27,Text,,技能可以命中敵方投射物,Skills can hit enemy projectiles.,技能可以命中敌方投射物
+Weapon/Weapon Name 28,Text,,滅日者,Sunbreaker,灭日者
+Weapon/Weapon Info 28,Text,,使用技能時消耗100%盛怒，並將此次傷害提升(消耗值*2)%,Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%.,使用技能时消耗100%盛怒，并将此次伤害提升(消耗值*2)%

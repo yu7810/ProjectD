@@ -70,7 +70,9 @@ public class Skill : MonoBehaviour
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
     }
 
-    public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0) {
+    public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0, float inheritedDamageMultiplier = -1f) {
+        float damageMultiplier = inheritedDamageMultiplier >= 0f
+            ? inheritedDamageMultiplier : ValueData.Instance.ConsumeSunbreakerRage(Fieldid);
         UsedTime = usedTime;
 
         if (UsedTime == 0 && !ValueData.Instance.SkillTag[Skillid].Contains(SkillTagType.Movement)) // �첾�ޤΦh���I�񤣷|���������y
@@ -118,7 +120,7 @@ public class Skill : MonoBehaviour
 
         switch (Skillid) {
             case 1:
-                Basicattack(Fieldid);
+                Basicattack(Fieldid, damageMultiplier);
                 break;
             case 2:
                 Dash(Fieldid);
@@ -127,25 +129,25 @@ public class Skill : MonoBehaviour
                 Flash();
                 break;
             case 5:
-                Newmoon(Fieldid);
+                Newmoon(Fieldid, damageMultiplier);
                 break;
             case 6:
-                Quartermoon(Fieldid);
+                Quartermoon(Fieldid, damageMultiplier);
                 break;
             case 7:
-                Fullmoon(Fieldid);
+                Fullmoon(Fieldid, damageMultiplier);
                 break;
             case 8:
-                Bell(Fieldid);
+                Bell(Fieldid, damageMultiplier);
                 break;
             case 9:
-                Magicarrow(Fieldid);
+                Magicarrow(Fieldid, damageMultiplier);
                 break;
             case 10:
-                Waterball(Fieldid);
+                Waterball(Fieldid, damageMultiplier);
                 break;
             case 11:
-                Charge(Fieldid);
+                Charge(Fieldid, damageMultiplier);
                 break;
         }
 
@@ -165,7 +167,7 @@ public class Skill : MonoBehaviour
         }
         if (ValueData.Instance.isHaveweaponid(Fieldid, 6) && usedTime < 2) //�Z��6�ĪG
         {
-            StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime));
+            StartCoroutine(doubleSkill(ValueData.Instance.SkillField[Fieldid].ID, Fieldid, usedTime, damageMultiplier));
         }
         if (ValueData.Instance.isHaveweaponid(Fieldid, 16)) //�Z��16���ĪG
         {
@@ -204,11 +206,17 @@ public class Skill : MonoBehaviour
         return newPosition;
     }
 
-    void Basicattack(int Fieldid)
+    private static void ConfigureAttack(PlayerAttack attack, int fieldId, float damageMultiplier)
+    {
+        attack.fidleid = fieldId;
+        attack.damageMultiplier = damageMultiplier;
+    }
+
+    void Basicattack(int Fieldid, float damageMultiplier)
     {
         startPos.y = 1.3f;
         GameObject a = Instantiate(Skill_A, startPos, startRot);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale *= _size;
     }
@@ -258,10 +266,10 @@ public class Skill : MonoBehaviour
         }
     }
 
-    void Newmoon(int Fieldid)
+    void Newmoon(int Fieldid, float damageMultiplier)
     {
         GameObject a = Instantiate(Skill_A, startPos, startRot);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 5)
@@ -273,10 +281,10 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
         }
     }
-    void Quartermoon(int Fieldid)
+    void Quartermoon(int Fieldid, float damageMultiplier)
     {
         GameObject a = Instantiate(Skill_A, startPos, startRot);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 6)
@@ -288,10 +296,10 @@ public class Skill : MonoBehaviour
             UICtrl.Instance.SelectSkillChangeField(Fieldid);
         }
     }
-    void Fullmoon(int Fieldid)
+    void Fullmoon(int Fieldid, float damageMultiplier)
     {
         GameObject a = Instantiate(Skill_A, startPos, startRot);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         a.transform.localScale = new Vector3(a.transform.localScale.x * _size, 1, a.transform.localScale.z * _size);
         if (ValueData.Instance.SkillField[Fieldid].ID == 7)
@@ -304,13 +312,13 @@ public class Skill : MonoBehaviour
         }
     }
 
-    IEnumerator doubleSkill(int Skillid, int Fieldid, int usedTime) 
+    IEnumerator doubleSkill(int Skillid, int Fieldid, int usedTime, float damageMultiplier)
     {
         yield return new WaitForSeconds(0.2f);
-        UseSkill(Skillid, Fieldid, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation, usedTime + 1);
+        UseSkill(Skillid, Fieldid, ValueData.Instance.Player.transform.position, ValueData.Instance.Player.transform.rotation, usedTime + 1, damageMultiplier);
     }
 
-    void Bell(int Fieldid) 
+    void Bell(int Fieldid, float damageMultiplier)
     {
         Vector3 targetpos;
         if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // �˳�14�|��������m���ƹ���m
@@ -319,9 +327,9 @@ public class Skill : MonoBehaviour
             targetpos = startPos;
         targetpos.y = 0;
         GameObject a = Instantiate(Skill_Bell, targetpos, Skill_Bell.transform.rotation);
-        a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
     }
-    void Magicarrow(int Fieldid)
+    void Magicarrow(int Fieldid, float damageMultiplier)
     {
         //�B�ʨ���
         float rngAngle = Random.Range(0f, 6f);
@@ -334,17 +342,17 @@ public class Skill : MonoBehaviour
             a = Instantiate(Skill_Magicarrow, startPos, currentRotation);
         
         PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
-        b.fidleid = Fieldid;
+        ConfigureAttack(b, Fieldid, damageMultiplier);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         b.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
         if (UsedTime > 0)
             b.canSplit = false;
     }
-    void Waterball(int Fieldid)
+    void Waterball(int Fieldid, float damageMultiplier)
     {
-        StartCoroutine(waterball(Fieldid));
+        StartCoroutine(waterball(Fieldid, damageMultiplier));
     }
-    IEnumerator waterball(int Fieldid)
+    IEnumerator waterball(int Fieldid, float damageMultiplier)
     {
         float _cost = ValueData.Instance.WaterballCost(Fieldid);
         ValueData.Instance.GetAp(-_cost);
@@ -364,19 +372,19 @@ public class Skill : MonoBehaviour
         Destroy(a, 1f);
         yield return new WaitForSeconds(0.7f);
         GameObject b = Instantiate(Skill_Waterball_2, targetPos, Skill_Waterball_2.transform.rotation);
-        b.transform.GetComponent<PlayerAttack>().fidleid = Fieldid;
+        ConfigureAttack(b.GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
         b.transform.GetComponent<PlayerAttack>().dmg = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
         b.transform.localScale = new Vector3(b.transform.localScale.x * _size, b.transform.localScale.y * _size, b.transform.localScale.z * _size);
         Destroy(b, 1f);
     }
 
-    void Charge(int Fieldid)
+    void Charge(int Fieldid, float damageMultiplier)
     {
         if(_Charge == null)
-            _Charge = StartCoroutine(charge(Fieldid));
+            _Charge = StartCoroutine(charge(Fieldid, damageMultiplier));
     }
 
-    IEnumerator charge(int Fieldid)
+    IEnumerator charge(int Fieldid, float damageMultiplier)
     {
         PlayerCtrl.Instance.canMove = false;
         ValueData.Instance.canBehurt = false;
@@ -396,7 +404,7 @@ public class Skill : MonoBehaviour
                 m.y = 1.3f;
                 GameObject a = Instantiate(Skill_Charge, m, startRot);
                 PlayerAttack atk = a.GetComponent<PlayerAttack>();
-                atk.fidleid = Fieldid;
+                ConfigureAttack(atk, Fieldid, damageMultiplier);
 
                 // �̽Ĩ�Z���M�w�ˮ`
                 float distance = Vector3.Distance(startpos, PlayerCtrl.Instance.transform.position);

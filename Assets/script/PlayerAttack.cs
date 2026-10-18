@@ -10,6 +10,7 @@ public class PlayerAttack : MonoBehaviour
     private SkillFieldBase thisSkill;
     private int _fidleid = -1;
     public float dmg;
+    public float damageMultiplier = 1f; // Snapshot for this cast, independent of live Rage.
     float crit;
     public List<GameObject> passTarget = new List<GameObject>();
     public List<GameObject> Target = new List<GameObject>();
@@ -131,6 +132,7 @@ public class PlayerAttack : MonoBehaviour
         }
 
         //暴擊
+        _dmg *= damageMultiplier;
         float randomvalue = Random.Range(0f, 1f);
         if (crit > randomvalue && thisSkill.ID != 8) // 喪鐘不會暴擊
         {
@@ -188,8 +190,8 @@ public class PlayerAttack : MonoBehaviour
                 Vector3 pos = transform.position;
                 pos += ValueData.Instance.Player.transform.forward * 0.7f;
                 pos.y = 0;
-                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, leftDirection, 1);
-                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, rightDirection, 1);
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, leftDirection, 1, damageMultiplier);
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, rightDirection, 1, damageMultiplier);
             }
 
             Destroy(this.gameObject);

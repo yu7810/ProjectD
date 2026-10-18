@@ -7,6 +7,7 @@ using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
+    public const int SunbreakerWeaponId = 28;
     public const int SuppressionTalentId = 33;
     public const int CalmTalentId = 37;
     public const int WrathTalentId = 38;
@@ -32,6 +33,17 @@ public class ValueData : MonoBehaviour
         }
         else GetAp(-cost);
         return true;
+    }
+
+    // Explicit weapon spending also counts toward Calm's recovery.
+    public float ConsumeSunbreakerRage(int fieldId)
+    {
+        if (!isHaveweaponid(fieldId, SunbreakerWeaponId)) return 1f;
+        float spent = Mathf.Max(0f, Rage);
+        if (spent == 0f) return 1f;
+        GetRage(-spent);
+        if (HasCalm) HP = Mathf.Min(maxHP, HP + spent * 0.1f);
+        return 1f + spent * 0.02f;
     }
 
     public float WaterballCost(int fieldId)
@@ -236,6 +248,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(25,RarityType.Magic,40,"數值鞋", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(26,RarityType.Magic,40,"數值書", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(27,RarityType.Rare,80,"\u64B2\u6EC5\u8005", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(28,RarityType.Rare,80,"\u6EC5\u65E5\u8005", 0, 0, 0, 0, 0, 0, 0),
     };
     // 裝備介紹
     [NonSerialized]
@@ -268,6 +281,7 @@ public class ValueData : MonoBehaviour
         "25",
         "26",
         "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269",
+        "\u4F7F\u7528\u6280\u80FD\u6642\u6D88\u8017100%\u76DB\u6012\uFF0C\u4E26\u5C07\u6B64\u6B21\u50B7\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*2)%",
     };
 
     // 已裝備裝備、裝備背包
@@ -299,7 +313,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,
     };
 
     //每次加減天賦時呼叫，更新所有數值

@@ -27,3 +27,4 @@ ID,Rarity,Price,Name,Damage,Cooldown,Size,Speed,Cost,Crit,CritDamage
 25,Magic,40,數值鞋,0,0,0,0.6,0,0,0
 26,Magic,40,數值書,0.5,0,0.5,0,0,0,0
 27,Rare,80,撲滅者,1,0.4,0.2,-0.5,0,0,0
+28,Rare,80,滅日者,1,1,0.6,0,0,0,0

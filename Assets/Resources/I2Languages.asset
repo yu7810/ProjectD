@@ -1986,6 +1986,24 @@ MonoBehaviour:
       - "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u654C\u65B9\u6295\u5C04\u7269"
       Flags: 000000
       Languages_Touch: []
+    - Term: Weapon/Weapon Name 28
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6ec5\u65e5\u8005"
+      - "Sunbreaker"
+      - "\u706d\u65e5\u8005"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 28
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u4f7f\u7528\u6280\u80fd\u6642\u6d88\u8017100%\u76db\u6012\uff0c\u4e26\u5c07\u6b64\u6b21\u50b7\u5bb3\u63d0\u5347(\u6d88\u8017\u503c*2)%"
+      - "Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%."
+      - "\u4f7f\u7528\u6280\u80fd\u65f6\u6d88\u8017100%\u76db\u6012\uff0c\u5e76\u5c06\u6b64\u6b21\u4f24\u5bb3\u63d0\u5347(\u6d88\u8017\u503c*2)%"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: 
