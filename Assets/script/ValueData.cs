@@ -9,6 +9,10 @@ public class ValueData : MonoBehaviour
 {
     public const int SuppressionTalentId = 33;
     public const int CalmTalentId = 37;
+    public const int WrathTalentId = 38;
+    public const int FrenzyTalentId = 40;
+    public const int WildnessTalentId = 42;
+    private bool HasPassiveSkill(int id) => PassiveSkills != null && id >= 0 && id < PassiveSkills.Length && PassiveSkills[id];
     public bool UsesRageForSkills => PassiveSkills != null && PassiveSkills.Length > SuppressionTalentId && PassiveSkills[SuppressionTalentId];
     public bool HasCalm => PassiveSkills != null && PassiveSkills.Length > CalmTalentId && PassiveSkills[CalmTalentId];
     public float SkillResource => UsesRageForSkills ? Rage : AP;
@@ -105,6 +109,7 @@ public class ValueData : MonoBehaviour
     public float add_RagePower; // 天賦0給予的傷害加乘
     public float add_RageCritdmg; // 天賦6給予的暴傷加乘
     public float add_RageCooldown; // 天賦10給予的冷卻
+    public float add_RageDamageReduction;
     public float add_RageMovespeed; // 天賦11給予的跑速
     public float add_ReloadCrit; // 天賦19給予的額外暴率
     public float add_ReloadMovespeed; // 天賦18給予的跑速
@@ -352,7 +357,7 @@ public class ValueData : MonoBehaviour
         else
             add_MaxapRestore = 0;
         RestoreAP = base_RestoreAP + add_RestoreAP + add_MaxapRestore;
-        Damagereduction = base_Damagereduction + add_Damagereduction;
+        Damagereduction = Mathf.Clamp01(base_Damagereduction + add_Damagereduction + add_RageDamageReduction);
         Vision = base_Vision + add_Vision;
         //更新value UI
         UICtrl.Instance.UpdateValueUI();
@@ -611,6 +616,8 @@ public class ValueData : MonoBehaviour
             case 31:
                 
                 break;
+            case 39:
+            case 41:
             case 34:
                 add_maxRage += 5;
                 break;
@@ -656,7 +663,8 @@ public class ValueData : MonoBehaviour
     }
 
     //加減生命通用
-    public void GetHp(float value, bool useBehurtTimer = false)
+    // Life payments must set isLifeCost: true; they bypass damage mitigation and on-damage effects.
+    public void GetHp(float value, bool useBehurtTimer = false, bool isLifeCost = false)
     {
         if (value > 0f && HasCalm) return;
         if (value >= 0) // 回血
@@ -668,9 +676,12 @@ public class ValueData : MonoBehaviour
         }
         else // 扣血
         {
-            if (!canBehurt || immortal)
+            if (!isLifeCost && (!canBehurt || immortal))
                 return;
-            value *= (1 - Damagereduction);
+            if (!isLifeCost)
+                value *= 1f - Mathf.Clamp01(Damagereduction);
+            // Capture damage after mitigation, before rage loss removes Wildness's mitigation.
+            bool lostLifeToDamage = !isLifeCost && value < 0f && HP > 0f;
             /*if (PassiveSkills[10] && !PlayerCtrl.Instance.isReload) // MOM
             {
                 if (AP >= -value)
@@ -693,7 +704,7 @@ public class ValueData : MonoBehaviour
                 else 
                 {
                     HP += value;
-                    if (useBehurtTimer == true)
+                    if (useBehurtTimer && !isLifeCost)
                         StartCoroutine(PlayerCtrl.Instance.BehurtTimer(true)); //扣血及特效
                 }
             }
@@ -702,6 +713,9 @@ public class ValueData : MonoBehaviour
                 HP = 0;
                 UICtrl.Instance.gameover();
             }
+            // This loss is not a resource payment and cannot trigger Calm healing.
+            if (lostLifeToDamage && HasPassiveSkill(WrathTalentId) && Rage > 0f)
+                GetRage(-Rage);
         }
     }
     //加減魔力通用
@@ -809,6 +823,8 @@ public class ValueData : MonoBehaviour
     {
         if (value > 0) // 加
         {
+            if (HasPassiveSkill(WrathTalentId))
+                value *= 2f;
             if (maxRage > Rage + value)
                 Rage += value;
             else
@@ -838,7 +854,9 @@ public class ValueData : MonoBehaviour
         add_RagePower = mRage * 0.05f;
         add_RageCritdmg = PassiveSkills[6] ? mRage * 0.04f : 0f;
         add_RageCooldown = PassiveSkills[10] ? mRage * -0.01f : 0f;
-        add_RageMovespeed = PassiveSkills[11] ? mRage * 0.015f : 0f;
+        add_RageMovespeed = mRage * ((PassiveSkills[11] ? 0.015f : 0f)
+            + (HasPassiveSkill(FrenzyTalentId) ? 0.01f : 0f));
+        add_RageDamageReduction = HasPassiveSkill(WildnessTalentId) ? mRage * 0.01f : 0f;
         UpdateSkillResourceUI();
         if (value != 0) // 避免死迴圈
         {

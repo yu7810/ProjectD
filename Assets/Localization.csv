@@ -204,3 +204,13 @@ NPC/Exitdoor Store,Text,,商店,Store,商店
 NPC/Item Money Name,Text,,金幣,Gold,金币
 NPC/Item Passivepoint Name,Text,,天賦點,Passive Point,天赋点
 NPC/Item Passivetree Name,Text,Boss 通關後獨立掉落的天賦樹三選一獎勵名稱,天賦樹,Talent Tree,天赋树
+Passiveskill/Passiveskill Info 38,Text,,盛怒獲得量提高 100%。<BR>受到傷害時，失去所有盛怒。,100% increased rage gain.<BR>Lose all rage when damage reduces your life.,盛怒获得量提高 100%。 <BR>受到伤害时，失去所有盛怒。
+Passiveskill/Passiveskill Info 39,Text,,＋ 5 盛怒上限,+5 maximum rage,＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 40,Text,,每層盛怒提供 1% 移動速度,1% increased movement speed per rage,每层盛怒提供 1% 移动速度
+Passiveskill/Passiveskill Info 41,Text,,＋ 5 盛怒上限,+5 maximum rage,＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 42,Text,,每層盛怒提供 1% 減傷,1% damage reduction per rage,每层盛怒提供 1% 减伤
+Passiveskill/Passiveskill Name 38,Text,,憤怒,Wrath,愤怒
+Passiveskill/Passiveskill Name 39,Text,,盛怒上限,Maximum Rage,盛怒上限
+Passiveskill/Passiveskill Name 40,Text,,狂躁,Frenzy,狂躁
+Passiveskill/Passiveskill Name 41,Text,,盛怒上限,Maximum Rage,盛怒上限
+Passiveskill/Passiveskill Name 42,Text,,野性,Wildness,野性
