@@ -1968,6 +1968,24 @@ MonoBehaviour:
       - "\u91CE\u6027"
       Flags: 000000
       Languages_Touch: []
+    - Term: Weapon/Weapon Name 27
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u64B2\u6EC5\u8005"
+      - "Extinguisher"
+      - "\u6251\u706D\u8005"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 27
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269"
+      - "Skills can hit enemy projectiles."
+      - "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u654C\u65B9\u6295\u5C04\u7269"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: 

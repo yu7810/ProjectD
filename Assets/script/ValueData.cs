@@ -235,6 +235,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(24,RarityType.Magic,40,"數值匕", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(25,RarityType.Magic,40,"數值鞋", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(26,RarityType.Magic,40,"數值書", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(27,RarityType.Rare,80,"\u64B2\u6EC5\u8005", 0, 0, 0, 0, 0, 0, 0),
     };
     // 裝備介紹
     [NonSerialized]
@@ -266,6 +267,7 @@ public class ValueData : MonoBehaviour
         "24",
         "25",
         "26",
+        "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269",
     };
 
     // 已裝備裝備、裝備背包
@@ -297,7 +299,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,
     };
 
     //每次加減天賦時呼叫，更新所有數值

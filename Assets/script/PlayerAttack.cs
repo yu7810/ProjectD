@@ -73,6 +73,25 @@ public class PlayerAttack : MonoBehaviour
         }
         else if (other.transform.tag == "EnemyAttack" || other.transform.tag == "PlayerAttack")
         {
+            // Extinguisher only intercepts hostile projectiles for this skill slot.
+            if (other.CompareTag("EnemyAttack") && _fidleid >= 0
+                && ValueData.Instance.isHaveweaponid(_fidleid, 27)
+                && other.TryGetComponent<EnemyAttack>(out var enemyAttack)
+                && enemyAttack.enemyType == EnemyType.Ranged)
+            {
+                if (!other.gameObject.activeInHierarchy || passTarget.Contains(other.gameObject))
+                    return;
+
+                // Disable immediately so another collider cannot hit the same projectile
+                // before Unity processes Destroy at the end of the frame.
+                GameObject projectile = other.transform.parent != null
+                    ? other.transform.parent.gameObject : other.gameObject;
+                projectile.SetActive(false);
+                doDamage(other.gameObject);
+                Destroy(projectile);
+                return;
+            }
+
             if (ValueData.Instance.PassiveSkills[9]) // 天賦9
             {
                 if (!ValueData.Instance.SkillTag[thisSkill.ID].Contains(SkillTagType.Attack) || ValueData.Instance.Rage != ValueData.Instance.maxRage)

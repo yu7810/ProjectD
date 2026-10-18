@@ -214,3 +214,5 @@ Passiveskill/Passiveskill Name 39,Text,,盛怒上限,Maximum Rage,盛怒上限
 Passiveskill/Passiveskill Name 40,Text,,狂躁,Frenzy,狂躁
 Passiveskill/Passiveskill Name 41,Text,,盛怒上限,Maximum Rage,盛怒上限
 Passiveskill/Passiveskill Name 42,Text,,野性,Wildness,野性
+Weapon/Weapon Name 27,Text,,撲滅者,Extinguisher,扑灭者
+Weapon/Weapon Info 27,Text,,技能可以命中敵方投射物,Skills can hit enemy projectiles.,技能可以命中敌方投射物
