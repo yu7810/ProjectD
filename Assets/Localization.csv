@@ -122,6 +122,11 @@ Passiveskill/Passiveskill Info 29,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
 Passiveskill/Passiveskill Info 30,Text,,＋ 1 最大魔力,,＋ 1 最大魔力
 Passiveskill/Passiveskill Info 31,Text,,每 1 魔力提升 3% 暴擊機率,,每 1 魔力提升 3% 暴击机率
 Passiveskill/Passiveskill Info 32,Text,,增減技能消耗的數值同時作用到技能範圍,,增减技能消耗的数值同时作用到技能范围
+Passiveskill/Passiveskill Info 33,Text,,技能的魔力消耗變為消耗盛怒,Skills spend rage instead of mana.,技能的魔力消耗变为消耗盛怒
+Passiveskill/Passiveskill Info 34,Text,,＋ 5 盛怒上限,+5 maximum rage,＋ 5 盛怒上限
+Passiveskill/Passiveskill Info 35,Text,,＋ 3 生命上限,+3 maximum life,＋ 3 生命上限
+Passiveskill/Passiveskill Info 36,Text,,＋ 3 生命上限,+3 maximum life,＋ 3 生命上限
+Passiveskill/Passiveskill Info 37,Text,,無法透過其他來源恢復生命。<BR>每消耗 1 點盛怒，恢復 0.1 生命。,Cannot recover life from other sources. <BR>Recover 0.1 life per rage spent.,无法透过其他来源恢复生命。 <BR>每消耗 1 点盛怒，恢复 0.1 生命。
 Passiveskill/Passiveskill Name 0,Text,,屠戮,,屠戮
 Passiveskill/Passiveskill Name 1,Text,,暴擊機率,Critical chance,暴击机率
 Passiveskill/Passiveskill Name 2,Text,,暴擊機率,Critical chance,暴击机率
@@ -155,6 +160,11 @@ Passiveskill/Passiveskill Name 29,Text,,魔力,,魔力
 Passiveskill/Passiveskill Name 30,Text,,魔力,,魔力
 Passiveskill/Passiveskill Name 31,Text,,魔力異常,,魔力异常
 Passiveskill/Passiveskill Name 32,Text,,魔力平衡,,魔力平衡
+Passiveskill/Passiveskill Name 33,Text,,壓抑,Suppression,压抑
+Passiveskill/Passiveskill Name 34,Text,,盛怒上限,Maximum Rage,盛怒上限
+Passiveskill/Passiveskill Name 35,Text,,生命上限,Maximum Life,生命上限
+Passiveskill/Passiveskill Name 36,Text,,生命上限,Maximum Life,生命上限
+Passiveskill/Passiveskill Name 37,Text,,冷靜,Calm,冷静
 Tag/tagAttack,Text,,攻擊,Attack,攻击
 Tag/tagSpell,Text,,法術,Spell,法术
 Tag/tagMovement,Text,,位移,Movement,位移

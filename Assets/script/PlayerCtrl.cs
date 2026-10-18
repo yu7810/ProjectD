@@ -277,7 +277,7 @@ public class PlayerCtrl : MonoBehaviour
             return;
         }
         // 冷卻及魔力足夠才能使用
-        if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.AP >= valuedata.SkillField[Field].Cost && canAttack && !isReload)
+        if (valuedata.SkillField[Field].nowCD <= 0 && valuedata.CanUseSkillResource(Field) && canAttack && !isReload)
         {
             if (valuedata.SkillField[Field].ID <= 0)
                 return;
@@ -285,15 +285,15 @@ public class PlayerCtrl : MonoBehaviour
             {
                 int rng = UnityEngine.Random.Range(0, 2);
                 if(rng == 1)
-                    valuedata.GetAp(-valuedata.SkillField[Field].Cost);
+                    valuedata.TryPaySkillCost(valuedata.SkillField[Field].Cost);
             }
             else
-                valuedata.GetAp(-valuedata.SkillField[Field].Cost);
+                valuedata.TryPaySkillCost(valuedata.SkillField[Field].Cost);
             valuedata.SkillField[Field].nowCD = valuedata.SkillField[Field].maxCD;
             UICtrl.Instance.UpdateSkillCD();
             skill.UseSkill(valuedata.SkillField[Field].ID, Field);
         }
-        else if (valuedata.AP < valuedata.SkillField[Field].Cost)
+        else if (!valuedata.UsesRageForSkills && valuedata.AP < valuedata.SkillField[Field].Cost)
         {
             if (valuedata.PassiveSkills[14]) // 天賦14
             {

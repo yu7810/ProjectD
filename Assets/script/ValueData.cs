@@ -7,6 +7,48 @@ using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
+    public const int SuppressionTalentId = 33;
+    public const int CalmTalentId = 37;
+    public bool UsesRageForSkills => PassiveSkills != null && PassiveSkills.Length > SuppressionTalentId && PassiveSkills[SuppressionTalentId];
+    public bool HasCalm => PassiveSkills != null && PassiveSkills.Length > CalmTalentId && PassiveSkills[CalmTalentId];
+    public float SkillResource => UsesRageForSkills ? Rage : AP;
+
+    public bool CanPaySkillCost(float cost) => SkillResource >= Mathf.Max(0f, cost);
+
+    // Only explicit payments count as spending rage. Decay uses GetRage directly.
+    public bool TryPaySkillCost(float cost)
+    {
+        cost = Mathf.Max(0f, cost);
+        if (!CanPaySkillCost(cost)) return false;
+        if (cost == 0f) return true;
+        if (UsesRageForSkills)
+        {
+            GetRage(-cost);
+            if (HasCalm) HP = Mathf.Min(maxHP, HP + cost * 0.1f);
+        }
+        else GetAp(-cost);
+        return true;
+    }
+
+    public float WaterballCost(int fieldId)
+    {
+        // Waterball always spends mana, including while Suppression is allocated.
+        return Mathf.Max(0f, AP * 0.5f * (1f + Cost + WeaponField[fieldId * 3].Cost
+            + WeaponField[fieldId * 3 + 1].Cost + WeaponField[fieldId * 3 + 2].Cost));
+    }
+
+    public bool CanUseSkillResource(int fieldId)
+    {
+        return CanPaySkillCost(SkillField[fieldId].Cost);
+    }
+
+    public void UpdateSkillResourceUI()
+    {
+        for (int i = 0; i < SkillField.Length; i++)
+            if (UICtrl.Instance.SkillFieldCanvasgroup[i])
+                UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = CanUseSkillResource(i) ? 1f : 0.1f;
+    }
+
     public GameObject Player;
     private static ValueData instance;
     private float initialMaxEXP;
@@ -393,6 +435,7 @@ public class ValueData : MonoBehaviour
             else
                 Debug.Log("技能等級不在預設範圍內");
         }
+        UpdateSkillResourceUI();
     }
 
     float countDamage(int fieldid)
@@ -568,6 +611,13 @@ public class ValueData : MonoBehaviour
             case 31:
                 
                 break;
+            case 34:
+                add_maxRage += 5;
+                break;
+            case 35:
+            case 36:
+                add_maxHp += 3;
+                break;
             case 32:
                 
                 break;
@@ -608,6 +658,7 @@ public class ValueData : MonoBehaviour
     //加減生命通用
     public void GetHp(float value, bool useBehurtTimer = false)
     {
+        if (value > 0f && HasCalm) return;
         if (value >= 0) // 回血
         {
             if (HP < maxHP - value)
@@ -682,7 +733,7 @@ public class ValueData : MonoBehaviour
         {
             if(UICtrl.Instance.SkillFieldCanvasgroup[i])
             {
-                if (SkillField[i].Cost > AP)
+                if (!CanUseSkillResource(i))
                     UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = 0.1f;
                 else
                     UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = 1f;
@@ -788,6 +839,7 @@ public class ValueData : MonoBehaviour
         add_RageCritdmg = PassiveSkills[6] ? mRage * 0.04f : 0f;
         add_RageCooldown = PassiveSkills[10] ? mRage * -0.01f : 0f;
         add_RageMovespeed = PassiveSkills[11] ? mRage * 0.015f : 0f;
+        UpdateSkillResourceUI();
         if (value != 0) // 避免死迴圈
         {
             PlayerValueUpdate();

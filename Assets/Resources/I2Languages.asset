@@ -1138,6 +1138,53 @@ MonoBehaviour:
       - "\u589E\u51CF\u6280\u80FD\u6D88\u8017\u7684\u6570\u503C\u540C\u65F6\u4F5C\u7528\u5230\u6280\u80FD\u8303\u56F4"
       Flags: 000000
       Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 33
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u8B8A\u70BA\u6D88\u8017\u76DB\u6012"
+      - Skills spend rage instead of mana.
+      - "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u53D8\u4E3A\u6D88\u8017\u76DB\u6012"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 34
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
+      - +5 maximum rage
+      - "\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 35
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
+      - +3 maximum life
+      - "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 36
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
+      - +3 maximum life
+      - "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 37
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u7121\u6CD5\u900F\u904E\u5176\u4ED6\u4F86\u6E90\u6062\u5FA9\u751F\u547D\u3002<BR>\u6BCF\u6D88\u8017
+        1 \u9EDE\u76DB\u6012\uFF0C\u6062\u5FA9 0.1 \u751F\u547D\u3002"
+      - Cannot recover life from other sources. <BR>Recover 0.1 life per rage spent.
+      - "\u65E0\u6CD5\u900F\u8FC7\u5176\u4ED6\u6765\u6E90\u6062\u590D\u751F\u547D\u3002
+        <BR>\u6BCF\u6D88\u8017 1 \u70B9\u76DB\u6012\uFF0C\u6062\u590D 0.1 \u751F\u547D\u3002"
+      Flags: 000000
+      Languages_Touch: []
     - Term: Passiveskill/Passiveskill Name 0
       TermType: 0
       Description: 
@@ -1433,6 +1480,51 @@ MonoBehaviour:
       - "\u9B54\u529B\u5E73\u8861"
       - 
       - "\u9B54\u529B\u5E73\u8861"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 33
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u58D3\u6291"
+      - Suppression
+      - "\u538B\u6291"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 34
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u76DB\u6012\u4E0A\u9650"
+      - Maximum Rage
+      - "\u76DB\u6012\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 35
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u751F\u547D\u4E0A\u9650"
+      - Maximum Life
+      - "\u751F\u547D\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 36
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u751F\u547D\u4E0A\u9650"
+      - Maximum Life
+      - "\u751F\u547D\u4E0A\u9650"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 37
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u51B7\u975C"
+      - Calm
+      - "\u51B7\u9759"
       Flags: 000000
       Languages_Touch: []
     - Term: Tag/tagAttack
