@@ -223,6 +223,7 @@ public class UICtrl : MonoBehaviour
                 ButtontipUI.SetActive(false);
                 PassiveskilltreeUI.SetActive(true);
                 UpdatePassiveSkill();
+                RefreshPassiveTreeScroll();
                 UpdateValueUI();
                 ValueData.Instance.isUIopen = true;
                 WeaponfieldUI.SetActive(true);
@@ -654,7 +655,7 @@ public class UICtrl : MonoBehaviour
             if (paid ? (!SkillStoreUI.activeInHierarchy || store.npcType != NpcType.Skillstore)
                      : (!BoxUI.activeInHierarchy || store.npcType != NpcType.Skill))
                 return false;
-            return !paid || ValueData.Instance.money >= ValueData.Instance.Skill[id].Price;
+            return !paid || ValueData.Instance.money >= ValueData.Instance.GetSkillBase(id, level).Price;
         }
         if (type == TipType.Weapon)
         {
@@ -724,7 +725,7 @@ public class UICtrl : MonoBehaviour
     public void ChangeSkill(int target , int level, bool isCostmoney = true, int itemListID = 0) {
         if (target < 0)
             return;
-        if (ValueData.Instance.Skill[target].Price > ValueData.Instance.money && isCostmoney)
+        if (ValueData.Instance.GetSkillBase(target, level).Price > ValueData.Instance.money && isCostmoney)
         {
             Debug.Log("金幣不足");
             return;
@@ -751,12 +752,13 @@ public class UICtrl : MonoBehaviour
     public void SelectSkillChangeField(int Field) {
         if (ChangeSkill_ID[0] < 0 || Field < 0 || Field >= ValueData.Instance.SkillField.Length)
             return;
-        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > ValueData.Instance.money)
+        int price = ValueData.Instance.GetSkillBase(ChangeSkill_ID[0], ChangeSkill_ID[1]).Price;
+        if (isSpendmoney && price > ValueData.Instance.money)
             return;
        
-        if (isSpendmoney && ValueData.Instance.Skill[ChangeSkill_ID[0]].Price > 0)
+        if (isSpendmoney && price > 0)
         {
-            ValueData.Instance.GetMoney(-ValueData.Instance.Skill[ChangeSkill_ID[0]].Price);
+            ValueData.Instance.GetMoney(-price);
         }
         if (nowSkillstore != null && ChangeSkill_ID[0] != 0 && !nowSkillstore.unlimited) // 如果當前為開啟技能商店，則從該商店移除該商品
         {
@@ -1523,6 +1525,26 @@ public class UICtrl : MonoBehaviour
         return true;
     }
 
+    private bool focusNewestPassiveTree;
+
+    private void RefreshPassiveTreeScroll()
+    {
+        // Tree rewards can be selected while the Tab panel is hidden.
+        if (!PassiveskilltreeUI.activeInHierarchy)
+            return;
+        ScrollRect scroll = PassiveskilltreeUI.GetComponent<ScrollRect>();
+        if (scroll == null || scroll.content == null)
+            return;
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
+        if (focusNewestPassiveTree)
+        {
+            scroll.StopMovement();
+            scroll.horizontalNormalizedPosition = 1f;
+            focusNewestPassiveTree = false;
+        }
+    }
+
     public void selectPassivetree(int treeID)
     {
         if(ValueData.Instance.PassiveTree.Length <= treeID)
@@ -1538,6 +1560,8 @@ public class UICtrl : MonoBehaviour
             ValueData.Instance.PassiveTree[treeID] = true;
             passivetree[treeID].SetActive(true);
             passivetree[treeID].transform.SetAsLastSibling();
+            focusNewestPassiveTree = true;
+            RefreshPassiveTreeScroll();
         }
         Time.timeScale = 1;
         passivetreeSelectUI.SetActive(false);

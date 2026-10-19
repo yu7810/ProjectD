@@ -36,7 +36,7 @@ public class UIStoreDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         if (!costsMoney) return;
         Button button = GetComponent<Button>();
         if (button == null) return;
-        int price = type == TipType.Skill ? ValueData.Instance.Skill[itemId].Price
+        int price = type == TipType.Skill ? ValueData.Instance.GetSkillBase(itemId, level).Price
             : ValueData.Instance.Weapon[itemId].Price;
         ColorBlock colors = button.colors;
         colors.disabledColor = UICtrl.Instance.unaffordableStoreColor;

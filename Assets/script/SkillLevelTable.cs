@@ -7,7 +7,7 @@ using System.Text;
 // Independent of Unity so the same validator is used by the editor and builds.
 public sealed class SkillLevelStats
 {
-    public int ID, Level;
+    public int ID, Level, Price;
     public string Name;
     public float Damage, Cooldown, Size, Speed, Cost, Crit, CritDmg;
     public float WaterballManaRatio, WaterballDamagePerMana, ChargeDamagePerMeter;
@@ -17,7 +17,7 @@ public sealed class SkillLevelTable
 {
     public const int MaxLevel = 3;
     public static readonly int[] ActiveIds = { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11 };
-    public static readonly string[] Headers = { "SkillID", "Name", "Level", "Damage", "Cooldown", "Size", "Speed", "Cost", "Crit", "CritDmg", "Special1Purpose", "Special1Value", "Special2Purpose", "Special2Value", "Special3Purpose", "Special3Value" };
+    public static readonly string[] Headers = { "SkillID", "Name", "Level", "Price", "Damage", "Cooldown", "Size", "Speed", "Cost", "Crit", "CritDmg", "Special1Purpose", "Special1Value", "Special2Purpose", "Special2Value", "Special3Purpose", "Special3Value" };
 
     // Slot meanings are defined by the implemented skill, never by editable spreadsheet text.
     public static string SpecialPurpose(int skillId, int slot)
@@ -53,18 +53,20 @@ public sealed class SkillLevelTable
             if (!ActiveIds.Contains(id) || level < 1 || level > MaxLevel)
                 throw new FormatException($"第 {i + 1} 列技能 ID 或等級無效。");
             if (string.IsNullOrWhiteSpace(row[columns[1]])) throw new FormatException($"第 {i + 1} 列缺少名稱。");
+            if (!int.TryParse(row[columns[3]], NumberStyles.Integer, CultureInfo.InvariantCulture, out int price) || price < 0)
+                throw new FormatException($"第 {i + 1} 列 Price 必須填寫非負整數，不可留空。");
             var v = new float[7];
             for (int j = 0; j < v.Length; j++)
             {
-                v[j] = Number(row[columns[j + 3]], j == 5, i + 1, Headers[j + 3]);
+                v[j] = Number(row[columns[j + 4]], j == 5, i + 1, Headers[j + 4]);
             }
             if (v[1] <= 0 || v[2] <= 0 || v[3] <= 0 || v[5] > 1 || v[6] < 1)
                 throw new FormatException($"第 {i + 1} 列冷卻、大小、速度須大於零；暴擊率為 0～1，暴傷倍率至少為 1。");
             var special = new float[3];
             for (int slot = 1; slot <= 3; slot++)
             {
-                string purpose = (row[columns[10 + (slot - 1) * 2]] ?? "").Trim();
-                string value = row[columns[11 + (slot - 1) * 2]];
+                string purpose = (row[columns[11 + (slot - 1) * 2]] ?? "").Trim();
+                string value = row[columns[12 + (slot - 1) * 2]];
                 string expected = SpecialPurpose(id, slot);
                 if (expected.Length == 0)
                 {
@@ -81,7 +83,7 @@ public sealed class SkillLevelTable
             }
             int key = id * 10 + level;
             if (table.rows.ContainsKey(key)) throw new FormatException($"重複的技能/等級：{id}/{level}。");
-            table.rows.Add(key, new SkillLevelStats { ID = id, Level = level, Name = row[columns[1]],
+            table.rows.Add(key, new SkillLevelStats { ID = id, Level = level, Price = price, Name = row[columns[1]],
                 Damage = v[0], Cooldown = v[1], Size = v[2], Speed = v[3], Cost = v[4], Crit = v[5], CritDmg = v[6],
                 WaterballManaRatio = id == 10 ? special[0] : 0,
                 WaterballDamagePerMana = id == 10 ? special[1] : 0,

@@ -444,7 +444,7 @@ public class ValueData : MonoBehaviour
         SkillBase original = Skill[skillId];
         SkillLevelStats stats = GetSkillLevelStats(skillId, level);
         if (stats == null) return original;
-        return new SkillBase(skillId, original.Price, original.Name, stats.Cooldown, stats.Damage, stats.Size,
+        return new SkillBase(skillId, stats.Price, original.Name, stats.Cooldown, stats.Damage, stats.Size,
             stats.Speed, stats.Cost, stats.Crit, stats.CritDmg, stats.Level);
     }
 
