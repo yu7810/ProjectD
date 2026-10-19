@@ -181,7 +181,8 @@ public class PlayerAttack : MonoBehaviour
 
         if (target.transform.tag == "Barrel" || target.transform.tag == "Enemy" || target.transform.tag == "Bell")
             target.transform.GetComponent<Enemy>().Hurt(-_dmg, _fidleid);
-        Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
+        if (AttackParticle != null)
+            Instantiate(AttackParticle, target.transform.position, AttackParticle.transform.rotation);
 
         if (isBullet)
         {
@@ -218,6 +219,35 @@ public class PlayerAttack : MonoBehaviour
                     dmg = thisSkill.Damage;//多一層變數，避免複寫回SkillFieldBase
             }
         }
+    }
+
+    // Pulses share the normal hit/crit/weapon/talent pipeline without a trigger collider.
+    public void Pulse(int fieldId, float damage, float multiplier, List<GameObject> targets)
+    {
+        _fidleid = fieldId;
+        thisSkill = ValueData.Instance.SkillField[fieldId];
+        dmg = damage;
+        crit = thisSkill.Crit;
+        damageMultiplier = multiplier;
+        Target.Clear();
+        Target.AddRange(targets);
+        foreach (var target in targets)
+        {
+            if (target == null || !target.activeInHierarchy) continue;
+            if (ValueData.Instance.isHaveweaponid(fieldId, 27) && target.CompareTag("EnemyAttack")
+                && target.TryGetComponent<EnemyAttack>(out var projectile) && projectile.enemyType == EnemyType.Ranged)
+            {
+                var root = target.transform.parent != null ? target.transform.parent.gameObject : target;
+                root.SetActive(false);
+                doDamage(target);
+                Destroy(root);
+                continue;
+            }
+            var enemy = target.GetComponent<Enemy>();
+            if (enemy != null && enemy.canBeHit && (enemy.Hp > 0f || enemy.CompareTag("Bell")))
+                doDamage(target);
+        }
+        Target.Clear();
     }
 
     IEnumerator Bullet()

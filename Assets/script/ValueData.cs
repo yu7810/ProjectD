@@ -7,6 +7,7 @@ using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
+    public const int SunfireSkillId = 12;
     public const int TrackingWeaponId = 29;
     public const int SunbreakerWeaponId = 28;
     public const int SuppressionTalentId = 33;
@@ -56,6 +57,7 @@ public class ValueData : MonoBehaviour
 
     public bool CanUseSkillResource(int fieldId)
     {
+        if (SkillField[fieldId].ID == SunfireSkillId) return true;
         return CanPaySkillCost(SkillField[fieldId].Cost);
     }
 
@@ -176,6 +178,7 @@ public class ValueData : MonoBehaviour
         new SkillBase(9,20,"飛箭",0.12f,3,1f,1,0.3f,0f,2f,1),
         new SkillBase(10,40,"水曝",0.5f,0f,1f,1,0f,0f,2f,1),
         new SkillBase(11,40,"衝撞", 1f, 10, 1, 1, 2f, 0.1f, 2f, 1),
+        new SkillBase(12,20,"日炎",1f,1f,6f,1f,0.5f,0f,2f,1),
     };
     // 技能介紹
     [NonSerialized]
@@ -192,6 +195,7 @@ public class ValueData : MonoBehaviour
         "朝滑鼠方向發射一枚飛彈，命中敵人後消失",
         "在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害",
         "衝撞",
+        "日炎",
     };
     // 技能標籤
     [NonSerialized]
@@ -209,6 +213,7 @@ public class ValueData : MonoBehaviour
         new SkillTagType[]{ SkillTagType.Projectile, SkillTagType.Physical } , //技能9
         new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range, SkillTagType.Cold } , //技能10
         new SkillTagType[]{ SkillTagType.Attack, SkillTagType.Movement, SkillTagType.Range } , //技能11
+        new SkillTagType[]{ SkillTagType.Spell, SkillTagType.Range, SkillTagType.Fire } , // Sunfire
     };
 
     // 已裝備技能欄位
@@ -310,7 +315,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> skillstorePool = new List<int>()
     {
-        1,2,4,8,9,10,11
+        1,2,4,8,9,10,11,12
     };
     //裝備商店池
     [NonSerialized]
@@ -465,7 +470,7 @@ public class ValueData : MonoBehaviour
     public void SkillFieldValueUpdate() {
         for (int id = 0; id < 3; id++) {
             SkillField[id].maxCD = CalculateSkillCooldown(id);
-            SkillField[id].Damage = countDamage(id);
+            SkillField[id].Damage = CalculateSkillDamage(id);
             float add_CostSize = 1;
             if (PassiveSkills[32])
                 add_CostSize = (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
@@ -495,8 +500,15 @@ public class ValueData : MonoBehaviour
         UpdateSkillResourceUI();
     }
 
-    float countDamage(int fieldid)
+    public float CalculateSkillDamage(int fieldid)
     {
+        if (SkillField[fieldid].ID == SunfireSkillId)
+        {
+            float ratio = GetSkillLevelStats(SunfireSkillId, SkillField[fieldid].Level)?.SunfireLifeRatio ?? 0.5f;
+            return maxHP * ratio * GetFieldSkillBase(fieldid).Damage * (1f + Power)
+                * (1f + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage
+                    + WeaponField[fieldid * 3 + 2].Damage);
+        }
         float dmg = 0;
         if(SkillField[fieldid].ID == 11) // 衝撞的傷害要加上速度
             dmg = GetFieldSkillBase(fieldid).Damage * (1 + Power) * (countSpeed(fieldid) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);

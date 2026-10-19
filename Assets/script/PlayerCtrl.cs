@@ -167,12 +167,12 @@ public class PlayerCtrl : MonoBehaviour
         if (UICtrl.Instance.IsPointerOverUI(out GameObject uiElement) || Time.timeScale == 0)
             return;
         //滑鼠L
-        if (Input.GetKey(KeyCode.Mouse0))
+        if (Input.GetKey(KeyCode.Mouse0) && (valuedata.SkillField[0].ID != ValueData.SunfireSkillId || Input.GetKeyDown(KeyCode.Mouse0)))
         {
             UseSkill(0);
         }
         //滑鼠R
-        if (Input.GetKey(KeyCode.Mouse1))
+        if (Input.GetKey(KeyCode.Mouse1) && (valuedata.SkillField[1].ID != ValueData.SunfireSkillId || Input.GetKeyDown(KeyCode.Mouse1)))
         {
             UseSkill(1);
         }
@@ -281,7 +281,11 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (valuedata.SkillField[Field].ID <= 0)
                 return;
-            if (valuedata.PassiveSkills[21])
+            if (valuedata.SkillField[Field].ID == ValueData.SunfireSkillId)
+            {
+                // Toggle is free; the aura pays on each pulse.
+            }
+            else if (valuedata.PassiveSkills[21])
             {
                 int rng = UnityEngine.Random.Range(0, 2);
                 if(rng == 1)
@@ -293,7 +297,8 @@ public class PlayerCtrl : MonoBehaviour
             UICtrl.Instance.UpdateSkillCD();
             skill.UseSkill(valuedata.SkillField[Field].ID, Field);
         }
-        else if (!valuedata.UsesRageForSkills && valuedata.AP < valuedata.SkillField[Field].Cost)
+        else if (valuedata.SkillField[Field].ID != ValueData.SunfireSkillId
+            && !valuedata.UsesRageForSkills && valuedata.AP < valuedata.SkillField[Field].Cost)
         {
             if (valuedata.PassiveSkills[14]) // 天賦14
             {

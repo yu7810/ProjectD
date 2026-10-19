@@ -343,6 +343,14 @@ public class UICtrl : MonoBehaviour
                     tipinfo = string.Format(tipinfo ?? string.Empty, ((stats?.WaterballManaRatio ?? 0.5f) * 100f).ToString("0.#"),
                         (stats?.WaterballDamagePerMana ?? 10f).ToString("0.##"));
                 }
+                if (_tipinfo.Id == ValueData.SunfireSkillId)
+                {
+                    var stats = ValueData.Instance.GetSkillLevelStats(ValueData.SunfireSkillId, _tipinfo.Level);
+                    tipinfo = string.Format(tipinfo ?? string.Empty,
+                        ((stats?.SunfireLifeRatio ?? 0.5f) * 100f).ToString("0.##"),
+                        (stats?.SunfireInterval ?? 0.5f).ToString("0.###"),
+                        (stats?.Size ?? 6f).ToString("0.##"), (stats?.Cost ?? 0.5f).ToString("0.##"));
+                }
                 Tip_Intro.text = tipinfo;
 
                 //等級
@@ -507,6 +515,7 @@ public class UICtrl : MonoBehaviour
     }
 
     public void gameover() {
+        if (Skill.Instance != null) Skill.Instance.StopAllSunfire();
         ValueData.Instance.immortal = true;
         UIUpdate();
         Time.timeScale = 0;
@@ -810,6 +819,8 @@ public class UICtrl : MonoBehaviour
             }
         }
 
+        if (ValueData.Instance.SkillField[Field].ID != ChangeSkill_ID[0] && Skill.Instance != null)
+            Skill.Instance.StopSunfire(Field);
         ValueData.Instance.SkillField[Field].ID = ValueData.Instance.Skill[ChangeSkill_ID[0]].ID;
         ValueData.Instance.SkillField[Field].Name = ValueData.Instance.Skill[ChangeSkill_ID[0]].Name;
         ValueData.Instance.SkillField[Field].Level = ChangeSkill_ID[1];

@@ -18,6 +18,42 @@ public class Skill : MonoBehaviour
     public GameObject Skill_DashTrail;
     public GameObject Skill_FlashTrail;
     public GameObject Skill_Charge;
+    public GameObject Skill_Sunfire;
+    private readonly Dictionary<int, SunfireAura> sunfireAuras = new Dictionary<int, SunfireAura>();
+
+    public void StopSunfire(int fieldId)
+    {
+        if (sunfireAuras.TryGetValue(fieldId, out var aura) && aura != null)
+        {
+            aura.gameObject.SetActive(false);
+            Destroy(aura.gameObject);
+        }
+        sunfireAuras.Remove(fieldId);
+    }
+
+    public void StopAllSunfire()
+    {
+        foreach (int fieldId in sunfireAuras.Keys.ToArray()) StopSunfire(fieldId);
+    }
+
+    private void ToggleSunfire(int fieldId, int usedTime)
+    {
+        // Repeats are applied to each pulse by the aura; they never toggle it.
+        if (usedTime > 0) return;
+        ValueData.Instance.SkillField[fieldId].nowCD = ValueData.Instance.SkillField[fieldId].maxCD;
+        UICtrl.Instance.UpdateSkillCD();
+        if (sunfireAuras.TryGetValue(fieldId, out var existing) && existing != null)
+        {
+            StopSunfire(fieldId);
+            return;
+        }
+        var root = Skill_Sunfire != null ? Instantiate(Skill_Sunfire) : new GameObject("Sunfire Aura");
+        root.transform.SetParent(ValueData.Instance.Player.transform, false);
+        var aura = root.GetComponent<SunfireAura>();
+        if (aura == null) aura = root.AddComponent<SunfireAura>();
+        sunfireAuras[fieldId] = aura;
+        aura.Initialize(fieldId);
+    }
     
     // �ĤH�ޯ�
     public GameObject Skill_Squidarrow;
@@ -55,6 +91,7 @@ public class Skill : MonoBehaviour
     }
     public void ResetRun()
     {
+        StopAllSunfire();
         StopAllCoroutines();
         useSkillStop = null;
         _CastOnCritical = null;
@@ -71,6 +108,11 @@ public class Skill : MonoBehaviour
     }
 
     public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0, float inheritedDamageMultiplier = -1f) {
+        if (Skillid == ValueData.SunfireSkillId)
+        {
+            ToggleSunfire(Fieldid, usedTime);
+            return;
+        }
         float damageMultiplier = inheritedDamageMultiplier >= 0f
             ? inheritedDamageMultiplier : ValueData.Instance.ConsumeSunbreakerRage(Fieldid);
         UsedTime = usedTime;

@@ -11,12 +11,13 @@ public sealed class SkillLevelStats
     public string Name;
     public float Damage, Cooldown, Size, Speed, Cost, Crit, CritDmg;
     public float WaterballManaRatio, WaterballDamagePerMana, ChargeDamagePerMeter;
+    public float SunfireLifeRatio, SunfireInterval;
 }
 
 public sealed class SkillLevelTable
 {
     public const int MaxLevel = 3;
-    public static readonly int[] ActiveIds = { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11 };
+    public static readonly int[] ActiveIds = { 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
     public static readonly string[] Headers = { "SkillID", "Name", "Level", "Price", "Damage", "Cooldown", "Size", "Speed", "Cost", "Crit", "CritDmg", "Special1Purpose", "Special1Value", "Special2Purpose", "Special2Value", "Special3Purpose", "Special3Value" };
 
     // Slot meanings are defined by the implemented skill, never by editable spreadsheet text.
@@ -25,6 +26,8 @@ public sealed class SkillLevelTable
         if (skillId == 10 && slot == 1) return "當前魔力消耗比例";
         if (skillId == 10 && slot == 2) return "每點魔力傷害";
         if (skillId == 11 && slot == 1) return "每公尺追加傷害";
+        if (skillId == 12 && slot == 1) return "最大生命傷害比例";
+        if (skillId == 12 && slot == 2) return "傷害觸發間隔秒數";
         return string.Empty;
     }
     private readonly Dictionary<int, SkillLevelStats> rows = new Dictionary<int, SkillLevelStats>();
@@ -76,10 +79,12 @@ public sealed class SkillLevelTable
                 }
                 if (purpose != expected)
                     throw new FormatException($"第 {i + 1} 列特殊欄位 {slot} 的用途必須是「{expected}」，不可修改用途或交換欄位。");
-                bool ratio = id == 10 && slot == 1;
+                bool ratio = (id == 10 || id == 12) && slot == 1;
                 special[slot - 1] = Number(value, ratio, i + 1, $"特殊欄位 {slot}（{expected}）");
-                if (ratio && special[slot - 1] > 1)
+                if (id == 10 && ratio && special[slot - 1] > 1)
                     throw new FormatException($"第 {i + 1} 列當前魔力消耗比例必須為 0～1（例如 0.5 或 50%）。");
+                if (id == 12 && slot == 2 && special[1] <= 0f)
+                    throw new FormatException($"第 {i + 1} 列日炎傷害觸發間隔必須大於零。");
             }
             int key = id * 10 + level;
             if (table.rows.ContainsKey(key)) throw new FormatException($"重複的技能/等級：{id}/{level}。");
@@ -87,7 +92,9 @@ public sealed class SkillLevelTable
                 Damage = v[0], Cooldown = v[1], Size = v[2], Speed = v[3], Cost = v[4], Crit = v[5], CritDmg = v[6],
                 WaterballManaRatio = id == 10 ? special[0] : 0,
                 WaterballDamagePerMana = id == 10 ? special[1] : 0,
-                ChargeDamagePerMeter = id == 11 ? special[0] : 0 });
+                ChargeDamagePerMeter = id == 11 ? special[0] : 0,
+                SunfireLifeRatio = id == 12 ? special[0] : 0,
+                SunfireInterval = id == 12 ? special[1] : 0 });
         }
         foreach (int id in ActiveIds)
             for (int level = 1; level <= MaxLevel; level++)

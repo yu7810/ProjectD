@@ -220,3 +220,5 @@ Weapon/Weapon Name 28,Text,,滅日者,Sunbreaker,灭日者
 Weapon/Weapon Info 28,Text,,使用技能時消耗100%盛怒，並將此次傷害提升(消耗值*2)%,Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%.,使用技能时消耗100%盛怒，并将此次伤害提升(消耗值*2)%
 Weapon/Weapon Name 29,Text,,追蹤,Homing,追踪
 Weapon/Weapon Info 29,Text,,投射物會追蹤範圍內最近的敵人,,投射物会追踪范围内最近的敌人
+Skill/Skill Name 12,Text,,日炎,Sunfire,日炎
+Skill/Skill Info 12,Text,,開啟後產生跟隨玩家的圓形傷害圈，每 0.5 秒消耗 0.5 魔力，對圈內目標造成玩家當前最大生命 50% 的基礎傷害,"While active, a circular damage aura follows you. Every 0.5 seconds, spend 0.5 mana to deal base damage equal to 50% of your current maximum life to targets inside.",开启后产生跟随玩家的圆形伤害圈，每 0.5 秒消耗 0.5 魔力，对圈内目标造成玩家当前最大生命 50% 的基础伤害

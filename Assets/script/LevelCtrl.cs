@@ -169,6 +169,7 @@ public class LevelCtrl : MonoBehaviour
     }
 
     public void NextLevel(int level) {
+        if (Skill.Instance != null) Skill.Instance.StopAllSunfire();
         StartCoroutine(LoadSceneWithProgress(level));
     }
 

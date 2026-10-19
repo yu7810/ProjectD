@@ -2022,6 +2022,24 @@ MonoBehaviour:
       - "\u6295\u5C04\u7269\u4F1A\u8FFD\u8E2A\u8303\u56F4\u5185\u6700\u8FD1\u7684\u654C\u4EBA"
       Flags: 000000
       Languages_Touch: []
+    - Term: Skill/Skill Name 12
+      TermType: 0
+      Description:
+      Languages:
+      - "\u65e5\u708e"
+      - "Sunfire"
+      - "\u65e5\u708e"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Skill/Skill Info 12
+      TermType: 0
+      Description:
+      Languages:
+      - "\u958b\u555f\u5f8c\u7522\u751f\u8ddf\u96a8\u73a9\u5bb6\u7684\u5713\u5f62\u50b7\u5bb3\u5708\uff0c\u6bcf 0.5 \u79d2\u6d88\u8017 0.5 \u9b54\u529b\uff0c\u5c0d\u5708\u5167\u76ee\u6a19\u9020\u6210\u73a9\u5bb6\u7576\u524d\u6700\u5927\u751f\u547d 50% \u7684\u57fa\u790e\u50b7\u5bb3"
+      - "While active, a circular damage aura follows you. Every 0.5 seconds, spend 0.5 mana to deal base damage equal to 50% of your current maximum life to targets inside."
+      - "\u5f00\u542f\u540e\u4ea7\u751f\u8ddf\u968f\u73a9\u5bb6\u7684\u5706\u5f62\u4f24\u5bb3\u5708\uff0c\u6bcf 0.5 \u79d2\u6d88\u8017 0.5 \u9b54\u529b\uff0c\u5bf9\u5708\u5185\u76ee\u6807\u9020\u6210\u73a9\u5bb6\u5f53\u524d\u6700\u5927\u751f\u547d 50% \u7684\u57fa\u7840\u4f24\u5bb3"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: 
