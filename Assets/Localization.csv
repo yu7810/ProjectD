@@ -218,3 +218,5 @@ Weapon/Weapon Name 27,Text,,撲滅者,Extinguisher,扑灭者
 Weapon/Weapon Info 27,Text,,技能可以命中敵方投射物,Skills can hit enemy projectiles.,技能可以命中敌方投射物
 Weapon/Weapon Name 28,Text,,滅日者,Sunbreaker,灭日者
 Weapon/Weapon Info 28,Text,,使用技能時消耗100%盛怒，並將此次傷害提升(消耗值*2)%,Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%.,使用技能时消耗100%盛怒，并将此次伤害提升(消耗值*2)%
+Weapon/Weapon Name 29,Text,,追蹤,Homing,追踪
+Weapon/Weapon Info 29,Text,,投射物會追蹤範圍內最近的敵人,,投射物会追踪范围内最近的敌人

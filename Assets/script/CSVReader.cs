@@ -1,109 +1,31 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
+// Keep the component and csvFile binding used by existing scenes.
 public class CSVReader : MonoBehaviour
 {
-    public TextAsset csvFile; // 將CSV文件拖到這個欄位中
-    private List<Dictionary<string, object>> data = new List<Dictionary<string, object>>();
+    public TextAsset csvFile;
 
-    void Start()
+    private void Awake()
     {
-        ReadCSV();
-    }
-
-    void ReadCSV()
-    {
-        string[] lines = csvFile.text.Split('\n');
-        string[] headers = lines[0].Split(',');
-
-        for (int i = 1; i < lines.Length; i++)
+        // Resolve the attached ValueData before any Start, independent of singleton Awake order.
+        ValueData data = GetComponent<ValueData>();
+        if (data == null) data = ValueData.Instance;
+        if (data == null)
         {
-            if (string.IsNullOrWhiteSpace(lines[i])) continue;
-
-            string[] values = lines[i].Split(',');
-            Dictionary<string, object> row = new Dictionary<string, object>();
-
-            for (int j = 0; j < headers.Length; j++)
-            {
-                string value = values[j].Trim(); // 去掉多餘的空格
-
-                if (headers[j] == "ID" || headers[j] == "Price") // int
-                {
-                    if (int.TryParse(value, out int intValue))
-                    {
-                        row[headers[j]] = intValue;
-                    }
-                }
-                else if(headers[j] == "Name" || headers[j] == "Rarity") // string
-                {
-                    row[headers[j]] = value;
-                }
-                else // float
-                {
-                    if (float.TryParse(value, out float floatValue))
-                    {
-                        row[headers[j]] = floatValue;
-                    }
-                }
-            }
-            data.Add(row);
+            Debug.LogError("Weapon CSV: ValueData is unavailable.", this);
+            return;
         }
-
-        int num = 0;
-        // 輸出
-        foreach (var row in data)
+        try
         {
-            foreach (var pair in row)
-            {
-                //Debug.Log($"{pair.Key}: {pair.Value}");
-                switch (pair.Key.Trim())
-                {
-                    case "ID":
-                        ValueData.Instance.Weapon[num].ID = (int)pair.Value;
-                        break;
-                    case "Rarity":
-                        if ((string)pair.Value == "Normal")
-                            ValueData.Instance.Weapon[num].Rarity = RarityType.Normal;
-                        else if ((string)pair.Value == "Magic")
-                            ValueData.Instance.Weapon[num].Rarity = RarityType.Magic;
-                        else if ((string)pair.Value == "Rare")
-                            ValueData.Instance.Weapon[num].Rarity = RarityType.Rare;
-                        else if ((string)pair.Value == "Unique")
-                            ValueData.Instance.Weapon[num].Rarity = RarityType.Unique;
-                        break;
-                    case "Price":
-                        ValueData.Instance.Weapon[num].Price = (int)pair.Value;
-                        break;
-                    case "Name":
-                        ValueData.Instance.Weapon[num].Name = (string)pair.Value;
-                        break;
-                    case "Damage":
-                        ValueData.Instance.Weapon[num].Damage = (float)pair.Value;
-                        break;
-                    case "Cooldown":
-                        ValueData.Instance.Weapon[num].Cooldown = (float)pair.Value;
-                        break;
-                    case "Size":
-                        ValueData.Instance.Weapon[num].Size = (float)pair.Value;
-                        break;
-                    case "Speed":
-                        ValueData.Instance.Weapon[num].Speed = (float)pair.Value;
-                        break;
-                    case "Cost":
-                        ValueData.Instance.Weapon[num].Cost = (float)pair.Value;
-                        break;
-                    case "Crit":
-                        ValueData.Instance.Weapon[num].Crit = (float)pair.Value;
-                        //Debug.Log("暴率 " + (float)pair.Value);
-                        break;
-                    case "CritDamage":
-                        ValueData.Instance.Weapon[num].CritDmg = (float)pair.Value;
-                        break;
-                }
-            }
-            num += 1;
-            //Debug.Log("下個武器");
+            if (csvFile == null) throw new FormatException("Missing Weapon.csv reference.");
+            WeaponBase[] weapons = WeaponDataTable.Parse(csvFile.text).CreateWeapons();
+            // Publish only once the whole table is valid; row order is resolved by ID.
+            data.Weapon = weapons;
+        }
+        catch (FormatException error)
+        {
+            Debug.LogError("Weapon CSV was not applied; keeping existing data: " + error.Message, this);
         }
     }
 }

@@ -137,6 +137,8 @@ public class UICtrl : MonoBehaviour
     public Color skillLevel2Color = new Color(0.24359201f, 0.30661494f, 0.3207547f, 1f);
     public Color skillLevel3Color = new Color(0.3490566f, 0.34200794f, 0.22556959f, 1f);
     public Color skillLevel4Color = new Color(0.7058299f, 0.5484603f, 0.8018868f, 1f);
+    [Header("Store affordability")]
+    public Color unaffordableStoreColor = new Color(0.3f, 0.3f, 0.3f, 1f);
     public PostProcessVolume volume; // 鏡頭渲染
     public Vignette vignette;
     public Line line;
@@ -1251,8 +1253,17 @@ public class UICtrl : MonoBehaviour
         
     }
 
+    private void RefreshStoreAffordability(Transform content)
+    {
+        if (content == null) return;
+        foreach (UIStoreDrag item in content.GetComponentsInChildren<UIStoreDrag>(true))
+            item.RefreshAffordability();
+    }
+
     public void UpdateMoneyUI() {
         MoneyValue.text = ValueData.Instance.money.ToString();
+        RefreshStoreAffordability(SkillStoreContent);
+        RefreshStoreAffordability(WeaponStoreContent);
     }
 
     public void resetlevel()

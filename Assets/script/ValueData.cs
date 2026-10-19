@@ -7,6 +7,7 @@ using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
+    public const int TrackingWeaponId = 29;
     public const int SunbreakerWeaponId = 28;
     public const int SuppressionTalentId = 33;
     public const int CalmTalentId = 37;
@@ -249,6 +250,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(26,RarityType.Magic,40,"數值書", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(27,RarityType.Rare,80,"\u64B2\u6EC5\u8005", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(28,RarityType.Rare,80,"\u6EC5\u65E5\u8005", 0, 0, 0, 0, 0, 0, 0),
+        new WeaponBase(29,RarityType.Rare,80,"\u8FFD\u8E64", 0, 0, 0, 0, 0, 0, 0, 6f, 180f),
     };
     // 裝備介紹
     [NonSerialized]
@@ -282,6 +284,7 @@ public class ValueData : MonoBehaviour
         "26",
         "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269",
         "\u4F7F\u7528\u6280\u80FD\u6642\u6D88\u8017100%\u76DB\u6012\uFF0C\u4E26\u5C07\u6B64\u6B21\u50B7\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*2)%",
+        "\u6295\u5C04\u7269\u6703\u6301\u7E8C\u671D\u7BC4\u570D\u5167\u6700\u8FD1\u7684\u6575\u4EBA\u9010\u6F38\u8F49\u5F4E\u3002",
     };
 
     // 已裝備裝備、裝備背包
@@ -313,7 +316,7 @@ public class ValueData : MonoBehaviour
     [NonSerialized]
     public List<int> weaponstorePool = new List<int>()
     {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,
+        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,
     };
 
     //每次加減天賦時呼叫，更新所有數值
@@ -1068,8 +1071,10 @@ public class WeaponBase
     public float CritDmg { get; set; }
     public int Price { get; set; }
     public RarityType Rarity { get; set; }
+    public float HomingRange { get; set; }
+    public float HomingTurnSpeed { get; set; }
 
-    public WeaponBase(int id, RarityType rarity, int price, string name, float damage, float cooldown, float size, float speed, float cost, float crit, float critdmg)
+    public WeaponBase(int id, RarityType rarity, int price, string name, float damage, float cooldown, float size, float speed, float cost, float crit, float critdmg, float homingRange = 0f, float homingTurnSpeed = 0f)
     {
         ID = id;
         Name = name;
@@ -1082,6 +1087,8 @@ public class WeaponBase
         CritDmg = critdmg;
         Price = price;
         Rarity = rarity;
+        HomingRange = homingRange;
+        HomingTurnSpeed = homingTurnSpeed;
     }
 }
 

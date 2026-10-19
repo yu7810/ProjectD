@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using I2.Loc;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace ProjectD.EditorTools
 {
@@ -14,6 +16,10 @@ namespace ProjectD.EditorTools
     {
         private const string CsvPath = "Assets/Localization.csv";
         private const string SourcePath = "Assets/Resources/I2Languages.asset";
+        private const string CloudUrl = "https://docs.google.com/spreadsheets/d/1C_ORywkclOb4Rg58aaSsfy7dnbQCERr83kPZnofz8lo/export?format=csv&gid=1066662696";
+        private static bool downloading;
+        private byte[] pendingCloudCsv;
+        private byte[] localCsvAtCloudPreview;
         private TextAsset csv;
         private LanguageSourceAsset targetSource;
         private LocalizationCsvReport report;
@@ -26,6 +32,80 @@ namespace ProjectD.EditorTools
             GetWindow<ProjectDLocalizationWindow>("多語系 CSV 匯入");
         }
 
+        [MenuItem("Tools/ProjectD/多語系/從雲端下載並匯入")]
+        public static async void DownloadFromCloud()
+        {
+            if (!CanDownloadFromCloud()) return;
+            var window = GetWindow<ProjectDLocalizationWindow>("多語系 CSV 匯入");
+            await window.DownloadAndImport();
+        }
+
+        [MenuItem("Tools/ProjectD/多語系/從雲端下載並匯入", true)]
+        private static bool CanDownloadFromCloud()
+        {
+            return !downloading && !EditorApplication.isPlayingOrWillChangePlaymode && !EditorApplication.isCompiling;
+        }
+
+        private async Task DownloadAndImport()
+        {
+            downloading = true;
+            pendingCloudCsv = null;
+            try
+            {
+                // Cloud sync always targets the project's canonical CSV and runtime I2 source.
+                csv = AssetDatabase.LoadAssetAtPath<TextAsset>(CsvPath);
+                targetSource = AssetDatabase.LoadAssetAtPath<LanguageSourceAsset>(SourcePath);
+                if (csv == null || targetSource == null)
+                    throw new InvalidOperationException("找不到本機 Localization.csv 或 I2Languages.asset。");
+                byte[] beforeCsv = ReadCsv();
+                string beforeSource = JsonUtility.ToJson(targetSource.mSource);
+                Repaint();
+                using (var request = UnityWebRequest.Get(CloudUrl))
+                {
+                    request.timeout = 30;
+                    var operation = request.SendWebRequest();
+                    while (!operation.isDone) await Task.Delay(100);
+                    if (this == null) return;
+                    if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling)
+                        throw new InvalidOperationException("下載期間進入 Play Mode 或開始編譯，已取消匯入，請稍後重試。");
+                    if (request.result != UnityWebRequest.Result.Success)
+                        throw new IOException($"無法下載多語系主表（HTTP {request.responseCode}）：{request.error}\n主表可能需要 Google 登入；Unity 不會沿用瀏覽器的登入狀態。");
+                    byte[] downloaded = request.downloadHandler.data;
+                    // Decode before staging, so invalid UTF-8 never reaches disk.
+                    new UTF8Encoding(false, true).GetString(downloaded);
+                    localCsvAtCloudPreview = ReadCsv();
+                    bool changed = !beforeCsv.SequenceEqual(localCsvAtCloudPreview) || beforeSource != JsonUtility.ToJson(targetSource.mSource);
+                    pendingCloudCsv = downloaded;
+                    Inspect();
+                    if (!report.CanImport)
+                    {
+                        EditorUtility.DisplayDialog("雲端資料未匯入", "下載內容未通過多語系檢查。請查看視窗中的錯誤；若下載到登入頁面，請先在瀏覽器下載 CSV。原 CSV 與 I2 保持不變。", "知道了");
+                        return;
+                    }
+                    if (changed)
+                    {
+                        EditorUtility.DisplayDialog("本機資料已變動", "下載期間 CSV 或 I2 有變更，已產生新的差異摘要。請確認後再按匯入，尚未修改本機檔案。", "知道了");
+                        return;
+                    }
+                    Import();
+                }
+            }
+            catch (Exception error)
+            {
+                if (this == null) return;
+                pendingCloudCsv = null;
+                report = null;
+                reportText = "雲端下載未完成：" + error.Message;
+                Debug.LogWarning(reportText);
+                EditorUtility.DisplayDialog("多語系未匯入", error.Message + "\n可在瀏覽器下載 Localization 分頁的 CSV，再使用原有「檢查與匯入 CSV」工具。", "知道了");
+            }
+            finally
+            {
+                downloading = false;
+                if (this != null) Repaint();
+            }
+        }
+
         private void OnEnable()
         {
             minSize = new Vector2(580f, 400f);
@@ -36,17 +116,24 @@ namespace ProjectD.EditorTools
 
         private void OnGUI()
         {
-            EditorGUILayout.HelpBox("先在線上主表編輯，下載 CSV 並替換本機檔案，再檢查與匯入。遊戲使用的是 I2 資源，替換 CSV 本身不會更新遊戲文字。", MessageType.Info);
-            EditorGUI.BeginChangeCheck();
-            csv = (TextAsset)EditorGUILayout.ObjectField("翻譯 CSV", csv, typeof(TextAsset), false);
-            targetSource = (LanguageSourceAsset)EditorGUILayout.ObjectField("I2 語言資源", targetSource, typeof(LanguageSourceAsset), false);
-            if (EditorGUI.EndChangeCheck()) { report = null; reportText = ""; }
-            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling))
+            EditorGUILayout.HelpBox("可從雲端下載並匯入，或手動替換本機 CSV 後檢查。成功匯入會一起更新 CSV 與 I2 資源，並備份原資料。", MessageType.Info);
+            using (new EditorGUI.DisabledScope(downloading))
             {
-                if (GUILayout.Button("檢查本機 CSV")) Inspect();
+                EditorGUI.BeginChangeCheck();
+                csv = (TextAsset)EditorGUILayout.ObjectField("翻譯 CSV", csv, typeof(TextAsset), false);
+                targetSource = (LanguageSourceAsset)EditorGUILayout.ObjectField("I2 語言資源", targetSource, typeof(LanguageSourceAsset), false);
+                if (EditorGUI.EndChangeCheck()) { pendingCloudCsv = null; report = null; reportText = ""; }
+            }
+            using (new EditorGUI.DisabledScope(downloading || EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling))
+            {
+                if (GUILayout.Button("從雲端下載並匯入")) DownloadFromCloud();
+                if (GUILayout.Button("檢查本機 CSV")) { pendingCloudCsv = null; Inspect(); }
                 using (new EditorGUI.DisabledScope(report == null || !report.CanImport))
                     if (GUILayout.Button("依上方來源匯入並儲存 I2")) Import();
             }
+            if (downloading) EditorGUILayout.HelpBox("正在下載多語系主表……", MessageType.Info);
+            if (pendingCloudCsv != null)
+                EditorGUILayout.HelpBox("目前預覽雲端下載內容，尚未寫入本機。確認匯入後才會更新 CSV 與 I2；可按「檢查本機 CSV」捨棄這份預覽。", MessageType.Info);
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 EditorGUILayout.HelpBox("請先退出 Play Mode，再匯入翻譯。", MessageType.Info);
             if (report != null)
@@ -58,6 +145,7 @@ namespace ProjectD.EditorTools
 
         private byte[] ReadCsv()
         {
+            if (pendingCloudCsv != null) return pendingCloudCsv;
             string project = Directory.GetParent(Application.dataPath).FullName;
             return File.ReadAllBytes(Path.Combine(project, AssetDatabase.GetAssetPath(csv)));
         }
@@ -91,6 +179,18 @@ namespace ProjectD.EditorTools
 
         private void Import()
         {
+            if (EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling) return;
+            if (pendingCloudCsv != null)
+            {
+                string localPath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, AssetDatabase.GetAssetPath(csv));
+                if (localCsvAtCloudPreview == null || !localCsvAtCloudPreview.SequenceEqual(File.ReadAllBytes(localPath)))
+                {
+                    pendingCloudCsv = null;
+                    Inspect();
+                    EditorUtility.DisplayDialog("本機 CSV 已變動", "雲端預覽後本機 CSV 有變更，已取消這次雲端匯入並重新檢查本機資料。請確認後重新下載。", "知道了");
+                    return;
+                }
+            }
             string approvedCsv = csvHash, approvedSource = sourceSnapshot;
             Inspect(); // Re-read disk, not the potentially stale TextAsset cache.
             if (!report.CanImport) return;
@@ -104,7 +204,12 @@ namespace ProjectD.EditorTools
 
             LanguageSourceData original = targetSource.mSource;
             string before = JsonUtility.ToJson(original);
+            string csvAssetPath = AssetDatabase.GetAssetPath(csv);
+            string csvFilePath = Path.Combine(Directory.GetParent(Application.dataPath).FullName, csvAssetPath);
+            byte[] beforeCsv = File.ReadAllBytes(csvFilePath);
+            byte[] cloudCsv = pendingCloudCsv;
             bool modified = false;
+            bool csvModified = false;
             try
             {
                 // Validate I2's own import on a detached source before touching the real asset.
@@ -123,15 +228,28 @@ namespace ProjectD.EditorTools
                 JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(candidate), original);
                 original.owner = targetSource;
                 original.UpdateDictionary(true);
+                if (cloudCsv != null)
+                {
+                    csvModified = true;
+                    File.WriteAllBytes(csvFilePath, cloudCsv);
+                    AssetDatabase.ImportAsset(csvAssetPath, ImportAssetOptions.ForceUpdate);
+                }
                 EditorUtility.SetDirty(targetSource);
                 AssetDatabase.SaveAssetIfDirty(targetSource);
                 LocalizationManager.LocalizeAll(true);
                 Debug.Log("多語系匯入完成：" + report.Rows.Count + " 列（含標題）。備份：" + backup, targetSource);
+                pendingCloudCsv = null;
+                csv = AssetDatabase.LoadAssetAtPath<TextAsset>(csvAssetPath);
                 Inspect();
                 ShowNotification(new GUIContent("翻譯已匯入並儲存"));
             }
             catch (Exception error)
             {
+                if (csvModified)
+                {
+                    File.WriteAllBytes(csvFilePath, beforeCsv);
+                    AssetDatabase.ImportAsset(csvAssetPath, ImportAssetOptions.ForceUpdate);
+                }
                 if (modified)
                 {
                     JsonUtility.FromJsonOverwrite(before, original);
@@ -153,6 +271,8 @@ namespace ProjectD.EditorTools
             File.Copy(Path.Combine(project, AssetDatabase.GetAssetPath(targetSource)), Path.Combine(folder, "I2Languages.before.asset"));
             File.WriteAllText(Path.Combine(folder, "I2Source.before.json"), JsonUtility.ToJson(targetSource.mSource, true), new UTF8Encoding(false));
             File.WriteAllBytes(Path.Combine(folder, "Localization.incoming.csv"), ReadCsv());
+            string localCsv = Path.Combine(project, AssetDatabase.GetAssetPath(csv));
+            File.Copy(localCsv, Path.Combine(folder, "Localization.before.csv"));
             File.WriteAllText(Path.Combine(folder, "Import report.txt"), reportText, new UTF8Encoding(false));
             return folder;
         }

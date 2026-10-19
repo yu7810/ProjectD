@@ -18,6 +18,9 @@ public class PlayerAttack : MonoBehaviour
     public bool isBullet; //投射物，會往前飛
     public bool canSplit = true; // 投射物可以分裂
     private Vector3 startPos;//投射物用，紀錄發射位置
+    private Collider[] homingCandidates;
+    private float homingRange;
+    private float homingTurnSpeed;
 
     private void Start()
     {
@@ -220,11 +223,61 @@ public class PlayerAttack : MonoBehaviour
     IEnumerator Bullet()
     {
         float speed = 5f * thisSkill.Speed;
+        if (ValueData.Instance.isHaveweaponid(_fidleid, ValueData.TrackingWeaponId))
+        {
+            WeaponBase weapon = ValueData.Instance.Weapon[ValueData.TrackingWeaponId];
+            homingRange = Mathf.Max(0f, weapon.HomingRange);
+            homingTurnSpeed = Mathf.Max(0f, weapon.HomingTurnSpeed);
+            if (homingRange > 0f && homingTurnSpeed > 0f)
+                homingCandidates = new Collider[32];
+        }
         while(this.gameObject)
         {
             yield return new WaitForSecondsRealtime(0.01f);
+            if (homingCandidates != null)
+                SteerTowardNearestEnemy(Time.deltaTime);
             transform.position += transform.forward * speed * Time.deltaTime;
         }
+    }
+
+    private void SteerTowardNearestEnemy(float deltaTime)
+    {
+        Vector3 origin = transform.position;
+        int count = Physics.OverlapSphereNonAlloc(origin, homingRange, homingCandidates,
+            ~0, QueryTriggerInteraction.Collide);
+        Collider[] candidates = homingCandidates;
+        // A full buffer may omit the closest enemy. Only allocate in crowded areas.
+        if (count == candidates.Length)
+        {
+            candidates = Physics.OverlapSphere(origin, homingRange, ~0, QueryTriggerInteraction.Collide);
+            count = candidates.Length;
+        }
+
+        Enemy nearest = null;
+        float nearestDistance = homingRange * homingRange;
+        for (int i = 0; i < count; i++)
+        {
+            Enemy enemy = candidates[i].GetComponentInParent<Enemy>();
+            if (enemy == null || !enemy.isActiveAndEnabled || !enemy.CompareTag("Enemy")
+                || enemy.Hp <= 0f || !enemy.canBeHit || passTarget.Contains(enemy.gameObject))
+                continue;
+
+            float distance = (enemy.transform.position - origin).sqrMagnitude;
+            if (distance <= nearestDistance)
+            {
+                nearestDistance = distance;
+                nearest = enemy;
+            }
+        }
+
+        if (nearest == null)
+            return;
+
+        Vector3 direction = nearest.transform.position - origin;
+        direction.y = 0f; // Keep projectiles on the combat plane.
+        if (direction.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                Quaternion.LookRotation(direction), homingTurnSpeed * deltaTime);
     }
     IEnumerator Range()
     {

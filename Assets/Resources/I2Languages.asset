@@ -2004,6 +2004,24 @@ MonoBehaviour:
       - "\u4f7f\u7528\u6280\u80fd\u65f6\u6d88\u8017100%\u76db\u6012\uff0c\u5e76\u5c06\u6b64\u6b21\u4f24\u5bb3\u63d0\u5347(\u6d88\u8017\u503c*2)%"
       Flags: 000000
       Languages_Touch: []
+    - Term: Weapon/Weapon Name 29
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u8FFD\u8E64"
+      - Homing
+      - "\u8FFD\u8E2A"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 29
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6295\u5C04\u7269\u6703\u8FFD\u8E64\u7BC4\u570D\u5167\u6700\u8FD1\u7684\u6575\u4EBA"
+      - 
+      - "\u6295\u5C04\u7269\u4F1A\u8FFD\u8E2A\u8303\u56F4\u5185\u6700\u8FD1\u7684\u654C\u4EBA"
+      Flags: 000000
+      Languages_Touch: []
     CaseInsensitiveTerms: 0
     OnMissingTranslation: 1
     mTerm_AppName: 

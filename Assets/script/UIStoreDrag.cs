@@ -27,6 +27,22 @@ public class UIStoreDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         level = itemLevel;
         itemIndex = index;
         costsMoney = paid;
+        RefreshAffordability();
+    }
+
+    public void RefreshAffordability()
+    {
+        // Free chest rewards share this component but do not depend on the player's gold.
+        if (!costsMoney) return;
+        Button button = GetComponent<Button>();
+        if (button == null) return;
+        int price = type == TipType.Skill ? ValueData.Instance.Skill[itemId].Price
+            : ValueData.Instance.Weapon[itemId].Price;
+        ColorBlock colors = button.colors;
+        colors.disabledColor = UICtrl.Instance.unaffordableStoreColor;
+        button.colors = colors;
+        // Keep the image raycastable so unaffordable items still show their tooltip.
+        button.interactable = ValueData.Instance.money >= price;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
