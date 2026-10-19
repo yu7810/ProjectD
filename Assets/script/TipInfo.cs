@@ -6,6 +6,7 @@ using TMPro;
 
 public class TipInfo : MonoBehaviour
 {
+    public uint Revision { get; private set; }
     public TipType Type;
     public int Id;
     public string Name;
@@ -46,6 +47,7 @@ public class TipInfo : MonoBehaviour
         Speed = speed;
         Level = level;
         Intro = intro;
+        unchecked { Revision++; }
     }
 
     public void UpdatePrice(int price) 

@@ -152,6 +152,10 @@ public class UICtrl : MonoBehaviour
     private Color dragDestinationColor = new Color(1f, 1f, 1f, 0.39215687f);
     private readonly Dictionary<Image, Color> dragDestinationColors = new Dictionary<Image, Color>();
 
+    private TipInfo displayedTip;
+    private uint displayedTipRevision;
+    private string displayedTipLanguage;
+
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
 
@@ -248,12 +252,11 @@ public class UICtrl : MonoBehaviour
         }
 
         //Tip彈窗
-        if (IsPointerOverUI(out GameObject uiElement) && uiElement.tag == "UI")
+        if (TryGetHoveredTip(out TipInfo _tipinfo))
         {
-            if (Tip.activeSelf)
+            if (!ShouldRefreshTip(_tipinfo))
                 return;
             Tip.SetActive(true);
-            TipInfo _tipinfo = uiElement.GetComponent<TipInfo>();
             
             if (_tipinfo.Type == TipType.Passiveskill)
             {
@@ -378,9 +381,13 @@ public class UICtrl : MonoBehaviour
                 Tip_Intro.text = tipinfo;
             }
             LayoutRebuilder.ForceRebuildLayoutImmediate(TiplayoutTransform);
+            displayedTip = _tipinfo;
+            displayedTipRevision = _tipinfo.Revision;
+            displayedTipLanguage = LocalizationManager.CurrentLanguage;
         }
         else
         {
+            displayedTip = null;
             Tip.SetActive(false);
         }
             
@@ -1186,6 +1193,22 @@ public class UICtrl : MonoBehaviour
     }
 
     //滑鼠射線
+    private bool ShouldRefreshTip(TipInfo info)
+    {
+        return !Tip.activeSelf || displayedTip != info || displayedTipRevision != info.Revision ||
+            displayedTipLanguage != LocalizationManager.CurrentLanguage;
+    }
+
+    private bool TryGetHoveredTip(out TipInfo info)
+    {
+        info = null;
+        if (!IsPointerOverUI(out GameObject hit)) return false;
+        // Price labels and other child graphics belong to the same item tooltip.
+        info = hit.GetComponentInParent<TipInfo>();
+        return info != null && info.CompareTag("UI") &&
+            (info.Type == TipType.Skill || info.Type == TipType.Weapon || info.Type == TipType.Passiveskill);
+    }
+
     public bool IsPointerOverUI(out GameObject uiElement)
     {
         // 用來儲存射線檢測結果
