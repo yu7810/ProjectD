@@ -75,7 +75,7 @@ Skill/Skill Info 6,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,
 Skill/Skill Info 7,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
 Skill/Skill Info 8,Text,,生成一個持續3秒的喪鐘，你對喪鐘造成的傷害會被喪鐘以圓形範圍釋放，該傷害不會暴擊,,生成一个持续3秒的丧钟，你对丧钟造成的伤害会被丧钟以圆形范围释放，该伤害不会暴击
 Skill/Skill Info 9,Text,,朝滑鼠方向發射一枚飛彈，命中敵人後消失,,朝滑鼠方向发射一枚飞弹，命中敌人后消失
-Skill/Skill Info 10,Text,,在滑鼠位置生成一個水球，一段時間後爆炸，消耗一半當前魔力並造成(消耗量×10)傷害,,在滑鼠位置生成一个水球，一段时间后爆炸，消耗一半当前魔力并造成(消耗量×10)伤害
+Skill/Skill Info 10,Text,,在滑鼠位置生成一個水球，一段時間後爆炸，基礎消耗當前魔力的{0}%，並造成（實際消耗量×{1}）傷害；耗魔量受天賦與裝備影響。,Create a water orb at the cursor that explodes after a delay. Its base cost is {0}% of current mana and it deals (actual mana spent × {1}) damage. Talents and equipment modify the mana cost.,在滑鼠位置生成一个水球，一段时间后爆炸，基础消耗当前魔力的{0}%，并造成（实际消耗量×{1}）伤害；耗魔量受天赋与装备影响。
 Skill/Skill Info 11,Text,,向前衝刺，撞到第一個目標後停下並造成範圍傷害，速度和衝刺距離會提升傷害。,,向前冲刺，撞到第一个目标后停下并造成范围伤害，速度和冲刺距离会提升伤害。
 Skill/Skill Name 0,Text,,–,,–
 Skill/Skill Name 1,Text,,風壓,Wind Pressure,风压

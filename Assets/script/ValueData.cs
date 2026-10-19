@@ -49,7 +49,7 @@ public class ValueData : MonoBehaviour
     public float WaterballCost(int fieldId)
     {
         // Waterball always spends mana, including while Suppression is allocated.
-        return Mathf.Max(0f, AP * 0.5f * (1f + Cost + WeaponField[fieldId * 3].Cost
+        return Mathf.Max(0f, AP * (GetSkillLevelStats(10, SkillField[fieldId].Level)?.WaterballManaRatio ?? 0.5f) * (1f + Cost + WeaponField[fieldId * 3].Cost
             + WeaponField[fieldId * 3 + 1].Cost + WeaponField[fieldId * 3 + 2].Cost));
     }
 
@@ -414,9 +414,42 @@ public class ValueData : MonoBehaviour
         GetAp(0);
     }
 
+    private SkillLevelTable skillLevels;
+    private bool skillLevelsLoaded;
+
+    private void LoadSkillLevels()
+    {
+        if (skillLevelsLoaded) return;
+        skillLevelsLoaded = true;
+        try
+        {
+            TextAsset csv = Resources.Load<TextAsset>("SkillLevels");
+            if (csv == null) throw new System.FormatException("Missing Resources/SkillLevels.csv");
+            skillLevels = SkillLevelTable.Parse(csv.text);
+        }
+        catch (System.FormatException error) { Debug.LogError("Skill level data unavailable: " + error.Message); }
+    }
+
+    public SkillLevelStats GetSkillLevelStats(int skillId, int level)
+    {
+        LoadSkillLevels();
+        return skillLevels == null ? null : skillLevels.Get(skillId, level);
+    }
+
+    public SkillBase GetSkillBase(int skillId, int level)
+    {
+        SkillBase original = Skill[skillId];
+        SkillLevelStats stats = GetSkillLevelStats(skillId, level);
+        if (stats == null) return original;
+        return new SkillBase(skillId, original.Price, original.Name, stats.Cooldown, stats.Damage, stats.Size,
+            stats.Speed, stats.Cost, stats.Crit, stats.CritDmg, stats.Level);
+    }
+
+    public SkillBase GetFieldSkillBase(int fieldId) => GetSkillBase(SkillField[fieldId].ID, SkillField[fieldId].Level);
+
     private float CalculateSkillCooldown(int fieldId)
     {
-        float baseCooldown = Mathf.Max(0f, Skill[SkillField[fieldId].ID].maxCD);
+        float baseCooldown = Mathf.Max(0f, GetFieldSkillBase(fieldId).maxCD);
         float weaponCooldown = WeaponField[fieldId * 3].Cooldown
             + WeaponField[fieldId * 3 + 1].Cooldown
             + WeaponField[fieldId * 3 + 2].Cooldown;
@@ -433,11 +466,11 @@ public class ValueData : MonoBehaviour
             float add_CostSize = 1;
             if (PassiveSkills[32])
                 add_CostSize = (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
-            SkillField[id].Size = Skill[SkillField[id].ID].Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size) * add_CostSize;
+            SkillField[id].Size = GetFieldSkillBase(id).Size * (1 + AttackSize) * (1 + WeaponField[id * 3].Size + WeaponField[id * 3 + 1].Size + WeaponField[id * 3 + 2].Size) * add_CostSize;
             SkillField[id].Speed = countSpeed(id);
-            SkillField[id].Cost = Skill[SkillField[id].ID].Cost * (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
-            SkillField[id].Crit = Skill[SkillField[id].ID].Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit;
-            SkillField[id].CritDmg = Skill[SkillField[id].ID].CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
+            SkillField[id].Cost = GetFieldSkillBase(id).Cost * (1 + Cost) * (1 + WeaponField[id * 3].Cost + WeaponField[id * 3 + 1].Cost + WeaponField[id * 3 + 2].Cost);
+            SkillField[id].Crit = Mathf.Clamp01(GetFieldSkillBase(id).Crit + Crit + WeaponField[id * 3].Crit + WeaponField[id * 3 + 1].Crit + WeaponField[id * 3 + 2].Crit);
+            SkillField[id].CritDmg = GetFieldSkillBase(id).CritDmg + CritDmg + WeaponField[id * 3].CritDmg + WeaponField[id * 3 + 1].CritDmg + WeaponField[id * 3 + 2].CritDmg;
             UICtrl.Instance.SkillfieldUI.transform.GetChild(id).transform.Find("Icon").GetComponent<TipInfo>().UpdateInfo(TipType.Skill, SkillField[id].ID, SkillField[id].Name, SkillField[id].maxCD, SkillField[id].Cost, SkillField[id].Damage, SkillField[id].Crit, SkillField[id].CritDmg, SkillField[id].Size, SkillField[id].Speed, SkillField[id].Level, SkillIntro[SkillField[id].ID]);
             
             // 關閉該技能所有裝備欄位]
@@ -463,16 +496,16 @@ public class ValueData : MonoBehaviour
     {
         float dmg = 0;
         if(SkillField[fieldid].ID == 11) // 衝撞的傷害要加上速度
-            dmg = Skill[SkillField[fieldid].ID].Damage * (1 + Power) * (countSpeed(fieldid) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+            dmg = GetFieldSkillBase(fieldid).Damage * (1 + Power) * (countSpeed(fieldid) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
         else
-            dmg = Skill[SkillField[fieldid].ID].Damage * (1 + Power) * (1 + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+            dmg = GetFieldSkillBase(fieldid).Damage * (1 + Power) * (1 + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
 
         return dmg;
     }
     float countSpeed(int id)
     {
         float speed;
-        speed = Skill[SkillField[id].ID].Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+        speed = GetFieldSkillBase(id).Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
 
         return speed;
     }

@@ -355,8 +355,9 @@ public class Skill : MonoBehaviour
     IEnumerator waterball(int Fieldid, float damageMultiplier)
     {
         float _cost = ValueData.Instance.WaterballCost(Fieldid);
+        float damagePerMana = ValueData.Instance.GetSkillLevelStats(10, ValueData.Instance.SkillField[Fieldid].Level)?.WaterballDamagePerMana ?? 10f;
         ValueData.Instance.GetAp(-_cost);
-        //ValueData.Instance.SkillField[Fieldid].Damage = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+        //ValueData.Instance.SkillField[Fieldid].Damage = _cost * damagePerMana * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
 
         Vector3 targetPos = ValueData.Instance.Player.transform.position;
         Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -373,7 +374,7 @@ public class Skill : MonoBehaviour
         yield return new WaitForSeconds(0.7f);
         GameObject b = Instantiate(Skill_Waterball_2, targetPos, Skill_Waterball_2.transform.rotation);
         ConfigureAttack(b.GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
-        b.transform.GetComponent<PlayerAttack>().dmg = _cost * 10 * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
+        b.transform.GetComponent<PlayerAttack>().dmg = _cost * damagePerMana * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
         b.transform.localScale = new Vector3(b.transform.localScale.x * _size, b.transform.localScale.y * _size, b.transform.localScale.z * _size);
         Destroy(b, 1f);
     }
@@ -408,7 +409,7 @@ public class Skill : MonoBehaviour
 
                 // �̽Ĩ�Z���M�w�ˮ`
                 float distance = Vector3.Distance(startpos, PlayerCtrl.Instance.transform.position);
-                atk.dmg = ValueData.Instance.SkillField[Fieldid].Damage + distance * 3;
+                atk.dmg = ValueData.Instance.SkillField[Fieldid].Damage + distance * (ValueData.Instance.GetSkillLevelStats(11, ValueData.Instance.SkillField[Fieldid].Level)?.ChargeDamagePerMeter ?? 3f);
 
                 float _size = ValueData.Instance.SkillField[Fieldid].Size;
                 a.transform.localScale *= _size;

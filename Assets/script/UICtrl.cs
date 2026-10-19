@@ -132,6 +132,11 @@ public class UICtrl : MonoBehaviour
     public Color weaponIconRarity_Magic;
     public Color weaponIconRarity_Rare;
     public Color weaponIconRarity_Unique;
+    [Header("Skill level background colors")]
+    public Color skillLevel1Color = new Color(0.1981132f, 0.1981132f, 0.1981132f, 1f);
+    public Color skillLevel2Color = new Color(0.24359201f, 0.30661494f, 0.3207547f, 1f);
+    public Color skillLevel3Color = new Color(0.3490566f, 0.34200794f, 0.22556959f, 1f);
+    public Color skillLevel4Color = new Color(0.7058299f, 0.5484603f, 0.8018868f, 1f);
     public PostProcessVolume volume; // 鏡頭渲染
     public Vignette vignette;
     public Line line;
@@ -175,6 +180,7 @@ public class UICtrl : MonoBehaviour
         {
             SkillFieldCanvasgroup[i] = SkillFieldIcon[i].GetComponent<CanvasGroup>();
         }
+        RefreshSkillLevelColors();
     }
 
     private void FixedUpdate()
@@ -325,6 +331,12 @@ public class UICtrl : MonoBehaviour
                 LocalizationManager.TryGetTranslation("Skill/Skill Name " + _tipinfo.Id, out string tipname);
                 Tip_Name.text = tipname;
                 LocalizationManager.TryGetTranslation("Skill/Skill Info " + _tipinfo.Id, out string tipinfo);
+                if (_tipinfo.Id == 10)
+                {
+                    var stats = ValueData.Instance.GetSkillLevelStats(10, _tipinfo.Level);
+                    tipinfo = string.Format(tipinfo ?? string.Empty, ((stats?.WaterballManaRatio ?? 0.5f) * 100f).ToString("0.#"),
+                        (stats?.WaterballDamagePerMana ?? 10f).ToString("0.##"));
+                }
                 Tip_Intro.text = tipinfo;
 
                 //等級
@@ -534,6 +546,49 @@ public class UICtrl : MonoBehaviour
                 SkillCdMask[FieldID].fillAmount = value;
             }
         }
+    }
+
+    public Color GetSkillLevelColor(int level)
+    {
+        if (level >= 4) return skillLevel4Color;
+        if (level == 3) return skillLevel3Color;
+        if (level == 2) return skillLevel2Color;
+        return skillLevel1Color;
+    }
+
+    private void SetSkillBackgroundColor(Image background, int level)
+    {
+        if (background == null) return;
+        Color color = GetSkillLevelColor(level);
+        // A highlighted drop target stays white, then restores the current level color.
+        if (dragDestinationColors.ContainsKey(background))
+            dragDestinationColors[background] = color;
+        else
+            background.color = color;
+    }
+
+    [ContextMenu("Refresh Skill Level Colors")]
+    public void RefreshSkillLevelColors()
+    {
+        if (ValueData.Instance != null)
+            for (int i = 0; i < SkillFieldIcon.Length; i++)
+            {
+                if (SkillFieldIcon[i] == null) continue;
+                Transform background = SkillFieldIcon[i].transform.parent.Find("BG");
+                if (background != null)
+                    SetSkillBackgroundColor(background.GetComponent<Image>(),
+                        ValueData.Instance.SkillField[i].ID == 0 ? 0 : ValueData.Instance.SkillField[i].Level);
+            }
+        RefreshSkillListColors(SkillStoreContent);
+        RefreshSkillListColors(BoxContent);
+    }
+
+    private void RefreshSkillListColors(Transform content)
+    {
+        if (content == null) return;
+        foreach (TipInfo item in content.GetComponentsInChildren<TipInfo>(true))
+            if (item.Type == TipType.Skill)
+                SetSkillBackgroundColor(item.GetComponent<Image>(), item.Level);
     }
 
     public void BeginDragHighlights(TipType type, int sourceField = -1)
@@ -749,10 +804,12 @@ public class UICtrl : MonoBehaviour
         ValueData.Instance.SkillField[Field].Level = ChangeSkill_ID[1];
         if (ValueData.Instance.SkillField[Field].nowCD == 0)
         {
-            ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.Skill[ChangeSkill_ID[0]].maxCD;
+            ValueData.Instance.SkillField[Field].nowCD = ValueData.Instance.GetFieldSkillBase(Field).maxCD;
         }
         SkillFieldIcon[Field].sprite = ValueData.Instance.SkillIcon[ChangeSkill_ID[0]];
         SkillFieldIcon[Field].SetNativeSize();
+        SetSkillBackgroundColor(SkillFieldIcon[Field].transform.parent.Find("BG").GetComponent<Image>(),
+            ValueData.Instance.SkillField[Field].ID == 0 ? 0 : ValueData.Instance.SkillField[Field].Level);
         if (ValueData.Instance.Skill[ChangeSkill_ID[0]].ID == 0)
             SkillFieldIcon[Field].tag = "Untagged";
         else
@@ -984,7 +1041,8 @@ public class UICtrl : MonoBehaviour
         for (int i = 0; i < itemID.Count; i++) 
         {
             GameObject newButton = Instantiate(StoreskillbuttonPrefab, SkillStoreContent);
-            SkillBase skill = ValueData.Instance.Skill[itemID[i]];
+            SkillBase skill = ValueData.Instance.GetSkillBase(itemID[i], itemlevel[i]);
+            SetSkillBackgroundColor(newButton.GetComponent<Image>(), itemlevel[i]);
             newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.CritDmg, skill.Size, skill.Speed, itemlevel[i], ValueData.Instance.SkillIntro[skill.ID]);
             newButton.GetComponent<TipInfo>().UpdatePrice(skill.Price);
             if (ValueData.Instance.SkillIcon.Length > skill.ID)
@@ -1108,7 +1166,8 @@ public class UICtrl : MonoBehaviour
             else  // 物品類型為技能
             {
                 GameObject newButton = Instantiate(StoreskillbuttonPrefab, BoxContent);
-                SkillBase skill = ValueData.Instance.Skill[itemID[i]];
+                SkillBase skill = ValueData.Instance.GetSkillBase(itemID[i], itemlevel[i]);
+                SetSkillBackgroundColor(newButton.GetComponent<Image>(), itemlevel[i]);
                 newButton.GetComponent<TipInfo>().UpdateInfo(TipType.Skill, skill.ID, skill.Name, skill.maxCD, skill.Cost, skill.Damage, skill.Crit, skill.CritDmg, skill.Size, skill.Speed, itemlevel[i], ValueData.Instance.SkillIntro[skill.ID]);
                 newButton.GetComponent<TipInfo>().UpdatePrice(0);
                 if (ValueData.Instance.SkillIcon.Length > skill.ID)
