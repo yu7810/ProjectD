@@ -38,6 +38,9 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             dragging = true;
             UICtrl.Instance.CancelStoreItemSelection();
             UICtrl.Instance.BeginDragHighlights(Type, ID);
+            if (Type == TipType.SkillField)
+                UICtrl.Instance.BeginSkillMergePreview(ValueData.Instance.SkillField[ID].ID,
+                    ValueData.Instance.SkillField[ID].Level, ID);
             PlayerCtrl.Instance.canAttack = false;
             canvasGroup.alpha = 0.7f;  // 拖曳時半透明
             canvasGroup.blocksRaycasts = false; // 防止拖曳過程中遮擋其他 UI 互動
@@ -95,6 +98,9 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
         // 檢查滑鼠下方的 UI 物件
         GameObject hoveredObject = eventData.pointerEnter;
+        if (Type == TipType.SkillField && hoveredObject != null &&
+            UICtrl.Instance.TryGetPurchaseDropField(hoveredObject, TipType.Skill, out int skillField))
+            hoveredObject = UICtrl.Instance.SkillFieldIcon[skillField].gameObject;
         if (hoveredObject != null)
         {
             if(hoveredObject.TryGetComponent<UIDrag>(out UIDrag target) && target != this)
@@ -119,7 +125,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
                     int mySkillID = ValueData.Instance.SkillField[ID].ID;
                     int mySkillILv = ValueData.Instance.SkillField[ID].Level;
                     // 相同的技能升級
-                    if(targetSkillID == mySkillID && targetSkillILv == mySkillILv)
+                    if (UICtrl.CanMergeSkills(mySkillID, mySkillILv, targetSkillID, targetSkillILv))
                     {
                         // 先換對方的
                         UICtrl.Instance.ChangeSkill_ID[0] = mySkillID;

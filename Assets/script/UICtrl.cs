@@ -126,6 +126,7 @@ public partial class UICtrl : MonoBehaviour
     public Color valueColor_add;//數值為正時的顏色
     public Color valueColor_reduce;//數值為負時的顏色
     public Color valueColor_normal;//技能數值的顏色
+    public Color skillMergePreviewColor = new Color(0.2f, 0.8f, 1f, 1f);
     public Color vignetteColor; // Global Volume裡vignette的初始顏色
     public Color vignetteBehurtColor;
     public Color weaponIconRarity_Normal;
@@ -157,6 +158,7 @@ public partial class UICtrl : MonoBehaviour
     private TipInfo displayedTip;
     private uint displayedTipRevision;
     private string displayedTipLanguage;
+    private bool displayedSkillMergePreview;
 
     private EventSystem eventSystem;//滑鼠射線用
     private GraphicRaycaster graphicRaycaster;
@@ -259,7 +261,8 @@ public partial class UICtrl : MonoBehaviour
         //Tip彈窗
         if (TryGetHoveredTip(out TipInfo _tipinfo))
         {
-            if (!ShouldRefreshTip(_tipinfo))
+            bool mergePreview = TryGetSkillMergePreview(_tipinfo, out SkillBase currentStats, out SkillBase upgradedStats);
+            if (!ShouldRefreshTip(_tipinfo) && !mergePreview && !displayedSkillMergePreview)
                 return;
             Tip.SetActive(true);
             
@@ -335,23 +338,30 @@ public partial class UICtrl : MonoBehaviour
                 Tip_Speed.text = _tipinfo.Speed.ToString("0.0");
                 Tip_Crit.text = (_tipinfo.Crit * 100).ToString("0") + " %";
                 Tip_CritDmg.text = (_tipinfo.CritDmg * 100).ToString("0") + " %";
+                if (mergePreview)
+                    ShowSkillMergeValues(currentStats, upgradedStats);
 
                 LocalizationManager.TryGetTranslation("Skill/Skill Name " + _tipinfo.Id, out string tipname);
                 Tip_Name.text = tipname;
                 LocalizationManager.TryGetTranslation("Skill/Skill Info " + _tipinfo.Id, out string tipinfo);
+                int tipLevel = mergePreview ? upgradedStats.Level : _tipinfo.Level;
                 if (_tipinfo.Id == 10)
                 {
-                    var stats = ValueData.Instance.GetSkillLevelStats(10, _tipinfo.Level);
-                    tipinfo = string.Format(tipinfo ?? string.Empty, ((stats?.WaterballManaRatio ?? 0.5f) * 100f).ToString("0.#"),
-                        (stats?.WaterballDamagePerMana ?? 10f).ToString("0.##"));
+                    var stats = ValueData.Instance.GetSkillLevelStats(10, tipLevel);
+                    var previous = mergePreview ? ValueData.Instance.GetSkillLevelStats(10, _tipinfo.Level) : null;
+                    tipinfo = string.Format(tipinfo ?? string.Empty,
+                        FormatSkillMergeNumber((stats?.WaterballManaRatio ?? 0.5f) * 100f, previous?.WaterballManaRatio * 100f, "0.#"),
+                        FormatSkillMergeNumber(stats?.WaterballDamagePerMana ?? 10f, previous?.WaterballDamagePerMana, "0.##"));
                 }
                 if (_tipinfo.Id == ValueData.SunfireSkillId)
                 {
-                    var stats = ValueData.Instance.GetSkillLevelStats(ValueData.SunfireSkillId, _tipinfo.Level);
+                    var stats = ValueData.Instance.GetSkillLevelStats(ValueData.SunfireSkillId, tipLevel);
+                    var previous = mergePreview ? ValueData.Instance.GetSkillLevelStats(ValueData.SunfireSkillId, _tipinfo.Level) : null;
                     tipinfo = string.Format(tipinfo ?? string.Empty,
-                        ((stats?.SunfireLifeRatio ?? 0.5f) * 100f).ToString("0.##"),
-                        (stats?.SunfireInterval ?? 0.5f).ToString("0.###"),
-                        (stats?.Size ?? 6f).ToString("0.##"), (stats?.Cost ?? 0.5f).ToString("0.##"));
+                        FormatSkillMergeNumber((stats?.SunfireLifeRatio ?? 0.5f) * 100f, previous?.SunfireLifeRatio * 100f, "0.##"),
+                        FormatSkillMergeNumber(stats?.SunfireInterval ?? 0.5f, previous?.SunfireInterval, "0.###"),
+                        FormatSkillMergeNumber(stats?.Size ?? 6f, previous?.Size, "0.##"),
+                        FormatSkillMergeNumber(stats?.Cost ?? 0.5f, previous?.Cost, "0.##"));
                 }
                 Tip_Intro.text = tipinfo;
 
@@ -359,7 +369,7 @@ public partial class UICtrl : MonoBehaviour
                 int childcount = Tip_Level.transform.childCount;
                 for (int i = 0; i < childcount; i++)
                 {
-                    if (i < _tipinfo.Level)
+                    if (i < tipLevel)
                         Tip_Level.transform.GetChild(i).gameObject.SetActive(true);
                     else
                         Tip_Level.transform.GetChild(i).gameObject.SetActive(false);
@@ -397,10 +407,12 @@ public partial class UICtrl : MonoBehaviour
             displayedTip = _tipinfo;
             displayedTipRevision = _tipinfo.Revision;
             displayedTipLanguage = LocalizationManager.CurrentLanguage;
+            displayedSkillMergePreview = mergePreview;
         }
         else
         {
             displayedTip = null;
+            displayedSkillMergePreview = false;
             Tip.SetActive(false);
         }
             
@@ -637,6 +649,7 @@ public partial class UICtrl : MonoBehaviour
 
     public void EndDragHighlights()
     {
+        EndSkillMergePreview();
         foreach (KeyValuePair<Image, Color> entry in dragDestinationColors)
         {
             if (entry.Key != null)
@@ -797,7 +810,7 @@ public partial class UICtrl : MonoBehaviour
 
         int oldlv = ValueData.Instance.SkillField[Field].Level;
         int newlv = ChangeSkill_ID[1];
-        if (ChangeSkill_ID[0] != 0 && (ChangeSkill_ID[0] == ValueData.Instance.SkillField[Field].ID) && (oldlv == newlv) && oldlv != 3) // 相同ID、等級的技能會升級
+        if (CanMergeSkills(ChangeSkill_ID[0], newlv, ValueData.Instance.SkillField[Field].ID, oldlv)) // 相同ID、等級的技能會升級
         {
             ChangeSkill_ID[1] += 1;
         }
@@ -1220,10 +1233,88 @@ public partial class UICtrl : MonoBehaviour
     {
         info = null;
         if (!IsPointerOverUI(out GameObject hit)) return false;
+        // Drop overlays and field backgrounds must resolve to the destination skill too.
+        if (mergePreviewSkillId > 0 && TryGetPurchaseDropField(hit, TipType.Skill, out int field))
+        {
+            info = SkillFieldIcon[field].GetComponent<TipInfo>();
+            return info != null && info.CompareTag("UI");
+        }
         // Price labels and other child graphics belong to the same item tooltip.
         info = hit.GetComponentInParent<TipInfo>();
         return info != null && info.CompareTag("UI") &&
             (info.Type == TipType.Skill || info.Type == TipType.Weapon || info.Type == TipType.Passiveskill);
+    }
+
+    private int mergePreviewSkillId;
+    private int mergePreviewLevel;
+    private int mergePreviewSourceField = -1;
+
+    public static bool CanMergeSkills(int sourceId, int sourceLevel, int targetId, int targetLevel)
+    {
+        return sourceId > 0 && sourceId == targetId && sourceLevel == targetLevel &&
+            sourceLevel >= 1 && sourceLevel < SkillLevelTable.MaxLevel;
+    }
+
+    public void BeginSkillMergePreview(int skillId, int level, int sourceField = -1)
+    {
+        mergePreviewSkillId = skillId;
+        mergePreviewLevel = level;
+        mergePreviewSourceField = sourceField;
+        displayedTip = null;
+    }
+
+    public void EndSkillMergePreview()
+    {
+        if (mergePreviewSkillId == 0) return;
+        mergePreviewSkillId = 0;
+        mergePreviewSourceField = -1;
+        displayedTip = null;
+    }
+
+    private bool TryGetSkillMergePreview(TipInfo info, out SkillBase current, out SkillBase upgraded)
+    {
+        current = upgraded = null;
+        if (mergePreviewSkillId <= 0 || info.Type != TipType.Skill) return false;
+        var data = ValueData.Instance;
+        if (mergePreviewSourceField >= 0 &&
+            (data.SkillField[mergePreviewSourceField].ID != mergePreviewSkillId ||
+             data.SkillField[mergePreviewSourceField].Level != mergePreviewLevel)) return false;
+        for (int i = 0; i < SkillFieldIcon.Length; i++)
+        {
+            if (i == mergePreviewSourceField || SkillFieldIcon[i].GetComponent<TipInfo>() != info ||
+                !IsPurchaseDestinationAvailable(TipType.Skill, i)) continue;
+            var field = data.SkillField[i];
+            if (!CanMergeSkills(mergePreviewSkillId, mergePreviewLevel, field.ID, field.Level)) return false;
+            current = data.GetSkillFieldPreview(i, field.Level);
+            upgraded = data.GetSkillFieldPreview(i, field.Level + 1);
+            return true;
+        }
+        return false;
+    }
+
+    private void ShowSkillMergeValues(SkillBase current, SkillBase upgraded)
+    {
+        ShowSkillMergeValue(Tip_Cd, current.maxCD, upgraded.maxCD, "0.00", " s");
+        ShowSkillMergeValue(Tip_Cost, current.Cost, upgraded.Cost, "0.0");
+        ShowSkillMergeValue(Tip_Dmg, current.Damage, upgraded.Damage, "0");
+        ShowSkillMergeValue(Tip_Size, current.Size, upgraded.Size, "0.0");
+        ShowSkillMergeValue(Tip_Speed, current.Speed, upgraded.Speed, "0.0");
+        ShowSkillMergeValue(Tip_Crit, current.Crit * 100f, upgraded.Crit * 100f, "0", " %");
+        ShowSkillMergeValue(Tip_CritDmg, current.CritDmg * 100f, upgraded.CritDmg * 100f, "0", " %");
+    }
+
+    private void ShowSkillMergeValue(TextMeshProUGUI valueUI, float current, float upgraded, string format, string unit = "")
+    {
+        valueUI.text = upgraded.ToString(format) + unit;
+        valueUI.color = Mathf.Approximately(current, upgraded) ? valueColor_normal : skillMergePreviewColor;
+    }
+
+    private string FormatSkillMergeNumber(float value, float? previous, string format)
+    {
+        string text = value.ToString(format);
+        return previous.HasValue && !Mathf.Approximately(previous.Value, value)
+            ? "<color=#" + UnityEngine.ColorUtility.ToHtmlStringRGBA(skillMergePreviewColor) + ">" + text + "</color>"
+            : text;
     }
 
     public bool IsPointerOverUI(out GameObject uiElement)

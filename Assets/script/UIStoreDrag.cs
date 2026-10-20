@@ -66,6 +66,8 @@ public class UIStoreDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
             ui.ChangeWeapon(itemId, costsMoney, itemIndex);
 
         ui.BeginDragHighlights(type);
+        if (type == TipType.Skill)
+            ui.BeginSkillMergePreview(itemId, level);
         group = GetComponent<CanvasGroup>();
         if (group == null)
             group = gameObject.AddComponent<CanvasGroup>();

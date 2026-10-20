@@ -461,9 +461,25 @@ public class ValueData : MonoBehaviour
 
     public SkillBase GetFieldSkillBase(int fieldId) => GetSkillBase(SkillField[fieldId].ID, SkillField[fieldId].Level);
 
-    private float CalculateSkillCooldown(int fieldId)
+    // Read-only calculation: previewing never changes fields, resources or equipment slots.
+    public SkillBase GetSkillFieldPreview(int fieldId, int level)
     {
-        float baseCooldown = Mathf.Max(0f, GetFieldSkillBase(fieldId).maxCD);
+        SkillBase basis = GetSkillBase(SkillField[fieldId].ID, level);
+        var a = WeaponField[fieldId * 3];
+        var b = WeaponField[fieldId * 3 + 1];
+        var c = WeaponField[fieldId * 3 + 2];
+        float costMultiplier = (1f + Cost) * (1f + a.Cost + b.Cost + c.Cost);
+        float size = basis.Size * (1f + AttackSize) * (1f + a.Size + b.Size + c.Size)
+            * (PassiveSkills[32] ? costMultiplier : 1f);
+        return new SkillBase(basis.ID, basis.Price, basis.Name, CalculateSkillCooldown(fieldId, level),
+            CalculateSkillDamage(fieldId, level), size, countSpeed(fieldId, level), basis.Cost * costMultiplier,
+            Mathf.Clamp01(basis.Crit + Crit + a.Crit + b.Crit + c.Crit),
+            basis.CritDmg + CritDmg + a.CritDmg + b.CritDmg + c.CritDmg, basis.Level);
+    }
+
+    private float CalculateSkillCooldown(int fieldId, int? previewLevel = null)
+    {
+        float baseCooldown = Mathf.Max(0f, GetSkillBase(SkillField[fieldId].ID, previewLevel ?? SkillField[fieldId].Level).maxCD);
         float weaponCooldown = WeaponField[fieldId * 3].Cooldown
             + WeaponField[fieldId * 3 + 1].Cooldown
             + WeaponField[fieldId * 3 + 2].Cooldown;
@@ -506,27 +522,27 @@ public class ValueData : MonoBehaviour
         UpdateSkillResourceUI();
     }
 
-    public float CalculateSkillDamage(int fieldid)
+    public float CalculateSkillDamage(int fieldid, int? previewLevel = null)
     {
         if (SkillField[fieldid].ID == SunfireSkillId)
         {
-            float ratio = GetSkillLevelStats(SunfireSkillId, SkillField[fieldid].Level)?.SunfireLifeRatio ?? 0.5f;
-            return maxHP * ratio * GetFieldSkillBase(fieldid).Damage * (1f + Power)
+            float ratio = GetSkillLevelStats(SunfireSkillId, previewLevel ?? SkillField[fieldid].Level)?.SunfireLifeRatio ?? 0.5f;
+            return maxHP * ratio * GetSkillBase(SkillField[fieldid].ID, previewLevel ?? SkillField[fieldid].Level).Damage * (1f + Power)
                 * (1f + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage
                     + WeaponField[fieldid * 3 + 2].Damage);
         }
         float dmg = 0;
         if(SkillField[fieldid].ID == 11) // 衝撞的傷害要加上速度
-            dmg = GetFieldSkillBase(fieldid).Damage * (1 + Power) * (countSpeed(fieldid) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+            dmg = GetSkillBase(SkillField[fieldid].ID, previewLevel ?? SkillField[fieldid].Level).Damage * (1 + Power) * (countSpeed(fieldid, previewLevel) + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
         else
-            dmg = GetFieldSkillBase(fieldid).Damage * (1 + Power) * (1 + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
+            dmg = GetSkillBase(SkillField[fieldid].ID, previewLevel ?? SkillField[fieldid].Level).Damage * (1 + Power) * (1 + WeaponField[fieldid * 3].Damage + WeaponField[fieldid * 3 + 1].Damage + WeaponField[fieldid * 3 + 2].Damage);
 
         return dmg;
     }
-    float countSpeed(int id)
+    float countSpeed(int id, int? previewLevel = null)
     {
         float speed;
-        speed = GetFieldSkillBase(id).Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
+        speed = GetSkillBase(SkillField[id].ID, previewLevel ?? SkillField[id].Level).Speed * (1 + SkillSpeed) * (1 + WeaponField[id * 3].Speed + WeaponField[id * 3 + 1].Speed + WeaponField[id * 3 + 2].Speed);
 
         return speed;
     }
