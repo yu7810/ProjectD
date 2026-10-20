@@ -1385,10 +1385,10 @@ public partial class UICtrl : MonoBehaviour
             return;
         if (!nowWeaponstore)
             return;
-        if (!nowWeaponstore.startRandom)
+        if (!nowWeaponstore.startRandom || nowWeaponstore.npcType != NpcType.Weaponstore || !WeaponStoreUI.activeInHierarchy)
             return;
+        if (!nowWeaponstore.RandomItem()) return;
         ValueData.Instance.GetMoney(-5);
-        nowWeaponstore.RandomItem();
         nowWeaponstore.doNpc(true);
     }
     public void randomskillstoreEvent()
@@ -1397,10 +1397,10 @@ public partial class UICtrl : MonoBehaviour
             return;
         if (!nowSkillstore)
             return;
-        if (!nowSkillstore.startRandom)
+        if (!nowSkillstore.startRandom || nowSkillstore.npcType != NpcType.Skillstore || !SkillStoreUI.activeInHierarchy)
             return;
+        if (!nowSkillstore.RandomItem()) return;
         ValueData.Instance.GetMoney(-5);
-        nowSkillstore.RandomItem();
         nowSkillstore.doNpc(true);
     }
     public void Newplayer()

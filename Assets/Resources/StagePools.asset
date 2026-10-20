@@ -94,3 +94,10 @@ MonoBehaviour:
       weight: 1
     - room: {fileID: 11400000, guid: d071ef1ce86d435698c7a7a6e29ce0cc, type: 2}
       weight: 1
+  chapterMoneyRewards:
+  - chapter: 1
+    money: 20
+  - chapter: 2
+    money: 60
+  - chapter: 3
+    money: 180

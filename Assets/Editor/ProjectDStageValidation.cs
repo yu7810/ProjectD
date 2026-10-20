@@ -11,6 +11,8 @@ public static class ProjectDStageValidation
     {
         StagePoolDatabase database = Resources.Load<StagePoolDatabase>("StagePools");
         Require(database != null && database.home != null, "StagePools and home room are required.");
+        var moneyErrors = database.ChapterMoneyRewardErrors();
+        Require(moneyErrors.Count == 0, string.Join("\n", moneyErrors));
         var scenes = new HashSet<string>(EditorBuildSettings.scenes.Where(s => s.enabled)
             .Select(s => System.IO.Path.GetFileNameWithoutExtension(s.path)));
         var indices = new HashSet<int>();

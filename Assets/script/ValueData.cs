@@ -317,18 +317,7 @@ public class ValueData : MonoBehaviour
         new WeaponFieldBase(0,"-",1,1f,1f,1f,1f,0,0),
     };
 
-    //技能商店池
-    [NonSerialized]
-    public List<int> skillstorePool = new List<int>()
-    {
-        1,2,4,8,9,10,11,12
-    };
-    //裝備商店池
-    [NonSerialized]
-    public List<int> weaponstorePool = new List<int>()
-    {
-        1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,
-    };
+    // Shared stock weights: Resources/ShopPool.csv.
 
     //每次加減天賦時呼叫，更新所有數值
     //還需要遍歷天賦點

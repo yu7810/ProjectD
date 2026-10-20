@@ -19,6 +19,28 @@ public class Npc : MonoBehaviour
     public bool unlimited; // 商品不會被消耗
     public List<int> item = new List<int> { };
     public List<int> itemlevel = new List<int> { };
+    [Min(0f)] public float normalRarityChance = 60f;
+    [Min(0f)] public float magicRarityChance = 30f;
+    [Min(0f)] public float rareRarityChance = 10f;
+    [Min(0f)] public float uniqueRarityChance = 0f;
+    [Min(0f)] public float skillLevel1Chance = 60f;
+    [Min(0f)] public float skillLevel2Chance = 30f;
+    [Min(0f)] public float skillLevel3Chance = 10f;
+    private bool randomStockReady;
+    private static ShopPoolTable commonShopPool;
+
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetShopPoolCache() => commonShopPool = null;
+
+    private IEnumerator Start()
+    {
+        if (startRandom && !randomStockReady)
+        {
+            yield return null; // All catalog Awake methods must finish first.
+            if (!randomStockReady) RandomItem();
+        }
+    }
+
 
     [Header("門")]
     public PrizeBase Prize;//獎勵類型
@@ -27,8 +49,7 @@ public class Npc : MonoBehaviour
     private void OnEnable()
     {
         LocalizationManager.OnLocalizeEvent += RefreshLocalizedName;
-        if (startRandom)
-            RandomItem();
+        randomStockReady = false;
     }
 
     private void OnDisable()
@@ -43,6 +64,9 @@ public class Npc : MonoBehaviour
     }
 
     public void doNpc(bool Switch) {
+        if (Switch && startRandom && !randomStockReady &&
+            (npcType == NpcType.Skillstore || npcType == NpcType.Weaponstore) && !RandomItem())
+            return;
         switch (npcType) 
         {
             case NpcType.Door:
@@ -117,33 +141,48 @@ public class Npc : MonoBehaviour
         }
     }
 
-    public void RandomItem()
+    public bool RandomItem()
     {
-        List<int> _pool = new List<int>();//所有商品池
-        List<int> _item = new List<int>();//存放取出的商品
-
-        if (npcType == NpcType.Skillstore)
+        if (!startRandom || (npcType != NpcType.Skillstore && npcType != NpcType.Weaponstore)) return false;
+        var data = ValueData.Instance;
+        if (data == null) return false;
+        try
         {
-            _pool.AddRange(ValueData.Instance.skillstorePool);
+            if (commonShopPool == null)
+            {
+                var csv = Resources.Load<TextAsset>("ShopPool");
+                if (csv == null) throw new System.FormatException("Missing Resources/ShopPool.csv.");
+                commonShopPool = ShopPoolTable.Parse(csv.text);
+            }
+            bool skill = npcType == NpcType.Skillstore;
+            double[] chances = skill
+                ? new double[] { skillLevel1Chance, skillLevel2Chance, skillLevel3Chance }
+                : new double[] { normalRarityChance, magicRarityChance, rareRarityChance, uniqueRarityChance };
+            var products = commonShopPool.Sample(skill ? ShopProductType.Skill : ShopProductType.Weapon,
+                chances, id => (int)data.Weapon[id].Rarity,
+                () => (double)Random.Range(0, int.MaxValue) / int.MaxValue);
+            if (products.Count == 0)
+            {
+                Debug.LogWarning("Shop pool has no products matching this merchant's chances; stock unchanged.", this);
+                return false;
+            }
+            var ids = new List<int>();
+            var levels = new List<int>();
+            foreach (var product in products)
+            {
+                ids.Add(product.ItemID);
+                levels.Add(product.Level);
+            }
+            item = ids;
+            itemlevel = levels;
+            randomStockReady = true;
+            return true;
         }
-        else if (npcType == NpcType.Weaponstore)
+        catch (System.FormatException error)
         {
-            _pool.AddRange(ValueData.Instance.weaponstorePool);
+            Debug.LogError("Shop pool was not applied; stock unchanged: " + error.Message, this);
+            return false;
         }
-        else
-            return;
-
-        itemlevel.Clear();
-        for (int i = 0; i < 3; i++)
-        {
-            int randomIndex = Random.Range(0, _pool.Count);
-            _item.Add(_pool[randomIndex]);
-            _pool.RemoveAt(randomIndex);
-            itemlevel.Add(Random.Range(1, LevelCtrl.Instance.nowLevel + 1));
-        }
-
-        item.Clear();
-        item.AddRange(_item);
     }
 
     public void SetNameVisible(bool visible)

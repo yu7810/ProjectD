@@ -93,18 +93,24 @@ public partial class LevelCtrl : MonoBehaviour
             case PrizeBase.Skill:
                 //Debug.Log("技能商店");
                 GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(p.x, skillstorePrefab.transform.position.y, p.z), skillstorePrefab.transform.rotation);
+                skillstore.GetComponent<Npc>().startRandom = true;
                 skillstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Weapon:
                 //Debug.Log("武器商店");
                 GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(p.x, weaponstorePrefab.transform.position.y, p.z), weaponstorePrefab.transform.rotation);
+                weaponstore.GetComponent<Npc>().startRandom = true;
                 weaponstore.GetComponent<Npc>().RandomItem();
                 return;
             case PrizeBase.Money:
                 //Debug.Log("金幣");
-                int min = 10 + 12 * nowclass;
-                int max = 15 + 12 * nowclass;
-                int _money = Random.Range(min, max);
+                var rewards = StagePools;
+                if (rewards == null || !rewards.TryGetChapterMoneyReward(nowLevel, out int _money))
+                {
+                    Debug.LogError("Missing or invalid money reward for chapter " + nowLevel + ".", this);
+                    return;
+                }
+                if (_money == 0) return;
                 GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
                 npc = _itemMoney.GetComponent<Npc>();
                 npc.money = _money;

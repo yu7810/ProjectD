@@ -66,7 +66,7 @@ public partial class LevelCtrl
     {
         CurrentLevelIndex = level;
         nowclass = level > 0 ? level % 10 : 0;
-        nowLevel = level > 0 ? (level - 1) / 10 + 1 : 0;
+        nowLevel = StagePoolDatabase.ChapterForProgress(level);
     }
 
     private bool TryLoadStage(int level, StageRoomDefinition selectedRoom, bool portalRecovery)
@@ -95,6 +95,9 @@ public partial class LevelCtrl
         string scene = level == -1 ? "Title" : room != null ? room.sceneName : null;
         if (string.IsNullOrEmpty(scene) || !Application.CanStreamedLevelBeLoaded(scene))
         { Debug.LogError($"Stage scene is not enabled in Build Settings: {scene}", this); return false; }
+        if (room != null && room.kind != StageRoomKind.Boss && room.reward == PrizeBase.Money &&
+            !stagePools.TryGetChapterMoneyReward(StagePoolDatabase.ChapterForProgress(level), out _))
+        { Debug.LogError($"Missing or invalid chapter money reward for progress {level}.", this); return false; }
         isLoadingLevel = true;
         if (portalRecovery) ValueData.Instance.ApplyPortalRecovery();
         if (Skill.Instance != null) Skill.Instance.StopAllSunfire();
