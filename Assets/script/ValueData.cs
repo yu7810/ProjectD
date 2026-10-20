@@ -15,6 +15,7 @@ public class ValueData : MonoBehaviour
     public const int WrathTalentId = 38;
     public const int FrenzyTalentId = 40;
     public const int WildnessTalentId = 42;
+    public const int VitalityTalentId = 48;
     private bool HasPassiveSkill(int id) => PassiveSkills != null && id >= 0 && id < PassiveSkills.Length && PassiveSkills[id];
     public bool UsesRageForSkills => PassiveSkills != null && PassiveSkills.Length > SuppressionTalentId && PassiveSkills[SuppressionTalentId];
     public bool HasCalm => PassiveSkills != null && PassiveSkills.Length > CalmTalentId && PassiveSkills[CalmTalentId];
@@ -66,6 +67,11 @@ public class ValueData : MonoBehaviour
         for (int i = 0; i < SkillField.Length; i++)
             if (UICtrl.Instance.SkillFieldCanvasgroup[i])
                 UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = CanUseSkillResource(i) ? 1f : 0.1f;
+    }
+
+    public void ApplyPortalRecovery()
+    {
+        if (HasPassiveSkill(VitalityTalentId)) GetHp(1f);
     }
 
     public GameObject Player;

@@ -48,9 +48,7 @@ public class Npc : MonoBehaviour
             case NpcType.Door:
                 if (Switch) 
                 {
-                    LevelCtrl.Instance.nowPrize = Prize;
-                    int nextLevel = Level;
-                    LevelCtrl.Instance.NextLevel(nextLevel);
+                    LevelCtrl.Instance.TryEnterPortal(this);
                 }
                 break;
             case NpcType.Weaponstore:
@@ -146,6 +144,11 @@ public class Npc : MonoBehaviour
 
         item.Clear();
         item.AddRange(_item);
+    }
+
+    public void SetNameVisible(bool visible)
+    {
+        if (NameUI != null) NameUI.gameObject.SetActive(visible);
     }
 
     public void showName()

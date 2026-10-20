@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using I2.Loc;
 
-public class LevelCtrl : MonoBehaviour
+public partial class LevelCtrl : MonoBehaviour
 {
     private static LevelCtrl instance;
     public int CurrentLevelIndex { get; private set; } = 0;
@@ -16,7 +16,7 @@ public class LevelCtrl : MonoBehaviour
     public GameObject Enemys;
     private readonly HashSet<Enemy> requiredEnemies = new HashSet<Enemy>();
     private bool stageCompleted = true;
-    GameObject ExitDoors;
+    private bool isLoadingLevel;
     public int leftEnemy; // 剩餘敵人數量
 
     public GameObject skillstorePrefab;
@@ -32,26 +32,6 @@ public class LevelCtrl : MonoBehaviour
     // 用來招喚的怪物
     public GameObject EnemyHerring;
 
-    //關卡池
-    public string[][] Level = new string[][] // [等級][關卡ID]
-    {
-        new string[]{ "Title", "MainScene" }, // 首頁,據點
-        new string[]{ "Level_1_1", },
-        new string[]{ "Level_2_1", },
-        new string[]{ "Level_3_1", },
-        new string[]{ "Level_4_1", },
-        new string[]{ "Level_5_1", },
-        new string[]{ "Level_6_1", },
-        new string[]{ "Level_7_1", },
-        new string[]{ "Level_8_1", },
-        new string[]{ "Level_9_1", },
-        new string[]{ "Level_10_1", },
-        new string[]{ "Level_11_1", },
-        new string[]{ "Level_12_1", },
-        new string[]{ "Level_13_1", },
-    };
-
-    //確認剩餘敵人
     private void ClearStageEnemies()
     {
         stageCompleted = true;
@@ -83,14 +63,7 @@ public class LevelCtrl : MonoBehaviour
         if (leftEnemy > 0)
             return;
 
-        // Mark completion before spawning rewards so duplicate notifications cannot settle twice.
-        stageCompleted = true;
-        getPrize();
-        ExitDoors = GameObject.Find("ExitDoors");
-        if (ExitDoors == null)
-            return;
-        foreach (Transform child in ExitDoors.transform)
-            child.gameObject.SetActive(true);
+        CompleteStage();
     }
 
     //領獎
@@ -100,7 +73,7 @@ public class LevelCtrl : MonoBehaviour
         p.y = 0;
         Npc npc;
 
-        if (CurrentLevelIndex > 0 && CurrentLevelIndex % 10 == 0)
+        if (CurrentRoom != null && CurrentRoom.kind == StageRoomKind.Boss)
         {
             DropBossRewards(p);
             return;
@@ -160,20 +133,26 @@ public class LevelCtrl : MonoBehaviour
     public void ResetRun()
     {
         StopAllCoroutines();
+        isLoadingLevel = false;
         ClearStageEnemies();
         if (Enemys)
             Enemys.SetActive(false);
         Enemys = null;
         leftEnemy = 0;
         nowPrize = PrizeBase.None;
+        CurrentRoom = null;
+        offeredDoors.Clear();
+        if (generatedDoors != null) Destroy(generatedDoors.gameObject);
+        generatedDoors = null;
+        doorAnchors.Clear();
     }
 
-    public void NextLevel(int level) {
-        if (Skill.Instance != null) Skill.Instance.StopAllSunfire();
-        StartCoroutine(LoadSceneWithProgress(level));
+    public void NextLevel(int level)
+    {
+        TryLoadStage(level, null, false);
     }
 
-    IEnumerator LoadSceneWithProgress(int level)
+    IEnumerator LoadSceneWithProgress(int level, StageRoomDefinition room)
     {
         ClearStageEnemies();
         if(PlayerCtrl.Instance)
@@ -189,28 +168,16 @@ public class LevelCtrl : MonoBehaviour
         }
         ScreenMask.alpha = 1;
 
-        string targetScene;
-        if (level == -1) // 從遊戲回到首頁
-        {
-            if (DontDestroy.instance)
-                Destroy(DontDestroy.instance.gameObject);
-            targetScene = Level[0][0];
-        }
-        else if(level == 0) // 到據點
-        {
-            targetScene = Level[0][1];
-            if(PlayerCtrl.Instance)
-                PlayerCtrl.Instance.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
-        }
-        else // 到關卡
-        {
-            PlayerCtrl.Instance.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);//每次到新關卡玩家位置固定為原點
-            // 從關卡池抽關卡
-            int x = Random.Range(0, Level[level].Length);
-            targetScene = Level[level][x];
-        }
-        
-        // 開始異步加載場景
+        string targetScene = level == -1 ? "Title" : room.sceneName;
+        if (level == -1 && DontDestroy.instance)
+            Destroy(DontDestroy.instance.gameObject);
+        if (level >= 0 && PlayerCtrl.Instance)
+            PlayerCtrl.Instance.transform.position = new Vector3(0, ValueData.Instance.Player.transform.position.y, 0);
+        // Merchants initialize during scene activation, so set depth before loading.
+        SetProgress(level);
+        CurrentRoom = room;
+        nowPrize = room != null ? room.reward : PrizeBase.None;
+
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(targetScene);
 
         // 在場景加載完成前，讓程序等待
@@ -224,24 +191,17 @@ public class LevelCtrl : MonoBehaviour
         }
         // 加載完成後執行某些操作
         //Debug.Log("場景加載完成！");
-        CurrentLevelIndex = level;
-        nowclass = level % 10;
-        nowLevel = level / 10 + 1;
-        if (level != 0) // 戰鬥關卡抓取敵人
+        if (level > 0)
         {
-            Enemys = GameObject.Find("Enemys");
-            InitializeStageEnemies();
-
-            if(nowclass == 0) // Boss關
-            {
-                nowLevel -= 1;
+            PrepareRoom();
+            if (CurrentRoom.kind == StageRoomKind.Boss)
                 UICtrl.Instance.classUI.text = "Boss " + nowLevel;
-            }
-            else // 小怪關
+            else
                 UICtrl.Instance.classUI.text = "Class " + nowLevel + "-" + nowclass;
         }
-        else // 回據點回滿生命
+        else if (level == 0)
         {
+            PrepareRoom();
             if (ValueData.Instance.HP != ValueData.Instance.maxHP)
                 ValueData.Instance.GetHp(ValueData.Instance.maxHP);
 
@@ -263,6 +223,7 @@ public class LevelCtrl : MonoBehaviour
         }
         ScreenMask.alpha = 0;
         ScreenMask.blocksRaycasts = false;
+        isLoadingLevel = false;
     }
 
     public void DropMoney(int value, Vector3 pos, float offset)

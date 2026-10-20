@@ -12,7 +12,7 @@ using UnityEngine.Rendering.PostProcessing;
 using System;
 using I2.Loc;
 
-public class UICtrl : MonoBehaviour
+public partial class UICtrl : MonoBehaviour
 {
     private static UICtrl instance;
     public Canvas canvas;
@@ -162,6 +162,7 @@ public class UICtrl : MonoBehaviour
     private GraphicRaycaster graphicRaycaster;
 
     private void Start() {
+        RefreshStageDropdown();
         ValueData.Instance.PlayerValueUpdate();
         ValueData.Instance.HP = ValueData.Instance.maxHP;
         ValueData.Instance.AP = ValueData.Instance.maxAP;
@@ -237,6 +238,7 @@ public class UICtrl : MonoBehaviour
             {
                 PlayerCtrl.Instance.openedTarget = null;
                 settingUI.SetActive(true);
+                RefreshStageDropdown();
                 StartLanguageDropdown();
                 showWeaponstore(false);
                 showSkillstore(false);
@@ -1451,21 +1453,8 @@ public class UICtrl : MonoBehaviour
     public void SelectClass()
     {
         int index = ClassDropdown.value;
-        string selectedOption = ClassDropdown.options[index].text;
-        int _class;
-
-        if (selectedOption == "據點")
-            _class = 0;
-        else if (selectedOption == "1-1")
-            _class = 1;
-        else if (selectedOption == "1-10 BOSS")
-            _class = 10;
-        else if (selectedOption == "2-1")
-            _class = 11;
-        else if (selectedOption == "2-3")
-            _class = 13;
-        else
-            return;
+        if (index <= 0 || index >= stageDropdownIndices.Count || LevelCtrl.Instance == null) return;
+        int _class = stageDropdownIndices[index];
 
         settingUI.SetActive(false);
         Time.timeScale = 1;
