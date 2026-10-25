@@ -60,6 +60,7 @@ public partial class UICtrl : MonoBehaviour
     public GameObject ButtontipUI; // 按鈕提示UI
     public GameObject passivetreeSelectUI; // 天賦樹選擇UI
     public GameObject[] passivetreePrefab;
+    [SerializeField] private UnityEngine.UI.Button[] passiveTreeRefreshButtons = new UnityEngine.UI.Button[3];
 
     public GameObject Tip; // 說明窗相關
     public RectTransform TiplayoutTransform; // Tip子物件tip的RectTransform，用來更新content size fitter
@@ -1684,6 +1685,9 @@ public partial class UICtrl : MonoBehaviour
     }
 
     public const int HomePassiveTreeId = 5;
+    private readonly int[] passiveTreeOptions = { -1, -1, -1 };
+    private readonly bool[] passiveTreeRerollUsed = new bool[3];
+    private int fixedPassiveTreeOfferId = -1;
 
     public bool CanOfferPassiveTree(int treeId)
     {
@@ -1719,15 +1723,17 @@ public partial class UICtrl : MonoBehaviour
         
         Time.timeScale = 0;
         passivetreeSelectUI.SetActive(true);
-        GameObject[] _button = new GameObject[3];
-
-        // 清除3個按鈕底下的天賦樹
+        fixedPassiveTreeOfferId = fixedTreeId;
         for (int n = 0 ; n < 3 ; n ++)
         {
-            _button[n] = passivetreeSelectUI.transform.Find("Button " + n).gameObject;
-            foreach (Transform child in _button[n].transform)
+            passiveTreeOptions[n] = -1;
+            passiveTreeRerollUsed[n] = false;
+            UnityEngine.UI.Button refreshButton = GetPassiveTreeRefreshButton(n);
+            if (refreshButton != null)
             {
-                Destroy(child.gameObject);
+                int optionIndex = n;
+                refreshButton.onClick.RemoveAllListeners();
+                refreshButton.onClick.AddListener(() => RerollPassiveTreeOption(optionIndex));
             }
         }
 
@@ -1737,23 +1743,89 @@ public partial class UICtrl : MonoBehaviour
             if(treepool.Count > 0 && (fixedTreeId < 0 || x == 1))
             {
                 int rng = UnityEngine.Random.Range(0, treepool.Count);
-                if (passivetreePrefab.Length > treepool[rng])
-                {
-                    _button[x].SetActive(true);
-                    int _treeID = treepool[rng];
-                    _button[x].GetComponent<UnityEngine.UI.Button>().onClick.RemoveAllListeners();
-                    _button[x].GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() => selectPassivetree(_treeID));
-                    GameObject _tree = Instantiate(passivetreePrefab[treepool[rng]], _button[x].transform);
-                    _tree.transform.localPosition = Vector3.zero;
-                    treepool.RemoveAt(rng);
-                }
-                else
-                    Debug.Log("天賦樹prefab數量 小於 valuedata的天賦樹bool數量");
+                SetPassiveTreeOption(x, treepool[rng]);
+                treepool.RemoveAt(rng);
             }
             else
-                _button[x].SetActive(false);
+                SetPassiveTreeOption(x, -1);
         }
+        UpdatePassiveTreeRefreshButtons();
         return true;
+    }
+
+    private void SetPassiveTreeOption(int optionIndex, int treeId)
+    {
+        Transform option = passivetreeSelectUI.transform.Find("Button " + optionIndex);
+        // Refresh controls are siblings, so only tree previews are cleared here.
+        foreach (Transform child in option)
+        {
+            child.gameObject.SetActive(false);
+            Destroy(child.gameObject);
+        }
+        passiveTreeOptions[optionIndex] = treeId;
+        UnityEngine.UI.Button button = option.GetComponent<UnityEngine.UI.Button>();
+        button.onClick.RemoveAllListeners();
+        option.gameObject.SetActive(treeId >= 0);
+        if (treeId < 0)
+            return;
+
+        button.onClick.AddListener(() => selectPassivetree(treeId));
+        GameObject tree = Instantiate(passivetreePrefab[treeId], option);
+        tree.transform.localPosition = Vector3.zero;
+    }
+
+    private UnityEngine.UI.Button GetPassiveTreeRefreshButton(int optionIndex)
+    {
+        return passiveTreeRefreshButtons != null && optionIndex < passiveTreeRefreshButtons.Length
+            ? passiveTreeRefreshButtons[optionIndex] : null;
+    }
+
+    private List<int> GetPassiveTreeRerollPool()
+    {
+        List<int> pool = new List<int>();
+        if (fixedPassiveTreeOfferId >= 0)
+            return pool;
+
+        for (int treeId = 0; treeId < ValueData.Instance.PassiveTree.Length; treeId++)
+        {
+            if (treeId != HomePassiveTreeId && CanOfferPassiveTree(treeId)
+                && Array.IndexOf(passiveTreeOptions, treeId) < 0)
+                pool.Add(treeId);
+        }
+        return pool;
+    }
+
+    public void RerollPassiveTreeOption(int optionIndex)
+    {
+        if (!passivetreeSelectUI.activeSelf || optionIndex < 0 || optionIndex >= 3
+            || passiveTreeOptions[optionIndex] < 0 || passiveTreeRerollUsed[optionIndex])
+            return;
+
+        List<int> pool = GetPassiveTreeRerollPool();
+        if (pool.Count == 0)
+        {
+            UpdatePassiveTreeRefreshButtons();
+            return;
+        }
+
+        passiveTreeRerollUsed[optionIndex] = true;
+        SetPassiveTreeOption(optionIndex, pool[UnityEngine.Random.Range(0, pool.Count)]);
+        UpdatePassiveTreeRefreshButtons();
+    }
+
+    private void UpdatePassiveTreeRefreshButtons()
+    {
+        bool hasReplacement = GetPassiveTreeRerollPool().Count > 0;
+        for (int i = 0; i < 3; i++)
+        {
+            UnityEngine.UI.Button refresh = GetPassiveTreeRefreshButton(i);
+            if (refresh != null)
+            {
+                refresh.gameObject.SetActive(passiveTreeOptions[i] >= 0 && !passiveTreeRerollUsed[i]);
+                refresh.interactable =
+                    passiveTreeOptions[i] >= 0 && !passiveTreeRerollUsed[i] && hasReplacement;
+            }
+        }
     }
 
     private bool focusNewestPassiveTree;
