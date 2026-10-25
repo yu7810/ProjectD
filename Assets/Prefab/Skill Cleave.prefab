@@ -62,10 +62,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 8eaf7d6fa83adc5429daeed3706a69df, type: 2}
+  - {fileID: 2100000, guid: 144e6d839d219e54a9918c56aa68f0a0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -151,10 +154,15 @@ MonoBehaviour:
   AttackParticle: {fileID: 1964145890330811715, guid: d90bab039c6ae1440a6e11b083e76ba1,
     type: 3}
   dmg: 0
+  damageMultiplier: 1
   passTarget: []
   Target: []
   isBullet: 0
   canSplit: 1
+  homingLayers:
+    serializedVersion: 2
+    m_Bits: 2048
+  homingSearchInterval: 0.1
 --- !u!114 &1550490121062617519
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -168,6 +176,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 0.2
+  particel: {fileID: 0}
 --- !u!1 &5270734611915153415
 GameObject:
   m_ObjectHideFlags: 0
@@ -5018,10 +5027,13 @@ ParticleSystemRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: fbe4a94b6c8166246a35e4a67c72f7fc, type: 2}
+  - {fileID: 2100000, guid: 5c2f42010b2729c4c8715c0258b4b0c4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5056,13 +5068,15 @@ ParticleSystemRenderer:
   m_RenderAlignment: 2
   m_Pivot: {x: 0, y: 0.6, z: 0}
   m_Flip: {x: 0, y: 0, z: 0}
-  m_UseCustomVertexStreams: 0
   m_EnableGPUInstancing: 1
   m_ApplyActiveColorSpace: 1
   m_AllowRoll: 1
   m_FreeformStretching: 0
   m_RotateWithStretchDirection: 1
+  m_UseCustomVertexStreams: 0
   m_VertexStreams: 00010304
+  m_UseCustomTrailVertexStreams: 0
+  m_TrailVertexStreams: 00010304
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   m_Mesh1: {fileID: 0}
   m_Mesh2: {fileID: 0}
@@ -5164,6 +5178,9 @@ VFXRenderer:
   m_ReflectionProbeUsage: 0
   m_RayTracingMode: 0
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_StaticBatchInfo:
@@ -5235,6 +5252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 1
+  particel: {fileID: 0}
 --- !u!1 &8869733100547471593
 GameObject:
   m_ObjectHideFlags: 0
@@ -5312,10 +5330,15 @@ MonoBehaviour:
   AttackParticle: {fileID: 1964145890330811715, guid: d90bab039c6ae1440a6e11b083e76ba1,
     type: 3}
   dmg: 0
+  damageMultiplier: 1
   passTarget: []
   Target: []
   isBullet: 0
   canSplit: 1
+  homingLayers:
+    serializedVersion: 2
+    m_Bits: 2048
+  homingSearchInterval: 0.1
 --- !u!114 &6218341689881184980
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5329,6 +5352,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 0.3
+  particel: {fileID: 0}
 --- !u!65 &4491108134251404573
 BoxCollider:
   m_ObjectHideFlags: 0

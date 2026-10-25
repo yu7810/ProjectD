@@ -189,6 +189,7 @@ public class Enemy : MonoBehaviour
             ValueData.Instance.GetAp(ValueData.Instance.maxAP / 5);
 
         int _money = Random.Range(money[0], money[1]+1);
+        _money += ValueData.Instance.GetEnemyKillBonusGold(Filed, CompareTag("Enemy") && enemyType != EnemyType.Barrel);
         LevelCtrl.Instance.DropMoney(_money, transform.position, 0.5f);
 
         StopAllCoroutines();

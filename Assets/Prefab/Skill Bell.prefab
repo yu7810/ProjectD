@@ -136,10 +136,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: feed73aa7b195b24f90cb430aae540a9, type: 2}
+  - {fileID: 2100000, guid: 034bba83d5eb9d84abbde16e7ca6dbf0, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -199,10 +202,15 @@ MonoBehaviour:
   AttackParticle: {fileID: 1964145890330811715, guid: d90bab039c6ae1440a6e11b083e76ba1,
     type: 3}
   dmg: 0
+  damageMultiplier: 1
   passTarget: []
   Target: []
   isBullet: 0
   canSplit: 1
+  homingLayers:
+    serializedVersion: 2
+    m_Bits: 2048
+  homingSearchInterval: 0.1
 --- !u!114 &2228706363267556148
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,7 +238,6 @@ MonoBehaviour:
   money: 0000000000000000
   Mesh: {fileID: 1940010075036936795}
   hpUI: {fileID: 9058881866906777176}
-  Bullet: {fileID: 0}
   canBeHit: 0
   canAttack: 0
   canMove: 0
@@ -420,6 +427,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeTime: 3
+  particel: {fileID: 0}
 --- !u!1 &5496502807458212430
 GameObject:
   m_ObjectHideFlags: 0

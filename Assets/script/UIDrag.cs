@@ -29,7 +29,12 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (Type == TipType.WeaponField && ValueData.Instance.WeaponField[ID].ID <= 0) // 空白欄位不能拖曳
+        if (Type != TipType.SkillField && Type != TipType.WeaponField)
+        {
+            eventData.pointerDrag = null;
+            return;
+        }
+        if (Type == TipType.WeaponField && (!ValueData.Instance.IsWeaponFieldUnlocked(ID) || ValueData.Instance.WeaponField[ID].ID <= 0)) // 空白欄位不能拖曳
             eventData.pointerDrag = null;
         else if (Type == TipType.SkillField && ValueData.Instance.SkillField[ID].ID <= 0) // 空白欄位不能拖曳
             eventData.pointerDrag = null;
@@ -45,7 +50,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             canvasGroup.alpha = 0.7f;  // 拖曳時半透明
             canvasGroup.blocksRaycasts = false; // 防止拖曳過程中遮擋其他 UI 互動
             transform.SetParent(UICtrl.Instance.UIDrogParent);
-            UICtrl.Instance.GarbageCan.SetActive(true);
+            UICtrl.Instance.BeginOwnedItemDrag(this);
         }
     }
 
@@ -69,7 +74,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         if (UICtrl.Instance != null)
         {
             UICtrl.Instance.EndDragHighlights();
-            UICtrl.Instance.GarbageCan.SetActive(false);
+            UICtrl.Instance.EndOwnedItemDrag(this);
         }
         if (PlayerCtrl.Instance != null)
             PlayerCtrl.Instance.canAttack = true;
@@ -79,6 +84,7 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
     {
         if (!dragging || canvas == null) return;
         rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        UICtrl.Instance.UpdateOwnedItemDragPointer(this, eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData)
@@ -97,7 +103,10 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         rectTransform.anchoredPosition = startPosition; // 回歸初始位置
 
         // 檢查滑鼠下方的 UI 物件
-        GameObject hoveredObject = eventData.pointerEnter;
+        GameObject hoveredObject = eventData.pointerCurrentRaycast.gameObject ?? eventData.pointerEnter;
+        bool handledDrop = UICtrl.Instance.HandleOwnedItemDrop(this, hoveredObject);
+        UICtrl.Instance.EndOwnedItemDrag(this);
+        if (handledDrop) return;
         if (Type == TipType.SkillField && hoveredObject != null &&
             UICtrl.Instance.TryGetPurchaseDropField(hoveredObject, TipType.Skill, out int skillField))
             hoveredObject = UICtrl.Instance.SkillFieldIcon[skillField].gameObject;
@@ -107,6 +116,10 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
             {
                 if(Type == TipType.WeaponField && target.Type == TipType.WeaponField) // 武器欄位
                 {
+                    if (!ValueData.Instance.IsWeaponFieldUnlocked(ID) || !ValueData.Instance.IsWeaponFieldUnlocked(target.ID))
+                    {
+                        return;
+                    }
                     int targetWeapinID = ValueData.Instance.WeaponField[target.ID].ID;
                     int myWeapinID = ValueData.Instance.WeaponField[ID].ID;
                     // 先換對方的
@@ -151,20 +164,6 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
                         UICtrl.Instance.DoChangeSkill(ID);
                     }
                 }
-                else if (target.Type == TipType.GarbageCan) // 丟棄
-                {
-                    if(Type == TipType.WeaponField)
-                    {
-                        UICtrl.Instance.ChangeWeapon_ID = 0;
-                        UICtrl.Instance.DoChangeWeapon(ID);
-                    }
-                    else if (Type == TipType.SkillField)
-                    {
-                        UICtrl.Instance.ChangeSkill_ID[0] = 0;
-                        UICtrl.Instance.ChangeSkill_ID[1] = 0;
-                        UICtrl.Instance.DoChangeSkill(ID);
-                    }
-                }
             }
             else
                 Debug.Log("目標沒有UIDrag");
@@ -172,6 +171,5 @@ public class UIDrag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHa
         else
             Debug.Log("沒指到目標");
 
-        UICtrl.Instance.GarbageCan.SetActive(false);
     }
 }

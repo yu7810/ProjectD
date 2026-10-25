@@ -8,6 +8,7 @@ public sealed class SunfireAura : MonoBehaviour
 {
     private int fieldId;
     private float elapsed;
+    private Quaternion worldRotation;
     private PlayerAttack attack;
     [SerializeField] private Transform visual;
     private readonly List<GameObject> targets = new List<GameObject>();
@@ -17,6 +18,7 @@ public sealed class SunfireAura : MonoBehaviour
     public void Initialize(int slot, GameObject effect = null)
     {
         fieldId = slot;
+        worldRotation = transform.rotation;
         attack = gameObject.AddComponent<PlayerAttack>();
         attack.fidleid = slot;
         if (visual == null && effect != null)
@@ -40,6 +42,12 @@ public sealed class SunfireAura : MonoBehaviour
     }
 
     private void SceneChanged(Scene previous, Scene next) => Close();
+    private void LateUpdate()
+    {
+        // Follow the player's position through parenting, while keeping the aura's world orientation.
+        transform.rotation = worldRotation;
+    }
+
     private void OnDisable() => SceneManager.activeSceneChanged -= SceneChanged;
     private void Close()
     {
@@ -58,6 +66,12 @@ public sealed class SunfireAura : MonoBehaviour
         var data = ValueData.Instance;
         if (data == null || data.Player == null || !data.Player.activeInHierarchy
             || data.HP <= 0f || data.SkillField[fieldId].ID != ValueData.SunfireSkillId)
+        {
+            Close();
+            return;
+        }
+        // Do not keep an unaffordable aura active until its next damage interval.
+        if (!data.CanStartSkillResource(fieldId))
         {
             Close();
             return;
@@ -88,17 +102,17 @@ public sealed class SunfireAura : MonoBehaviour
                 yield break;
             }
             float cost = Mathf.Max(0f, data.SkillField[fieldId].Cost);
-            if (data.AP < cost)
+            if (!data.TryPaySkillCost(cost, fieldId))
             {
                 Close();
                 yield break;
             }
-            data.GetAp(-cost);
             CollectTargets(data.SkillField[fieldId].Size);
             float damage = data.CalculateSkillDamage(fieldId);
             float multiplier = data.ConsumeSunbreakerRage(fieldId);
             attack.Pulse(fieldId, damage, multiplier, targets);
-            if (data.HP <= 0f || data.SkillField[fieldId].ID != ValueData.SunfireSkillId)
+            if (data.HP <= 0f || data.SkillField[fieldId].ID != ValueData.SunfireSkillId
+                || !data.CanStartSkillResource(fieldId))
             {
                 Close();
                 yield break;

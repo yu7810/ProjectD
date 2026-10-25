@@ -464,9 +464,9 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u5F48\u5F13"
+      - "\u53CD\u5F48"
       - 
-      - "\u5F39\u5F13"
+      - "\u53CD\u5F39"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Name 11
@@ -713,9 +713,16 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u4E00\u500B\u6C34\u7403\uFF0C\u4E00\u6BB5\u6642\u9593\u5F8C\u7206\u70B8\uFF0C\u57FA\u790E\u6D88\u8017\u7576\u524D\u9B54\u529B\u7684{0}%\uFF0C\u4E26\u9020\u6210\uFF08\u5BE6\u969B\u6D88\u8017\u91CF\u00D7{1}\uFF09\u50B7\u5BB3\uFF1B\u8017\u9B54\u91CF\u53D7\u5929\u8CE6\u8207\u88DD\u5099\u5F71\u97FF\u3002"
-      - "Create a water orb at the cursor that explodes after a delay. Its base cost is {0}% of current mana and it deals (actual mana spent \u00D7 {1}) damage. Talents and equipment modify the mana cost."
-      - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u4E00\u4E2A\u6C34\u7403\uFF0C\u4E00\u6BB5\u65F6\u95F4\u540E\u7206\u70B8\uFF0C\u57FA\u7840\u6D88\u8017\u5F53\u524D\u9B54\u529B\u7684{0}%\uFF0C\u5E76\u9020\u6210\uFF08\u5B9E\u9645\u6D88\u8017\u91CF\u00D7{1}\uFF09\u4F24\u5BB3\uFF1B\u8017\u9B54\u91CF\u53D7\u5929\u8D4B\u4E0E\u88C5\u5907\u5F71\u54CD\u3002"
+      - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u6C34\u7403\uFF0C\u7A0D\u5F8C\u7206\u70B8\u3002\u984D\u5916\u6D88\u8017\u7576\u524D\u8CC7\u6E90\u7684{0}%\uFF0C\u9020\u6210\uFF08\u6BD4\u4F8B\u6D88\u8017\u91CF\u7E3D\u548C\xD7{1}\uFF09\u57FA\u790E\u50B7\u5BB3\uFF1B\u6D88\u8017\u91CF\u53D7\u5929\u8CE6\u8207\u88DD\u5099\u5F71\u97FF\u3002\u4E00\u822C\u6D88\u8017\u9B54\u529B\uFF0C\u58D3\u6291\u6539\u7528\u76DB\u6012\uFF0C\u8165\u7D05\u9B54\u5178\u6539\u7528\u751F\u547D\uFF0C\u5169\u8005\u4E26\u7528\u6642\u540C\u6642\u6D88\u8017\u4E26\u5408\u8A08\u50B7\u5BB3\u3002\u751F\u547D\u5FC5\u9808\u5927\u65BC\u7E3D\u751F\u547D\u6D88\u8017\u3002\u6BCF\u6B21\u65BD\u653E\u524D\uFF0C\u6240\u4F7F\u7528\u7684\u6BCF\u4E00\u7A2E\u8CC7\u6E90\u90FD\u5FC5\u9808\u81F3\u5C11\u6709
+        1\uFF1B\u89F8\u767C\u8207\u91CD\u8907\u65BD\u653E\u540C\u6A23\u9069\u7528\u3002"
+      - "Create a water orb at the cursor that explodes after a delay. Spend an additional
+        {0}% of current resources to deal (total percentage resource spent \xD7 {1})
+        base damage; cost modifiers apply. Normally uses mana; Suppression uses Rage;
+        Crimson Grimoire uses life. With both, spend both and add their damage. Life
+        must exceed the total life cost. Before every cast, each resource used must
+        be at least 1, including triggered and repeated casts."
+      - "\u5728\u6ED1\u9F20\u4F4D\u7F6E\u751F\u6210\u6C34\u7403\uFF0C\u7A0D\u540E\u7206\u70B8\u3002\u989D\u5916\u6D88\u8017\u5F53\u524D\u8D44\u6E90\u7684{0}%\uFF0C\u9020\u6210\uFF08\u6BD4\u4F8B\u6D88\u8017\u91CF\u603B\u548C\xD7{1}\uFF09\u57FA\u7840\u4F24\u5BB3\uFF1B\u6D88\u8017\u91CF\u53D7\u5929\u8D4B\u4E0E\u88C5\u5907\u5F71\u54CD\u3002\u4E00\u822C\u6D88\u8017\u9B54\u529B\uFF0C\u538B\u6291\u6539\u7528\u76DB\u6012\uFF0C\u8165\u7EA2\u9B54\u5178\u6539\u7528\u751F\u547D\uFF0C\u4E24\u8005\u5E76\u7528\u65F6\u540C\u65F6\u6D88\u8017\u5E76\u5408\u8BA1\u4F24\u5BB3\u3002\u751F\u547D\u5FC5\u987B\u5927\u4E8E\u603B\u751F\u547D\u6D88\u8017\u3002\u6BCF\u6B21\u65BD\u653E\u524D\uFF0C\u6240\u4F7F\u7528\u7684\u6BCF\u4E00\u79CD\u8D44\u6E90\u90FD\u5FC5\u987B\u81F3\u5C11\u6709
+        1\uFF1B\u89E6\u53D1\u4E0E\u91CD\u590D\u65BD\u653E\u540C\u6837\u9002\u7528\u3002"
       Flags: 000000
       Languages_Touch: []
     - Term: Skill/Skill Info 11
@@ -1968,12 +1975,121 @@ MonoBehaviour:
       - "\u91CE\u6027"
       Flags: 000000
       Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 43
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 10% \u50B7\u5BB3"
+      - +10% damage
+      - "\uFF0B 10% \u4F24\u5BB3"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 44
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6E1B\u5C11 5% \u51B7\u537B\u6642\u9593"
+      - 5% reduced cooldown
+      - "\u51CF\u5C11 5% \u51B7\u5374\u65F6\u95F4"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 45
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 1 \u6700\u5927\u9B54\u529B"
+      - +1 maximum mana
+      - "\uFF0B 1 \u6700\u5927\u9B54\u529B"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 46
+      TermType: 0
+      Description: 
+      Languages:
+      - "\uFF0B 1 \u80CC\u5305\u6B04\u4F4D<BR>\u9000\u56DE\u6B64\u5929\u8CE6\u6642\uFF0C\u8D85\u51FA\u5BB9\u91CF\u7684\u7269\u54C1\u6703\u6389\u843D\u5230\u5730\u4E0A\u3002"
+      - +1 backpack slot<BR>Refunding this talent drops items that exceed the remaining
+        capacity.
+      - "\uFF0B 1 \u80CC\u5305\u680F\u4F4D<BR>\u9000\u56DE\u6B64\u5929\u8D4B\u65F6\uFF0C\u8D85\u51FA\u5BB9\u91CF\u7684\u7269\u54C1\u4F1A\u6389\u843D\u5230\u5730\u4E0A\u3002"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 47
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u64CA\u6BBA\u6575\u4EBA\u6642\u984D\u5916\u6389\u843D 1 \u91D1\u5E63"
+      - Enemies you kill drop 1 additional gold.
+      - "\u51FB\u6740\u654C\u4EBA\u65F6\u989D\u5916\u6389\u843D 1 \u91D1\u5E01"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Info 48
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u4F7F\u7528\u50B3\u9001\u9580\u6642\u6062\u5FA9 1 \u751F\u547D"
+      - Recover 1 life when using a portal.
+      - "\u4F7F\u7528\u4F20\u9001\u95E8\u65F6\u6062\u590D 1 \u751F\u547D"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 43
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u50B7\u5BB3"
+      - Damage
+      - "\u4F24\u5BB3"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 44
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u51B7\u537B"
+      - Cooldown
+      - "\u51B7\u5374"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 45
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6700\u5927\u9B54\u529B"
+      - Maximum Mana
+      - "\u6700\u5927\u9B54\u529B"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 46
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u80CC\u5305\u5BB9\u91CF"
+      - Backpack Capacity
+      - "\u80CC\u5305\u5BB9\u91CF"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 47
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u641C\u522E"
+      - Scavenging
+      - "\u641C\u522E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Passiveskill/Passiveskill Name 48
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6D3B\u529B"
+      - Vitality
+      - "\u6D3B\u529B"
+      Flags: 000000
+      Languages_Touch: []
     - Term: Weapon/Weapon Name 27
       TermType: 0
       Description: 
       Languages:
       - "\u64B2\u6EC5\u8005"
-      - "Extinguisher"
+      - Extinguisher
       - "\u6251\u706D\u8005"
       Flags: 000000
       Languages_Touch: []
@@ -1982,7 +2098,7 @@ MonoBehaviour:
       Description: 
       Languages:
       - "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269"
-      - "Skills can hit enemy projectiles."
+      - Skills can hit enemy projectiles.
       - "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u654C\u65B9\u6295\u5C04\u7269"
       Flags: 000000
       Languages_Touch: []
@@ -1990,18 +2106,19 @@ MonoBehaviour:
       TermType: 0
       Description: 
       Languages:
-      - "\u6ec5\u65e5\u8005"
-      - "Sunbreaker"
-      - "\u706d\u65e5\u8005"
+      - "\u6EC5\u65E5\u8005"
+      - Sunbreaker
+      - "\u706D\u65E5\u8005"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Info 28
       TermType: 0
       Description: 
       Languages:
-      - "\u4f7f\u7528\u6280\u80fd\u6642\u6d88\u8017100%\u76db\u6012\uff0c\u4e26\u5c07\u6b64\u6b21\u50b7\u5bb3\u63d0\u5347(\u6d88\u8017\u503c*2)%"
-      - "Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%."
-      - "\u4f7f\u7528\u6280\u80fd\u65f6\u6d88\u8017100%\u76db\u6012\uff0c\u5e76\u5c06\u6b64\u6b21\u4f24\u5bb3\u63d0\u5347(\u6d88\u8017\u503c*2)%"
+      - "\u4F7F\u7528\u6280\u80FD\u6642\u6D88\u8017100%\u76DB\u6012\uFF0C\u4E26\u5C07\u6B64\u6B21\u50B7\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*{0})%"
+      - Using a skill consumes 100% of your Rage and increases that cast's damage
+        by (Rage spent * {0})%.
+      - "\u4F7F\u7528\u6280\u80FD\u65F6\u6D88\u8017100%\u76DB\u6012\uFF0C\u5E76\u5C06\u6B64\u6B21\u4F24\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*{0})%"
       Flags: 000000
       Languages_Touch: []
     - Term: Weapon/Weapon Name 29
@@ -2024,20 +2141,63 @@ MonoBehaviour:
       Languages_Touch: []
     - Term: Skill/Skill Name 12
       TermType: 0
-      Description:
+      Description: 
       Languages:
-      - "\u65e5\u708e"
-      - "Sunfire"
-      - "\u65e5\u708e"
+      - "\u65E5\u708E"
+      - Sunfire
+      - "\u65E5\u708E"
       Flags: 000000
       Languages_Touch: []
     - Term: Skill/Skill Info 12
       TermType: 0
-      Description:
+      Description: 
       Languages:
-      - "\u958b\u555f\u5f8c\u7522\u751f\u8ddf\u96a8\u73a9\u5bb6\u7684\u5713\u5f62\u50b7\u5bb3\u5708\uff0c\u6bcf 0.5 \u79d2\u6d88\u8017 0.5 \u9b54\u529b\uff0c\u5c0d\u5708\u5167\u76ee\u6a19\u9020\u6210\u73a9\u5bb6\u7576\u524d\u6700\u5927\u751f\u547d 50% \u7684\u57fa\u790e\u50b7\u5bb3"
-      - "While active, a circular damage aura follows you. Every 0.5 seconds, spend 0.5 mana to deal base damage equal to 50% of your current maximum life to targets inside."
-      - "\u5f00\u542f\u540e\u4ea7\u751f\u8ddf\u968f\u73a9\u5bb6\u7684\u5706\u5f62\u4f24\u5bb3\u5708\uff0c\u6bcf 0.5 \u79d2\u6d88\u8017 0.5 \u9b54\u529b\uff0c\u5bf9\u5708\u5185\u76ee\u6807\u9020\u6210\u73a9\u5bb6\u5f53\u524d\u6700\u5927\u751f\u547d 50% \u7684\u57fa\u7840\u4f24\u5bb3"
+      - "\u958B\u555F\u5F8C\u7522\u751F\u8DDF\u96A8\u73A9\u5BB6\u7684\u5713\u5F62\u50B7\u5BB3\u5708\uFF0C\u6BCF
+        0.5 \u79D2\u6D88\u8017 0.5 \u9B54\u529B\uFF0C\u5C0D\u5708\u5167\u76EE\u6A19\u9020\u6210\u73A9\u5BB6\u7576\u524D\u6700\u5927\u751F\u547D
+        50% \u7684\u57FA\u790E\u50B7\u5BB3"
+      - While active, a circular damage aura follows you. Every 0.5 seconds, spend
+        0.5 mana to deal base damage equal to 50% of your current maximum life to
+        targets inside.
+      - "\u5F00\u542F\u540E\u4EA7\u751F\u8DDF\u968F\u73A9\u5BB6\u7684\u5706\u5F62\u4F24\u5BB3\u5708\uFF0C\u6BCF
+        0.5 \u79D2\u6D88\u8017 0.5 \u9B54\u529B\uFF0C\u5BF9\u5708\u5185\u76EE\u6807\u9020\u6210\u73A9\u5BB6\u5F53\u524D\u6700\u5927\u751F\u547D
+        50% \u7684\u57FA\u7840\u4F24\u5BB3"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Name 30
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u8165\u7D05\u9B54\u5178"
+      - Crimson Grimoire
+      - "\u8165\u7EA2\u9B54\u5178"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: Weapon/Weapon Info 30
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u6539\u70BA\u6D88\u8017\u751F\u547D\uFF1B\u8207\u58D3\u6291\u4E26\u7528\u6642\u540C\u6642\u6D88\u8017\u751F\u547D\u8207\u76DB\u6012\u3002\u751F\u547D\u5FC5\u9808\u5927\u65BC\u7E3D\u751F\u547D\u6D88\u8017\u3002"
+      - Skills spend life instead of mana. With Suppression, spend both life and
+        Rage. Life must exceed the total life cost.
+      - "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u6539\u4E3A\u6D88\u8017\u751F\u547D\uFF1B\u4E0E\u538B\u6291\u5E76\u7528\u65F6\u540C\u65F6\u6D88\u8017\u751F\u547D\u4E0E\u76DB\u6012\u3002\u751F\u547D\u5FC5\u987B\u5927\u4E8E\u603B\u751F\u547D\u6D88\u8017\u3002"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Sell
+      TermType: 0
+      Description: 
+      Languages:
+      - "\u8CA9\u552E"
+      - Sell
+      - "\u8D29\u552E"
+      Flags: 000000
+      Languages_Touch: []
+    - Term: UI/Sell Price
+      TermType: 0
+      Description: 
+      Languages:
+      - '{[PRICE]}'
+      - '{[PRICE]}'
+      - '{[PRICE]}'
       Flags: 000000
       Languages_Touch: []
     CaseInsensitiveTerms: 0

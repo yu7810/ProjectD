@@ -48,7 +48,7 @@ Weapon/Weapon Name 6,Text,,「 滄浪 」,,「 沧浪 」
 Weapon/Weapon Name 7,Text,,賽博義肢,,赛博义肢
 Weapon/Weapon Name 8,Text,,漩渦法典,,漩涡法典
 Weapon/Weapon Name 9,Text,,黃金戒指,,黄金戒指
-Weapon/Weapon Name 10,Text,,彈弓,,弹弓
+Weapon/Weapon Name 10,Text,,反彈,,反弹
 Weapon/Weapon Name 11,Text,,分裂,,分裂
 Weapon/Weapon Name 12,Text,,狙擊,,狙击
 Weapon/Weapon Name 13,Text,,水晶匕首,,水晶匕首
@@ -75,7 +75,7 @@ Skill/Skill Info 6,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,
 Skill/Skill Info 7,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
 Skill/Skill Info 8,Text,,生成一個持續3秒的喪鐘，你對喪鐘造成的傷害會被喪鐘以圓形範圍釋放，該傷害不會暴擊,,生成一个持续3秒的丧钟，你对丧钟造成的伤害会被丧钟以圆形范围释放，该伤害不会暴击
 Skill/Skill Info 9,Text,,朝滑鼠方向發射一枚飛彈，命中敵人後消失,,朝滑鼠方向发射一枚飞弹，命中敌人后消失
-Skill/Skill Info 10,Text,,在滑鼠位置生成一個水球，一段時間後爆炸，基礎消耗當前魔力的{0}%，並造成（實際消耗量×{1}）傷害；耗魔量受天賦與裝備影響。,Create a water orb at the cursor that explodes after a delay. Its base cost is {0}% of current mana and it deals (actual mana spent × {1}) damage. Talents and equipment modify the mana cost.,在滑鼠位置生成一个水球，一段时间后爆炸，基础消耗当前魔力的{0}%，并造成（实际消耗量×{1}）伤害；耗魔量受天赋与装备影响。
+Skill/Skill Info 10,Text,,在滑鼠位置生成水球，稍後爆炸。額外消耗當前資源的{0}%，造成（比例消耗量總和×{1}）基礎傷害；消耗量受天賦與裝備影響。一般消耗魔力，壓抑改用盛怒，腥紅魔典改用生命，兩者並用時同時消耗並合計傷害。生命必須大於總生命消耗。每次施放前，所使用的每一種資源都必須至少有 1；觸發與重複施放同樣適用。,"Create a water orb at the cursor that explodes after a delay. Spend an additional {0}% of current resources to deal (total percentage resource spent × {1}) base damage; cost modifiers apply. Normally uses mana; Suppression uses Rage; Crimson Grimoire uses life. With both, spend both and add their damage. Life must exceed the total life cost. Before every cast, each resource used must be at least 1, including triggered and repeated casts.",在滑鼠位置生成水球，稍后爆炸。额外消耗当前资源的{0}%，造成（比例消耗量总和×{1}）基础伤害；消耗量受天赋与装备影响。一般消耗魔力，压抑改用盛怒，腥红魔典改用生命，两者并用时同时消耗并合计伤害。生命必须大于总生命消耗。每次施放前，所使用的每一种资源都必须至少有 1；触发与重复施放同样适用。
 Skill/Skill Info 11,Text,,向前衝刺，撞到第一個目標後停下並造成範圍傷害，速度和衝刺距離會提升傷害。,,向前冲刺，撞到第一个目标后停下并造成范围伤害，速度和冲刺距离会提升伤害。
 Skill/Skill Name 0,Text,,–,,–
 Skill/Skill Name 1,Text,,風壓,Wind Pressure,风压
@@ -214,11 +214,27 @@ Passiveskill/Passiveskill Name 39,Text,,盛怒上限,Maximum Rage,盛怒上限
 Passiveskill/Passiveskill Name 40,Text,,狂躁,Frenzy,狂躁
 Passiveskill/Passiveskill Name 41,Text,,盛怒上限,Maximum Rage,盛怒上限
 Passiveskill/Passiveskill Name 42,Text,,野性,Wildness,野性
+Passiveskill/Passiveskill Info 43,Text,,＋ 10% 傷害,+10% damage,＋ 10% 伤害
+Passiveskill/Passiveskill Info 44,Text,,減少 5% 冷卻時間,5% reduced cooldown,减少 5% 冷却时间
+Passiveskill/Passiveskill Info 45,Text,,＋ 1 最大魔力,+1 maximum mana,＋ 1 最大魔力
+Passiveskill/Passiveskill Info 46,Text,,＋ 1 背包欄位<BR>退回此天賦時，超出容量的物品會掉落到地上。,+1 backpack slot<BR>Refunding this talent drops items that exceed the remaining capacity.,＋ 1 背包栏位<BR>退回此天赋时，超出容量的物品会掉落到地上。
+Passiveskill/Passiveskill Info 47,Text,,擊殺敵人時額外掉落 1 金幣,Enemies you kill drop 1 additional gold.,击杀敌人时额外掉落 1 金币
+Passiveskill/Passiveskill Info 48,Text,,使用傳送門時恢復 1 生命,Recover 1 life when using a portal.,使用传送门时恢复 1 生命
+Passiveskill/Passiveskill Name 43,Text,,傷害,Damage,伤害
+Passiveskill/Passiveskill Name 44,Text,,冷卻,Cooldown,冷却
+Passiveskill/Passiveskill Name 45,Text,,最大魔力,Maximum Mana,最大魔力
+Passiveskill/Passiveskill Name 46,Text,,背包容量,Backpack Capacity,背包容量
+Passiveskill/Passiveskill Name 47,Text,,搜刮,Scavenging,搜刮
+Passiveskill/Passiveskill Name 48,Text,,活力,Vitality,活力
 Weapon/Weapon Name 27,Text,,撲滅者,Extinguisher,扑灭者
 Weapon/Weapon Info 27,Text,,技能可以命中敵方投射物,Skills can hit enemy projectiles.,技能可以命中敌方投射物
 Weapon/Weapon Name 28,Text,,滅日者,Sunbreaker,灭日者
-Weapon/Weapon Info 28,Text,,使用技能時消耗100%盛怒，並將此次傷害提升(消耗值*2)%,Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * 2)%.,使用技能时消耗100%盛怒，并将此次伤害提升(消耗值*2)%
+Weapon/Weapon Info 28,Text,,使用技能時消耗100%盛怒，並將此次傷害提升(消耗值*{0})%,Using a skill consumes 100% of your Rage and increases that cast's damage by (Rage spent * {0})%.,使用技能时消耗100%盛怒，并将此次伤害提升(消耗值*{0})%
 Weapon/Weapon Name 29,Text,,追蹤,Homing,追踪
 Weapon/Weapon Info 29,Text,,投射物會追蹤範圍內最近的敵人,,投射物会追踪范围内最近的敌人
 Skill/Skill Name 12,Text,,日炎,Sunfire,日炎
 Skill/Skill Info 12,Text,,開啟後產生跟隨玩家的圓形傷害圈，每 0.5 秒消耗 0.5 魔力，對圈內目標造成玩家當前最大生命 50% 的基礎傷害,"While active, a circular damage aura follows you. Every 0.5 seconds, spend 0.5 mana to deal base damage equal to 50% of your current maximum life to targets inside.",开启后产生跟随玩家的圆形伤害圈，每 0.5 秒消耗 0.5 魔力，对圈内目标造成玩家当前最大生命 50% 的基础伤害
+Weapon/Weapon Name 30,Text,,腥紅魔典,Crimson Grimoire,腥红魔典
+Weapon/Weapon Info 30,Text,,技能的魔力消耗改為消耗生命；與壓抑並用時同時消耗生命與盛怒。生命必須大於總生命消耗。,"Skills spend life instead of mana. With Suppression, spend both life and Rage. Life must exceed the total life cost.",技能的魔力消耗改为消耗生命；与压抑并用时同时消耗生命与盛怒。生命必须大于总生命消耗。
+UI/Sell,Text,,販售,Sell,贩售
+UI/Sell Price,Text,,{[PRICE]},{[PRICE]},{[PRICE]}

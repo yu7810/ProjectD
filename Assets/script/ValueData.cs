@@ -7,6 +7,7 @@ using Cinemachine;
 
 public class ValueData : MonoBehaviour
 {
+    public const int CrimsonGrimoireWeaponId = 30;
     public const int SunfireSkillId = 12;
     public const int TrackingWeaponId = 29;
     public const int SunbreakerWeaponId = 28;
@@ -15,26 +16,106 @@ public class ValueData : MonoBehaviour
     public const int WrathTalentId = 38;
     public const int FrenzyTalentId = 40;
     public const int WildnessTalentId = 42;
+    public const int BackpackTalentId = 46;
+    public const int ScavengingTalentId = 47;
     public const int VitalityTalentId = 48;
     private bool HasPassiveSkill(int id) => PassiveSkills != null && id >= 0 && id < PassiveSkills.Length && PassiveSkills[id];
     public bool UsesRageForSkills => PassiveSkills != null && PassiveSkills.Length > SuppressionTalentId && PassiveSkills[SuppressionTalentId];
     public bool HasCalm => PassiveSkills != null && PassiveSkills.Length > CalmTalentId && PassiveSkills[CalmTalentId];
     public float SkillResource => UsesRageForSkills ? Rage : AP;
 
-    public bool CanPaySkillCost(float cost) => SkillResource >= Mathf.Max(0f, cost);
+    public bool UsesLifeForSkill(int fieldId) => fieldId >= 0
+        && fieldId < SkillField.Length && isHaveweaponid(fieldId, CrimsonGrimoireWeaponId);
 
-    // Only explicit payments count as spending rage. Decay uses GetRage directly.
-    public bool TryPaySkillCost(float cost)
+    public struct SkillPayment
+    {
+        public float Mana, Life, Rage, WaterballDamageResource;
+        public float MinimumMana, MinimumLife, MinimumRage;
+        public bool RequiresLife;
+    }
+
+    private SkillPayment BasicSkillPayment(float cost, int fieldId)
     {
         cost = Mathf.Max(0f, cost);
-        if (!CanPaySkillCost(cost)) return false;
-        if (cost == 0f) return true;
+        var payment = new SkillPayment { RequiresLife = UsesLifeForSkill(fieldId) };
+        if (payment.RequiresLife) payment.Life = cost;
+        if (UsesRageForSkills) payment.Rage = cost;
+        else if (!payment.RequiresLife) payment.Mana = cost;
+        return payment;
+    }
+
+    public SkillPayment GetSkillPayment(int fieldId, bool includeBaseCost = true)
+    {
+        var payment = BasicSkillPayment(includeBaseCost ? SkillField[fieldId].Cost : 0f, fieldId);
+        if (SkillField[fieldId].ID != 10) return payment;
+        // Every Waterball cast requires at least one unit of each selected resource,
+        // including free-base triggers and repeats, even with zero percentage cost.
+        payment.MinimumLife = payment.RequiresLife ? 1f : 0f;
+        payment.MinimumRage = UsesRageForSkills ? 1f : 0f;
+        payment.MinimumMana = !payment.RequiresLife && !UsesRageForSkills ? 1f : 0f;
+        float ratio = Mathf.Max(0f, (GetSkillLevelStats(10, SkillField[fieldId].Level)?.WaterballManaRatio ?? 0.5f)
+            * (1f + Cost + WeaponField[fieldId * 3].Cost + WeaponField[fieldId * 3 + 1].Cost
+                + WeaponField[fieldId * 3 + 2].Cost));
+        // Snapshot all percentage costs before making any payment or gaining Calm recovery.
+        if (payment.RequiresLife)
+        {
+            float life = Mathf.Max(0f, HP) * ratio;
+            payment.Life += life;
+            payment.WaterballDamageResource += life;
+        }
         if (UsesRageForSkills)
         {
-            GetRage(-cost);
-            if (HasCalm) HP = Mathf.Min(maxHP, HP + cost * 0.1f);
+            float rage = Mathf.Max(0f, Rage) * ratio;
+            payment.Rage += rage;
+            payment.WaterballDamageResource += rage;
         }
-        else GetAp(-cost);
+        else if (!payment.RequiresLife)
+        {
+            float mana = Mathf.Max(0f, AP) * ratio;
+            payment.Mana += mana;
+            payment.WaterballDamageResource = mana;
+        }
+        return payment;
+    }
+
+    public bool CanAffordSkillPayment(SkillPayment payment)
+    {
+        return (!payment.RequiresLife || HP > payment.Life)
+            && HP >= payment.MinimumLife
+            && AP >= Mathf.Max(payment.Mana, payment.MinimumMana)
+            && Rage >= Mathf.Max(payment.Rage, payment.MinimumRage);
+    }
+
+    private bool TryPaySkillPayment(SkillPayment payment)
+    {
+        if (!CanAffordSkillPayment(payment)) return false;
+        // Validate everything first. Life payment bypasses damage, mitigation and invulnerability.
+        if (payment.Life > 0f) GetHp(-payment.Life, isLifeCost: true);
+        if (payment.Mana > 0f) GetAp(-payment.Mana);
+        if (payment.Rage > 0f)
+        {
+            GetRage(-payment.Rage);
+            if (HasCalm) HP = Mathf.Min(maxHP, HP + payment.Rage * 0.1f);
+        }
+        UpdateSkillResourceUI();
+        return true;
+    }
+
+    public bool CanPaySkillCost(float cost, int fieldId = -1)
+        => CanAffordSkillPayment(BasicSkillPayment(cost, fieldId));
+
+    public bool TryPaySkillCost(float cost, int fieldId = -1)
+        => TryPaySkillPayment(BasicSkillPayment(cost, fieldId));
+
+    public bool TryPaySkillResources(int fieldId, bool includeBaseCost, out float waterballDamageResource)
+    {
+        waterballDamageResource = 0f;
+        // Free base costs must not bypass the life threshold for triggered or repeated casts.
+        if (!includeBaseCost && UsesLifeForSkill(fieldId)
+            && !CanAffordSkillPayment(GetSkillPayment(fieldId))) return false;
+        var payment = GetSkillPayment(fieldId, includeBaseCost);
+        if (!TryPaySkillPayment(payment)) return false;
+        waterballDamageResource = payment.WaterballDamageResource;
         return true;
     }
 
@@ -46,20 +127,23 @@ public class ValueData : MonoBehaviour
         if (spent == 0f) return 1f;
         GetRage(-spent);
         if (HasCalm) HP = Mathf.Min(maxHP, HP + spent * 0.1f);
-        return 1f + spent * 0.02f;
+        return 1f + spent * Mathf.Max(0f, Weapon[SunbreakerWeaponId].RageDamagePerPoint);
     }
 
     public float WaterballCost(int fieldId)
     {
-        // Waterball always spends mana, including while Suppression is allocated.
-        return Mathf.Max(0f, AP * (GetSkillLevelStats(10, SkillField[fieldId].Level)?.WaterballManaRatio ?? 0.5f) * (1f + Cost + WeaponField[fieldId * 3].Cost
-            + WeaponField[fieldId * 3 + 1].Cost + WeaponField[fieldId * 3 + 2].Cost));
+        return GetSkillPayment(fieldId, false).WaterballDamageResource;
     }
+
+    public bool CanStartSkillResource(int fieldId)
+        => CanAffordSkillPayment(GetSkillPayment(fieldId));
 
     public bool CanUseSkillResource(int fieldId)
     {
-        if (SkillField[fieldId].ID == SunfireSkillId) return true;
-        return CanPaySkillCost(SkillField[fieldId].Cost);
+        // Turning an active aura off is free; starting it requires one pulse of resource.
+        if (SkillField[fieldId].ID == SunfireSkillId && global::Skill.Instance != null
+            && global::Skill.Instance.IsSkillActive(fieldId)) return true;
+        return CanStartSkillResource(fieldId);
     }
 
     public void UpdateSkillResourceUI()
@@ -67,6 +151,49 @@ public class ValueData : MonoBehaviour
         for (int i = 0; i < SkillField.Length; i++)
             if (UICtrl.Instance.SkillFieldCanvasgroup[i])
                 UICtrl.Instance.SkillFieldCanvasgroup[i].alpha = CanUseSkillResource(i) ? 1f : 0.1f;
+    }
+
+    public int EquipmentFieldCount => SkillField.Length * 3;
+    public int MaximumBackpackCapacity => Mathf.Max(0, WeaponField.Length - EquipmentFieldCount);
+    public int BackpackCapacity { get; private set; }
+    private int additionalBackpackCapacity;
+
+    public bool IsWeaponFieldUnlocked(int field)
+    {
+        return field >= 0 && field < WeaponField.Length
+            && (field < EquipmentFieldCount || field - EquipmentFieldCount < BackpackCapacity);
+    }
+
+    // Capacity starts at zero each run. Future rewards/talents can unlock slots in order.
+    public void AddBackpackCapacity(int amount)
+    {
+        if (amount <= 0) return;
+        additionalBackpackCapacity += Mathf.Min(amount, MaximumBackpackCapacity - additionalBackpackCapacity);
+        UpdateBackpackCapacity();
+    }
+
+    private void UpdateBackpackCapacity()
+    {
+        int capacity = Mathf.Clamp(additionalBackpackCapacity + (HasPassiveSkill(BackpackTalentId) ? 1 : 0),
+            0, MaximumBackpackCapacity);
+        if (capacity == BackpackCapacity) return;
+        int previous = BackpackCapacity;
+        BackpackCapacity = capacity;
+        // Losing capacity drops occupied overflow slots through the existing equipment-drop flow.
+        for (int field = EquipmentFieldCount + capacity; field < EquipmentFieldCount + previous; field++)
+        {
+            if (WeaponField[field].ID == 0) continue;
+            UICtrl.Instance.ChangeWeapon_ID = 0;
+            UICtrl.Instance.DoChangeWeapon(field);
+        }
+        if (UICtrl.Instance != null)
+            UICtrl.Instance.UpdateBackpackCapacityUI();
+    }
+
+    public int GetEnemyKillBonusGold(int fieldId, bool isEnemy)
+    {
+        return isEnemy && fieldId >= 0 && fieldId < SkillField.Length
+            && HasPassiveSkill(ScavengingTalentId) ? 1 : 0;
     }
 
     public void ApplyPortalRecovery()
@@ -262,6 +389,7 @@ public class ValueData : MonoBehaviour
         new WeaponBase(27,RarityType.Rare,80,"\u64B2\u6EC5\u8005", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(28,RarityType.Rare,80,"\u6EC5\u65E5\u8005", 0, 0, 0, 0, 0, 0, 0),
         new WeaponBase(29,RarityType.Rare,80,"\u8FFD\u8E64", 0, 0, 0, 0, 0, 0, 0, 6f, 180f),
+        new WeaponBase(30,RarityType.Rare,180,"\u8165\u7D05\u9B54\u5178", 0, 0, 0, 0, 0, 0, 0),
     };
     // 裝備介紹
     [NonSerialized]
@@ -294,8 +422,9 @@ public class ValueData : MonoBehaviour
         "25",
         "26",
         "\u6280\u80FD\u53EF\u4EE5\u547D\u4E2D\u6575\u65B9\u6295\u5C04\u7269",
-        "\u4F7F\u7528\u6280\u80FD\u6642\u6D88\u8017100%\u76DB\u6012\uFF0C\u4E26\u5C07\u6B64\u6B21\u50B7\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*2)%",
+        "\u4F7F\u7528\u6280\u80FD\u6642\u6D88\u8017100%\u76DB\u6012\uFF0C\u4E26\u5C07\u6B64\u6B21\u50B7\u5BB3\u63D0\u5347(\u6D88\u8017\u503C*{0})%",
         "\u6295\u5C04\u7269\u6703\u6301\u7E8C\u671D\u7BC4\u570D\u5167\u6700\u8FD1\u7684\u6575\u4EBA\u9010\u6F38\u8F49\u5F4E\u3002",
+        "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u6539\u70BA\u6D88\u8017\u751F\u547D\uFF1B\u8207\u58D3\u6291\u4E26\u7528\u6642\u540C\u6642\u6D88\u8017\u751F\u547D\u8207\u76DB\u6012\u3002",
     };
 
     // 已裝備裝備、裝備背包
@@ -345,6 +474,7 @@ public class ValueData : MonoBehaviour
                 PassiveSkillValueUpdate(i);
         }
         //加總
+        UpdateBackpackCapacity();
         maxAP = base_maxAp + add_maxAp;
         maxHP = base_maxHp + add_maxHp;
         if (PassiveSkills[28]) 
@@ -559,6 +689,9 @@ public class ValueData : MonoBehaviour
         _lostRage = null;
         _rageCount = null;
 
+        additionalBackpackCapacity = 0;
+        BackpackCapacity = 0;
+        UICtrl.Instance.UpdateBackpackCapacityUI();
         Array.Clear(PassiveTree, 0, PassiveTree.Length);
         Array.Clear(PassiveSkills, 0, PassiveSkills.Length);
         money = 0;
@@ -691,6 +824,15 @@ public class ValueData : MonoBehaviour
             case 31:
                 
                 break;
+            case 43:
+                add_Power += 0.1f;
+                break;
+            case 44:
+                add_Cooldown -= 0.05f;
+                break;
+            case 45:
+                add_maxAp += 1;
+                break;
             case 39:
             case 41:
             case 34:
@@ -792,6 +934,7 @@ public class ValueData : MonoBehaviour
             if (lostLifeToDamage && HasPassiveSkill(WrathTalentId) && Rage > 0f)
                 GetRage(-Rage);
         }
+        if (UICtrl.Instance != null) UpdateSkillResourceUI();
     }
     //加減魔力通用
     public void GetAp(float value)
@@ -1096,8 +1239,9 @@ public class WeaponBase
     public RarityType Rarity { get; set; }
     public float HomingRange { get; set; }
     public float HomingTurnSpeed { get; set; }
+    public float RageDamagePerPoint { get; set; }
 
-    public WeaponBase(int id, RarityType rarity, int price, string name, float damage, float cooldown, float size, float speed, float cost, float crit, float critdmg, float homingRange = 0f, float homingTurnSpeed = 0f)
+    public WeaponBase(int id, RarityType rarity, int price, string name, float damage, float cooldown, float size, float speed, float cost, float crit, float critdmg, float homingRange = 0f, float homingTurnSpeed = 0f, float rageDamagePerPoint = 0.02f)
     {
         ID = id;
         Name = name;
@@ -1112,6 +1256,13 @@ public class WeaponBase
         Rarity = rarity;
         HomingRange = homingRange;
         HomingTurnSpeed = homingTurnSpeed;
+        RageDamagePerPoint = rageDamagePerPoint;
+    }
+    public string FormatDescription(string template)
+    {
+        if (ID == ValueData.SunbreakerWeaponId)
+            return string.Format(template ?? string.Empty, (RageDamagePerPoint * 100f).ToString("0.##"));
+        return template;
     }
 }
 

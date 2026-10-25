@@ -18,7 +18,12 @@ public class PlayerAttack : MonoBehaviour
     public bool isBullet; //投射物，會往前飛
     public bool canSplit = true; // 投射物可以分裂
     private Vector3 startPos;//投射物用，紀錄發射位置
-    private Collider[] homingCandidates;
+    // Queries run synchronously on Unity's main thread; all arrows reuse one buffer.
+    private static Collider[] homingCandidates = new Collider[32];
+    [SerializeField] private LayerMask homingLayers = 1 << 11;
+    [Min(0.01f)] public float homingSearchInterval = 0.1f;
+    private Enemy homingTarget;
+    private float nextHomingSearchTime;
     private float homingRange;
     private float homingTurnSpeed;
 
@@ -191,16 +196,24 @@ public class PlayerAttack : MonoBehaviour
                 Quaternion forward = transform.rotation;
                 Quaternion leftDirection = Quaternion.Euler(0, -30, 0) * forward;
                 Quaternion rightDirection = Quaternion.Euler(0, 30, 0) * forward;
-                Vector3 pos = transform.position;
-                pos += ValueData.Instance.Player.transform.forward * 0.7f;
-                pos.y = 0;
-                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, leftDirection, 1, damageMultiplier);
-                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, rightDirection, 1, damageMultiplier);
+                Vector3 pos = SplitSpawnPosition();
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, leftDirection, 1, damageMultiplier,
+                    splitProjectile: true, ignoredTarget: target);
+                Skill.Instance.UseSkill(thisSkill.ID, _fidleid, pos, rightDirection, 1, damageMultiplier,
+                    splitProjectile: true, ignoredTarget: target);
             }
 
             Destroy(this.gameObject);
         }
             
+    }
+
+    private Vector3 SplitSpawnPosition()
+    {
+        Vector3 position = transform.position + transform.forward * 0.7f;
+        // Movement happens on the collider child. Preserve the prefab root's height.
+        position.y = transform.parent != null ? transform.parent.position.y : transform.position.y;
+        return position;
     }
 
     public int fidleid
@@ -258,13 +271,11 @@ public class PlayerAttack : MonoBehaviour
             WeaponBase weapon = ValueData.Instance.Weapon[ValueData.TrackingWeaponId];
             homingRange = Mathf.Max(0f, weapon.HomingRange);
             homingTurnSpeed = Mathf.Max(0f, weapon.HomingTurnSpeed);
-            if (homingRange > 0f && homingTurnSpeed > 0f)
-                homingCandidates = new Collider[32];
         }
         while(this.gameObject)
         {
             yield return new WaitForSecondsRealtime(0.01f);
-            if (homingCandidates != null)
+            if (homingRange > 0f && homingTurnSpeed > 0f)
                 SteerTowardNearestEnemy(Time.deltaTime);
             transform.position += transform.forward * speed * Time.deltaTime;
         }
@@ -272,25 +283,48 @@ public class PlayerAttack : MonoBehaviour
 
     private void SteerTowardNearestEnemy(float deltaTime)
     {
+        if (deltaTime <= 0f) return;
         Vector3 origin = transform.position;
-        int count = Physics.OverlapSphereNonAlloc(origin, homingRange, homingCandidates,
-            ~0, QueryTriggerInteraction.Collide);
-        Collider[] candidates = homingCandidates;
-        // A full buffer may omit the closest enemy. Only allocate in crowded areas.
-        if (count == candidates.Length)
+        if (Time.time >= nextHomingSearchTime)
         {
-            candidates = Physics.OverlapSphere(origin, homingRange, ~0, QueryTriggerInteraction.Collide);
-            count = candidates.Length;
+            homingTarget = FindNearestHomingEnemy(origin);
+            nextHomingSearchTime = Time.time + Mathf.Max(0.01f, homingSearchInterval);
         }
+        if (!ValidHomingEnemy(homingTarget, origin)) { homingTarget = null; return; }
 
+        Vector3 direction = homingTarget.transform.position - origin;
+        direction.y = 0f;
+        if (direction.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.RotateTowards(transform.rotation,
+                Quaternion.LookRotation(direction), homingTurnSpeed * deltaTime);
+    }
+
+    private bool ValidHomingEnemy(Enemy enemy, Vector3 origin)
+    {
+        return enemy != null && enemy.isActiveAndEnabled && enemy.CompareTag("Enemy") &&
+            enemy.Hp > 0f && enemy.canBeHit && !passTarget.Contains(enemy.gameObject) &&
+            (enemy.transform.position - origin).sqrMagnitude <= homingRange * homingRange;
+    }
+
+    private Enemy FindNearestHomingEnemy(Vector3 origin)
+    {
+        int count;
+        // Retain a grown shared buffer rather than allocating a full result array per arrow.
+        while (true)
+        {
+            count = Physics.OverlapSphereNonAlloc(origin, homingRange, homingCandidates,
+                homingLayers, QueryTriggerInteraction.Collide);
+            if (count < homingCandidates.Length) break;
+            System.Array.Resize(ref homingCandidates, homingCandidates.Length * 2);
+        }
         Enemy nearest = null;
         float nearestDistance = homingRange * homingRange;
         for (int i = 0; i < count; i++)
         {
-            Enemy enemy = candidates[i].GetComponentInParent<Enemy>();
-            if (enemy == null || !enemy.isActiveAndEnabled || !enemy.CompareTag("Enemy")
-                || enemy.Hp <= 0f || !enemy.canBeHit || passTarget.Contains(enemy.gameObject))
-                continue;
+            Collider candidate = homingCandidates[i];
+            homingCandidates[i] = null;
+            Enemy enemy = candidate != null ? candidate.GetComponentInParent<Enemy>() : null;
+            if (!ValidHomingEnemy(enemy, origin)) continue;
 
             float distance = (enemy.transform.position - origin).sqrMagnitude;
             if (distance <= nearestDistance)
@@ -300,14 +334,7 @@ public class PlayerAttack : MonoBehaviour
             }
         }
 
-        if (nearest == null)
-            return;
-
-        Vector3 direction = nearest.transform.position - origin;
-        direction.y = 0f; // Keep projectiles on the combat plane.
-        if (direction.sqrMagnitude > 0.0001f)
-            transform.rotation = Quaternion.RotateTowards(transform.rotation,
-                Quaternion.LookRotation(direction), homingTurnSpeed * deltaTime);
+        return nearest;
     }
     IEnumerator Range()
     {

@@ -21,6 +21,11 @@ public class Skill : MonoBehaviour
     public GameObject Skill_Sunfire;
     private readonly Dictionary<int, SunfireAura> sunfireAuras = new Dictionary<int, SunfireAura>();
 
+    public bool IsSkillActive(int fieldId)
+    {
+        return sunfireAuras.TryGetValue(fieldId, out var aura) && aura != null && aura.isActiveAndEnabled;
+    }
+
     public void StopSunfire(int fieldId)
     {
         if (sunfireAuras.TryGetValue(fieldId, out var aura) && aura != null)
@@ -29,6 +34,8 @@ public class Skill : MonoBehaviour
             Destroy(aura.gameObject);
         }
         sunfireAuras.Remove(fieldId);
+        if (ValueData.Instance != null && UICtrl.Instance != null)
+            ValueData.Instance.UpdateSkillResourceUI();
     }
 
     public void StopAllSunfire()
@@ -40,6 +47,7 @@ public class Skill : MonoBehaviour
     {
         // Repeats are applied to each pulse by the aura; they never toggle it.
         if (usedTime > 0) return;
+        if (!IsSkillActive(fieldId) && !ValueData.Instance.CanStartSkillResource(fieldId)) return;
         ValueData.Instance.SkillField[fieldId].nowCD = ValueData.Instance.SkillField[fieldId].maxCD;
         UICtrl.Instance.UpdateSkillCD();
         if (sunfireAuras.TryGetValue(fieldId, out var existing) && existing != null)
@@ -47,12 +55,15 @@ public class Skill : MonoBehaviour
             StopSunfire(fieldId);
             return;
         }
+        // Closing an existing aura is free; every new opening must pass the real payment gate.
+        if (!ValueData.Instance.CanStartSkillResource(fieldId)) return;
         var root = Skill_Sunfire != null ? Instantiate(Skill_Sunfire) : new GameObject("Sunfire Aura");
         root.transform.SetParent(ValueData.Instance.Player.transform, false);
         var aura = root.GetComponent<SunfireAura>();
         if (aura == null) aura = root.AddComponent<SunfireAura>();
         sunfireAuras[fieldId] = aura;
         aura.Initialize(fieldId);
+        ValueData.Instance.UpdateSkillResourceUI();
     }
     
     // �ĤH�ޯ�
@@ -107,12 +118,15 @@ public class Skill : MonoBehaviour
         m_Rigidbody = ValueData.Instance.Player.GetComponent<Rigidbody>();
     }
 
-    public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0, float inheritedDamageMultiplier = -1f) {
+    public void UseSkill(int Skillid, int Fieldid, Vector3 Startpos = default, Quaternion Startrot = default, int usedTime = 0, float inheritedDamageMultiplier = -1f, bool costsPaid = false, float waterballResource = 0f, bool splitProjectile = false, GameObject ignoredTarget = null) {
         if (Skillid == ValueData.SunfireSkillId)
         {
             ToggleSunfire(Fieldid, usedTime);
             return;
         }
+        // Triggered/repeated skills keep their existing free base cost, but Waterball
+        // always pays its percentage costs. Capture its damage resource before Sunbreaker.
+        if (!costsPaid && !ValueData.Instance.TryPaySkillResources(Fieldid, false, out waterballResource)) return;
         float damageMultiplier = inheritedDamageMultiplier >= 0f
             ? inheritedDamageMultiplier : ValueData.Instance.ConsumeSunbreakerRage(Fieldid);
         UsedTime = usedTime;
@@ -138,7 +152,9 @@ public class Skill : MonoBehaviour
             }
         }
 
-        if (ValueData.Instance.isHaveweaponid(Fieldid, 14)) //�Z��14 �q�ƹ��y�Ч���
+        if (splitProjectile)
+            startPos = Startpos;
+        else if (ValueData.Instance.isHaveweaponid(Fieldid, 14)) //�Z��14 �q�ƹ��y�Ч���
         {
             startPos = ValueData.Instance.Player.transform.position;
             Ray camRay = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -154,7 +170,7 @@ public class Skill : MonoBehaviour
         else
             startPos = Startpos;
 
-        if (Startrot.eulerAngles == new Vector3(0,0,0))
+        if (!splitProjectile && Startrot.eulerAngles == new Vector3(0,0,0))
             startRot = ValueData.Instance.Player.transform.rotation;
         else
             startRot = Startrot;
@@ -183,10 +199,10 @@ public class Skill : MonoBehaviour
                 Bell(Fieldid, damageMultiplier);
                 break;
             case 9:
-                Magicarrow(Fieldid, damageMultiplier);
+                Magicarrow(Fieldid, damageMultiplier, splitProjectile, ignoredTarget);
                 break;
             case 10:
-                Waterball(Fieldid, damageMultiplier);
+                Waterball(Fieldid, damageMultiplier, waterballResource);
                 break;
             case 11:
                 Charge(Fieldid, damageMultiplier);
@@ -371,34 +387,36 @@ public class Skill : MonoBehaviour
         GameObject a = Instantiate(Skill_Bell, targetpos, Skill_Bell.transform.rotation);
         ConfigureAttack(a.transform.Find("Collider").GetComponent<PlayerAttack>(), Fieldid, damageMultiplier);
     }
-    void Magicarrow(int Fieldid, float damageMultiplier)
+    void Magicarrow(int Fieldid, float damageMultiplier, bool splitProjectile, GameObject ignoredTarget)
     {
         //�B�ʨ���
         float rngAngle = Random.Range(0f, 6f);
         Quaternion currentRotation = startRot * Quaternion.Euler(0, rngAngle, 0);
 
         GameObject a;
-        if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // �˳�14�|��������m���ƹ���m
+        if (splitProjectile)
+            a = Instantiate(Skill_Magicarrow, startPos, currentRotation);
+        else if (!ValueData.Instance.isHaveweaponid(Fieldid, 14)) // �˳�14�|��������m���ƹ���m
             a = Instantiate(Skill_Magicarrow, attackPoint(0.7f), currentRotation);
         else
             a = Instantiate(Skill_Magicarrow, startPos, currentRotation);
         
         PlayerAttack b = a.transform.Find("Collider").gameObject.GetComponent<PlayerAttack>();
         ConfigureAttack(b, Fieldid, damageMultiplier);
+        if (ignoredTarget != null) b.passTarget.Add(ignoredTarget);
         float _size = ValueData.Instance.SkillField[Fieldid].Size;
         b.transform.localScale = new Vector3(a.transform.localScale.x * _size, a.transform.localScale.y * _size, a.transform.localScale.z * _size);
         if (UsedTime > 0)
             b.canSplit = false;
     }
-    void Waterball(int Fieldid, float damageMultiplier)
+    void Waterball(int Fieldid, float damageMultiplier, float waterballResource)
     {
-        StartCoroutine(waterball(Fieldid, damageMultiplier));
+        StartCoroutine(waterball(Fieldid, damageMultiplier, waterballResource));
     }
-    IEnumerator waterball(int Fieldid, float damageMultiplier)
+    IEnumerator waterball(int Fieldid, float damageMultiplier, float waterballResource)
     {
-        float _cost = ValueData.Instance.WaterballCost(Fieldid);
+        float _cost = waterballResource;
         float damagePerMana = ValueData.Instance.GetSkillLevelStats(10, ValueData.Instance.SkillField[Fieldid].Level)?.WaterballDamagePerMana ?? 10f;
-        ValueData.Instance.GetAp(-_cost);
         //ValueData.Instance.SkillField[Fieldid].Damage = _cost * damagePerMana * (1 + ValueData.Instance.Power + ValueData.Instance.WeaponField[Fieldid * 3].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 1].Damage + ValueData.Instance.WeaponField[Fieldid * 3 + 2].Damage);
 
         Vector3 targetPos = ValueData.Instance.Player.transform.position;

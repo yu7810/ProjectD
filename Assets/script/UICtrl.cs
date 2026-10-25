@@ -8,7 +8,7 @@ using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.PostProcessing;
+using Vignette = UnityEngine.Rendering.Universal.Vignette;
 using System;
 using I2.Loc;
 
@@ -109,6 +109,8 @@ public partial class UICtrl : MonoBehaviour
     public int ChangeWeapon_ID;//更換裝備的ID暫存
     public bool isSpendmoney;//更換技能、裝備時是否消耗金幣
     public Image[] SkillCdMask = new Image[3];//技能CD遮罩
+    [SerializeField] private Color activeSkillMaskColor = new Color(1f, 0.85f, 0f, 0.55f);
+    private Image[] activeSkillMasks;
     public Image[] SkillFieldIcon = new Image[3];//已裝備技能icon
     public CanvasGroup[] SkillFieldCanvasgroup = new CanvasGroup[3];//已裝備技能icon的CanvasGroup
     public Image[] WeaponFieldIcon = new Image[3];//已裝備武器icon
@@ -140,7 +142,7 @@ public partial class UICtrl : MonoBehaviour
     public Color skillLevel4Color = new Color(0.7058299f, 0.5484603f, 0.8018868f, 1f);
     [Header("Store affordability")]
     public Color unaffordableStoreColor = new Color(0.3f, 0.3f, 0.3f, 1f);
-    public PostProcessVolume volume; // 鏡頭渲染
+    public UnityEngine.Rendering.Volume volume; // 鏡頭渲染
     public Vignette vignette;
     public Line line;
     public Transform LineFather;
@@ -154,6 +156,69 @@ public partial class UICtrl : MonoBehaviour
     [SerializeField]
     private Color dragDestinationColor = new Color(1f, 1f, 1f, 0.39215687f);
     private readonly Dictionary<Image, Color> dragDestinationColors = new Dictionary<Image, Color>();
+
+    private readonly Dictionary<Transform, Image> backpackLockOverlays = new Dictionary<Transform, Image>();
+
+    // Keep locked slots visible, but exclude them from all pointer/selection interaction.
+    public void UpdateBackpackCapacityUI()
+    {
+        ValueData data = ValueData.Instance;
+        for (int field = data.EquipmentFieldCount; field < WeaponFieldIcon.Length; field++)
+        {
+            Image icon = WeaponFieldIcon[field];
+            if (icon == null) continue;
+            Transform slot = icon.transform.parent;
+            bool unlocked = data.IsWeaponFieldUnlocked(field);
+            // Locked cells show only the dark shade, without their placeholder artwork.
+            icon.enabled = unlocked;
+            Image backgroundImage = slot.Find("BG")?.GetComponent<Image>();
+            if (backgroundImage != null)
+                backgroundImage.enabled = unlocked;
+            CanvasGroup group = slot.GetComponent<CanvasGroup>();
+            if (group == null) group = slot.gameObject.AddComponent<CanvasGroup>();
+            group.interactable = unlocked;
+            group.blocksRaycasts = unlocked;
+            if (!backpackLockOverlays.TryGetValue(slot, out Image overlay) || overlay == null)
+            {
+                GameObject shade = new GameObject("BackpackCapacityLock", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                shade.layer = slot.gameObject.layer;
+                shade.transform.SetParent(slot, false);
+                overlay = shade.GetComponent<Image>();
+                overlay.color = new Color(0f, 0f, 0f, 0.85f);
+                overlay.raycastTarget = false;
+                RectTransform background = slot.Find("BG") as RectTransform;
+                if (background != null)
+                {
+                    // Slot roots are larger than their visible backgrounds; shade the actual cell only.
+                    overlay.rectTransform.anchorMin = background.anchorMin;
+                    overlay.rectTransform.anchorMax = background.anchorMax;
+                    overlay.rectTransform.pivot = background.pivot;
+                    overlay.rectTransform.sizeDelta = background.sizeDelta;
+                    overlay.rectTransform.anchoredPosition = background.anchoredPosition;
+                    overlay.rectTransform.localScale = background.localScale;
+                    overlay.rectTransform.localRotation = background.localRotation;
+                }
+                else
+                {
+                    overlay.rectTransform.anchorMin = Vector2.zero;
+                    overlay.rectTransform.anchorMax = Vector2.one;
+                    overlay.rectTransform.offsetMin = Vector2.zero;
+                    overlay.rectTransform.offsetMax = Vector2.zero;
+                }
+                backpackLockOverlays[slot] = overlay;
+            }
+            overlay.transform.SetAsLastSibling();
+            overlay.gameObject.SetActive(!unlocked);
+            int bagIndex = field - data.EquipmentFieldCount;
+            if (WeaponBagSelectUI != null && bagIndex < WeaponBagSelectUI.transform.childCount)
+            {
+                GameObject selection = WeaponBagSelectUI.transform.GetChild(bagIndex).gameObject;
+                selection.SetActive(unlocked);
+                if (selection.TryGetComponent<UnityEngine.UI.Button>(out UnityEngine.UI.Button button))
+                    button.interactable = unlocked;
+            }
+        }
+    }
 
     private TipInfo displayedTip;
     private uint displayedTipRevision;
@@ -182,19 +247,73 @@ public partial class UICtrl : MonoBehaviour
         WeaponbagdUI.SetActive(false);
         SetWeaponSelectionActive(false);
         UpdateMoneyUI();
-        volume.profile.TryGetSettings(out vignette);
+        if (volume != null && volume.profile != null)
+            volume.profile.TryGet(out vignette);
         GarbageCan.SetActive(false);
         ButtontipUI.SetActive(true);
         for (int i = 0; i < 3; i++)
         {
             SkillFieldCanvasgroup[i] = SkillFieldIcon[i].GetComponent<CanvasGroup>();
         }
+        UpdateBackpackCapacityUI();
         RefreshSkillLevelColors();
     }
 
     private void FixedUpdate()
     {
         UIUpdate();//暴力解(暫)
+    }
+
+    private void LateUpdate()
+    {
+        UpdateActiveSkillMasks();
+        RefreshOwnedItemDropArea();
+    }
+
+    private void UpdateActiveSkillMasks()
+    {
+        if (SkillFieldIcon == null) return;
+        if (activeSkillMasks == null)
+            activeSkillMasks = new Image[SkillFieldIcon.Length];
+
+        for (int fieldId = 0; fieldId < activeSkillMasks.Length; fieldId++)
+        {
+            Image icon = SkillFieldIcon[fieldId];
+            if (icon == null) continue;
+            Image cooldown = SkillCdMask[fieldId];
+            if (cooldown == null) continue;
+            Image background = cooldown.transform.parent.Find("BG")?.GetComponent<Image>();
+            Image buttonShape = background != null ? background : cooldown;
+            Image mask = activeSkillMasks[fieldId];
+            if (mask == null)
+            {
+                var overlay = new GameObject("ActiveMask", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                overlay.layer = icon.gameObject.layer;
+                // Cover the button background, immediately below the cooldown layer.
+                overlay.transform.SetParent(cooldown.transform.parent, false);
+                overlay.transform.SetSiblingIndex(cooldown.transform.GetSiblingIndex());
+                mask = overlay.GetComponent<Image>();
+                mask.raycastTarget = false;
+                activeSkillMasks[fieldId] = mask;
+            }
+            RectTransform shape = buttonShape.rectTransform;
+            mask.rectTransform.anchorMin = shape.anchorMin;
+            mask.rectTransform.anchorMax = shape.anchorMax;
+            mask.rectTransform.pivot = shape.pivot;
+            mask.rectTransform.sizeDelta = shape.sizeDelta;
+            mask.rectTransform.anchoredPosition3D = shape.anchoredPosition3D;
+            mask.rectTransform.localScale = shape.localScale;
+            mask.rectTransform.localRotation = shape.localRotation;
+            mask.sprite = buttonShape.overrideSprite;
+            mask.type = background != null ? background.type : Image.Type.Simple;
+            mask.fillAmount = 1f;
+            mask.preserveAspect = buttonShape.preserveAspect;
+            mask.pixelsPerUnitMultiplier = buttonShape.pixelsPerUnitMultiplier;
+            mask.color = activeSkillMaskColor;
+            bool active = Skill.Instance != null && Skill.Instance.IsSkillActive(fieldId);
+            if (mask.gameObject.activeSelf != active)
+                mask.gameObject.SetActive(active);
+        }
     }
 
     void Update()
@@ -401,7 +520,7 @@ public partial class UICtrl : MonoBehaviour
                 LocalizationManager.TryGetTranslation("Weapon/Weapon Name " + _tipinfo.Id, out string tipname);
                 Tip_Name.text = tipname;
                 LocalizationManager.TryGetTranslation("Weapon/Weapon Info " + _tipinfo.Id, out string tipinfo);
-                Tip_Intro.text = tipinfo;
+                Tip_Intro.text = ValueData.Instance.Weapon[_tipinfo.Id].FormatDescription(tipinfo);
             }
             LayoutRebuilder.ForceRebuildLayoutImmediate(TiplayoutTransform);
             displayedTip = _tipinfo;
@@ -697,7 +816,8 @@ public partial class UICtrl : MonoBehaviour
     {
         Image[] icons = type == TipType.Skill ? SkillFieldIcon : WeaponFieldIcon;
         return (type == TipType.Skill || type == TipType.Weapon) && field >= 0 && field < icons.Length &&
-            icons[field] != null && icons[field].transform.parent.gameObject.activeInHierarchy;
+            icons[field] != null && icons[field].transform.parent.gameObject.activeInHierarchy &&
+            (type != TipType.Weapon || ValueData.Instance.IsWeaponFieldUnlocked(field));
     }
 
     public bool TryGetPurchaseDropField(GameObject hit, TipType type, out int field)
@@ -897,12 +1017,13 @@ public partial class UICtrl : MonoBehaviour
         WeaponFieldSelectUI.SetActive(active);
         if (WeaponBagSelectUI != null)
             WeaponBagSelectUI.SetActive(active);
+        UpdateBackpackCapacityUI();
     }
 
     // 點擊要放的欄位時
     public void SelectWeaponChangeField(int Field)
     {
-        if (ChangeWeapon_ID < 0 || Field < 0 || Field >= ValueData.Instance.WeaponField.Length)
+        if (ChangeWeapon_ID < 0 || !ValueData.Instance.IsWeaponFieldUnlocked(Field))
             return;
         if (isSpendmoney && ValueData.Instance.Weapon[ChangeWeapon_ID].Price > ValueData.Instance.money)
             return;
@@ -933,6 +1054,11 @@ public partial class UICtrl : MonoBehaviour
 
     public void DoChangeWeapon(int Field)
     {
+        // Clearing remains available for ResetLoadout, including the locked backpack slots.
+        if (Field < 0 || Field >= ValueData.Instance.WeaponField.Length || ChangeWeapon_ID < 0 ||
+            ChangeWeapon_ID >= ValueData.Instance.Weapon.Length ||
+            (ChangeWeapon_ID != 0 && !ValueData.Instance.IsWeaponFieldUnlocked(Field)))
+            return;
         SetWeaponSelectionActive(false);
         // 被擠掉的裝備變成裝備寶箱
         if (ValueData.Instance.WeaponField[Field].ID != 0)
@@ -1557,7 +1683,22 @@ public partial class UICtrl : MonoBehaviour
         TryCallPassivetreeSelect();
     }
 
+    public const int HomePassiveTreeId = 5;
+
+    public bool CanOfferPassiveTree(int treeId)
+    {
+        return treeId >= 0 && treeId < ValueData.Instance.PassiveTree.Length &&
+            treeId < passivetreePrefab.Length && treeId < passivetree.Length &&
+            !ValueData.Instance.PassiveTree[treeId] && passivetreePrefab[treeId] != null &&
+            passivetree[treeId] != null;
+    }
+
     public bool TryCallPassivetreeSelect()
+    {
+        return TryCallPassivetreeSelect(-1);
+    }
+
+    public bool TryCallPassivetreeSelect(int fixedTreeId)
     {
         if (passivetreeSelectUI.activeSelf)
             return false;
@@ -1565,8 +1706,7 @@ public partial class UICtrl : MonoBehaviour
         List<int> treepool = new List<int>();
         for(int i = 0 ; i< ValueData.Instance.PassiveTree.Length ; i++)
         {
-            if (!ValueData.Instance.PassiveTree[i] && i < passivetreePrefab.Length &&
-                i < passivetree.Length && passivetreePrefab[i] != null)
+            if (CanOfferPassiveTree(i) && (fixedTreeId >= 0 ? i == fixedTreeId : i != HomePassiveTreeId))
             {
                 treepool.Add(i);
             }
@@ -1594,7 +1734,7 @@ public partial class UICtrl : MonoBehaviour
         // 生成選項
         for(int x =0; x < 3 ; x ++)
         {
-            if(treepool.Count > 0)
+            if(treepool.Count > 0 && (fixedTreeId < 0 || x == 1))
             {
                 int rng = UnityEngine.Random.Range(0, treepool.Count);
                 if (passivetreePrefab.Length > treepool[rng])

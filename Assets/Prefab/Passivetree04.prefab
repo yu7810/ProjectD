@@ -546,7 +546,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 33
-  Name: "\u58d3\u6291"
+  Name: "\u58D3\u6291"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -555,7 +555,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\u6280\u80fd\u7684\u9b54\u529b\u6d88\u8017\u8b8a\u70ba\u6d88\u8017\u76db\u6012"
+  Intro: "\u6280\u80FD\u7684\u9B54\u529B\u6D88\u8017\u8B8A\u70BA\u6D88\u8017\u76DB\u6012"
   Price: {fileID: 0}
 --- !u!1 &1100
 GameObject:
@@ -726,7 +726,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 34
-  Name: "\u76db\u6012\u4e0a\u9650"
+  Name: "\u76DB\u6012\u4E0A\u9650"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -735,7 +735,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\uff0b 5 \u76db\u6012\u4e0a\u9650"
+  Intro: "\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
   Price: {fileID: 0}
 --- !u!1 &1200
 GameObject:
@@ -903,7 +903,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 35
-  Name: "\u751f\u547d\u4e0a\u9650"
+  Name: "\u751F\u547D\u4E0A\u9650"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -912,7 +912,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\uff0b 3 \u751f\u547d\u4e0a\u9650"
+  Intro: "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
   Price: {fileID: 0}
 --- !u!1 &1300
 GameObject:
@@ -1080,7 +1080,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 36
-  Name: "\u751f\u547d\u4e0a\u9650"
+  Name: "\u751F\u547D\u4E0A\u9650"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -1089,7 +1089,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\uff0b 3 \u751f\u547d\u4e0a\u9650"
+  Intro: "\uFF0B 3 \u751F\u547D\u4E0A\u9650"
   Price: {fileID: 0}
 --- !u!1 &1400
 GameObject:
@@ -1257,7 +1257,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 37
-  Name: "\u51b7\u975c"
+  Name: "\u51B7\u975C"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -1266,5 +1266,6 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\u7121\u6cd5\u900f\u904e\u5176\u4ed6\u4f86\u6e90\u6062\u5fa9\u751f\u547d\u3002\u6bcf\u6d88\u8017 1 \u9ede\u76db\u6012\uff0c\u6062\u5fa9 0.1 \u751f\u547d\u3002"
+  Intro: "\u7121\u6CD5\u900F\u904E\u5176\u4ED6\u4F86\u6E90\u6062\u5FA9\u751F\u547D\u3002\u6BCF\u6D88\u8017
+    1 \u9EDE\u76DB\u6012\uFF0C\u6062\u5FA9 0.1 \u751F\u547D\u3002"
   Price: {fileID: 0}

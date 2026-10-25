@@ -8,10 +8,12 @@ public class Npc : MonoBehaviour
     public NpcType npcType;
     public string Name;
     public TextMeshProUGUI NameUI;
+    public RectTransform NameUIBackground;
 
     [Header("通關獎勵")] 
     public int money;
     public int passivepoint;
+    public int fixedPassiveTreeId = -1;
     private bool rewardConsumed;
 
     [Header("商店 / 道具")]
@@ -32,6 +34,10 @@ public class Npc : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetShopPoolCache() => commonShopPool = null;
 
+    [Header("門")]
+    public PrizeBase Prize;//獎勵類型
+    public int Level;//關卡編號
+
     private IEnumerator Start()
     {
         if (startRandom && !randomStockReady)
@@ -39,12 +45,21 @@ public class Npc : MonoBehaviour
             yield return null; // All catalog Awake methods must finish first.
             if (!randomStockReady) RandomItem();
         }
+
+        if (npcType != NpcType.Passivetree || fixedPassiveTreeId < 0)
+            yield break;
+
+        // Scene rewards wait for ValueData.Start to initialize unlocks.
+        yield return null;
+        if (!UICtrl.Instance.CanOfferPassiveTree(fixedPassiveTreeId))
+        {
+            if (gameObject.TryGetComponent<Collider>(out Collider treeCollider))
+                PlayerCtrl.Instance.OnTriggerExit(treeCollider);
+            Destroy(gameObject);
+            yield break;
+        }
+        showName();
     }
-
-
-    [Header("門")]
-    public PrizeBase Prize;//獎勵類型
-    public int Level;//關卡編號
 
     private void OnEnable()
     {
@@ -116,7 +131,7 @@ public class Npc : MonoBehaviour
                 }
                 break;
             case NpcType.Passivetree:
-                if (Switch && !rewardConsumed && UICtrl.Instance.TryCallPassivetreeSelect())
+                if (Switch && !rewardConsumed && UICtrl.Instance.TryCallPassivetreeSelect(fixedPassiveTreeId))
                 {
                     rewardConsumed = true;
                     if (gameObject.TryGetComponent<Collider>(out Collider treeCollider))
@@ -187,7 +202,23 @@ public class Npc : MonoBehaviour
 
     public void SetNameVisible(bool visible)
     {
-        if (NameUI != null) NameUI.gameObject.SetActive(visible);
+        if (NameUI != null)
+            NameUI.gameObject.SetActive(visible);
+        if (NameUIBackground != null)
+            NameUIBackground.gameObject.SetActive(visible);
+    }
+
+    private void UpdateNameBackground()
+    {
+        if (NameUIBackground == null || NameUI == null)
+            return;
+
+        Vector2 textSize = NameUI.GetPreferredValues(NameUI.text,
+            NameUI.rectTransform.rect.width, Mathf.Infinity);
+        NameUIBackground.sizeDelta = new Vector2(
+            Mathf.Min(NameUI.rectTransform.rect.width, textSize.x) + 16f,
+            textSize.y + 8f);
+        NameUIBackground.gameObject.SetActive(NameUI.gameObject.activeSelf);
     }
 
     public void showName()
@@ -220,6 +251,7 @@ public class Npc : MonoBehaviour
         }
 
         NameUI.text = _name;
+        UpdateNameBackground();
     }
 
 }

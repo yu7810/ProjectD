@@ -34,7 +34,7 @@ public class PassiveSkill : MonoBehaviour
                     bool a = ValueData.Instance.PassiveSkills[down[i].top[x].ID];//и糷ヴ種糷ぱ结琌Τ翴
                     if(a)
                         Debug.Log(down[i].top[x].ID + "ヴ種糷ぱ结Τ翴");
-                    if (down[i].top[x].ID != ID && a && top.Length>0) //璝糷ヴ種糷埃иΤヴ翴ぱ结иぃ﹍翴
+                    if (down[i].top[x].ID != ID && a && (top.Length > 0 || down[i].top[x].top.Length == 0)) //璝糷ヴ種糷埃иΤヴ翴ぱ结иぃ﹍翴
                     {
                         canRemove = true;
                         Debug.Log("can remove");

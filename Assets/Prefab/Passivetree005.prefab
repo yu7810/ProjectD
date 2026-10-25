@@ -105,7 +105,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 300}
-  m_LocalRotation: {x: 0, y: 0, z: -0.707106781, w: 0.707106781}
+  m_LocalRotation: {x: 0, y: 0, z: -0.70710677, w: 0.70710677}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -180,17 +180,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 310}
-  m_LocalRotation: {x: 0, y: 0, z: -0.899394672, w: 0.437137534}
+  m_LocalRotation: {x: 0, y: 0, z: -0.8993947, w: 0.43713754}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 201}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -128.157227}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -128.15723}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -20.7643569, y: 1.57263668}
-  m_SizeDelta: {x: 51.2179753, y: 2}
+  m_AnchoredPosition: {x: -20.764357, y: 1.5726367}
+  m_SizeDelta: {x: 51.217976, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &312
 CanvasRenderer:
@@ -255,17 +255,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 320}
-  m_LocalRotation: {x: 0, y: 0, z: -0.437137534, w: 0.899394672}
+  m_LocalRotation: {x: 0, y: 0, z: -0.43713754, w: 0.8993947}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 201}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -51.8427734}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -51.842773}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 22, y: 0}
-  m_SizeDelta: {x: 55.2179753, y: 2}
+  m_SizeDelta: {x: 55.217976, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &322
 CanvasRenderer:
@@ -330,17 +330,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330}
-  m_LocalRotation: {x: 0, y: 0, z: -0.899394672, w: 0.437137534}
+  m_LocalRotation: {x: 0, y: 0, z: -0.8993947, w: 0.43713754}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 201}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -128.157227}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -128.15723}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 23.2356431, y: -54.4273633}
-  m_SizeDelta: {x: 51.2179753, y: 2}
+  m_AnchoredPosition: {x: 23.235643, y: -54.427364}
+  m_SizeDelta: {x: 51.217976, y: 2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &332
 CanvasRenderer:
@@ -515,7 +515,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 38
-  Name: "\u61a4\u6012"
+  Name: "\u61A4\u6012"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -524,7 +524,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\u76db\u6012\u7372\u5f97\u91cf\u63d0\u9ad8 100%\u3002<BR>\u53d7\u5230\u50b7\u5bb3\u4e26\u640d\u5931\u751f\u547d\u6642\uff0c\u5931\u53bb\u6240\u6709\u76db\u6012\u3002<BR>\u81ea\u8eab\u6d88\u8017\u751f\u547d\u4e0d\u89f8\u767c\u6b64\u6548\u679c\u3002"
+  Intro: "\u76DB\u6012\u7372\u5F97\u91CF\u63D0\u9AD8 100%\u3002<BR>\u53D7\u5230\u50B7\u5BB3\u4E26\u640D\u5931\u751F\u547D\u6642\uFF0C\u5931\u53BB\u6240\u6709\u76DB\u6012\u3002<BR>\u81EA\u8EAB\u6D88\u8017\u751F\u547D\u4E0D\u89F8\u767C\u6B64\u6548\u679C\u3002"
   Price: {fileID: 0}
 --- !u!1 &1100
 GameObject:
@@ -661,7 +661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 39
-  Name: "\u76db\u6012\u4e0a\u9650"
+  Name: "\u76DB\u6012\u4E0A\u9650"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -670,7 +670,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\uff0b 5 \u76db\u6012\u4e0a\u9650"
+  Intro: "\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
   Price: {fileID: 0}
 --- !u!1 &1200
 GameObject:
@@ -807,7 +807,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 40
-  Name: "\u72c2\u8e81"
+  Name: "\u72C2\u8E81"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -816,7 +816,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\u6bcf\u5c64\u76db\u6012\u63d0\u4f9b 1% \u79fb\u52d5\u901f\u5ea6"
+  Intro: "\u6BCF\u5C64\u76DB\u6012\u63D0\u4F9B 1% \u79FB\u52D5\u901F\u5EA6"
   Price: {fileID: 0}
 --- !u!1 &1300
 GameObject:
@@ -953,7 +953,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 41
-  Name: "\u76db\u6012\u4e0a\u9650"
+  Name: "\u76DB\u6012\u4E0A\u9650"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -962,7 +962,7 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\uff0b 5 \u76db\u6012\u4e0a\u9650"
+  Intro: "\uFF0B 5 \u76DB\u6012\u4E0A\u9650"
   Price: {fileID: 0}
 --- !u!1 &1400
 GameObject:
@@ -1099,7 +1099,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 4
   Id: 42
-  Name: "\u91ce\u6027"
+  Name: "\u91CE\u6027"
   Cd: 0
   Cost: 0
   Dmg: 0
@@ -1108,5 +1108,5 @@ MonoBehaviour:
   Size: 0
   Speed: 0
   Level: 0
-  Intro: "\u6bcf\u5c64\u76db\u6012\u63d0\u4f9b 1% \u6e1b\u50b7"
+  Intro: "\u6BCF\u5C64\u76DB\u6012\u63D0\u4F9B 1% \u6E1B\u50B7"
   Price: {fileID: 0}

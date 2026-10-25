@@ -374,6 +374,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyType: 2
+  enemyRarity: 0
   immortal: 1
   notMove: 0
   Hp: 0
@@ -387,10 +388,11 @@ MonoBehaviour:
   money: 0000000000000000
   Mesh: {fileID: 7579059185747133631}
   hpUI: {fileID: 7230101548016126741}
-  Bullet: {fileID: 0}
   canBeHit: 0
   canAttack: 0
   canMove: 0
+  BossStage: 0
+  MinionPosition: []
 --- !u!208 &1538809221130011744
 NavMeshObstacle:
   m_ObjectHideFlags: 0
@@ -500,10 +502,13 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 17507c07301e3524d912fb5ae15ea89d, type: 2}
+  - {fileID: 2100000, guid: 890b895f9a53bd145a0abdb956ea85ab, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

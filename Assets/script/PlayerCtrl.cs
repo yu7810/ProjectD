@@ -238,7 +238,7 @@ public class PlayerCtrl : MonoBehaviour
                         // 關閉名稱UI
                         if (npc.NameUI)
                         {
-                            npc.NameUI.gameObject.SetActive(false);
+                            npc.SetNameVisible(false);
                         }
                         UpdateCurrentTarget();
                     }
@@ -281,24 +281,21 @@ public class PlayerCtrl : MonoBehaviour
         {
             if (valuedata.SkillField[Field].ID <= 0)
                 return;
-            if (valuedata.SkillField[Field].ID == ValueData.SunfireSkillId)
+            bool costsPaid = false;
+            float waterballResource = 0f;
+            if (valuedata.SkillField[Field].ID != ValueData.SunfireSkillId)
             {
-                // Toggle is free; the aura pays on each pulse.
+                bool payBaseCost = !valuedata.PassiveSkills[21] || UnityEngine.Random.Range(0, 2) == 1;
+                if (!valuedata.TryPaySkillResources(Field, payBaseCost, out waterballResource)) return;
+                costsPaid = true;
             }
-            else if (valuedata.PassiveSkills[21])
-            {
-                int rng = UnityEngine.Random.Range(0, 2);
-                if(rng == 1)
-                    valuedata.TryPaySkillCost(valuedata.SkillField[Field].Cost);
-            }
-            else
-                valuedata.TryPaySkillCost(valuedata.SkillField[Field].Cost);
             valuedata.SkillField[Field].nowCD = valuedata.SkillField[Field].maxCD;
             UICtrl.Instance.UpdateSkillCD();
-            skill.UseSkill(valuedata.SkillField[Field].ID, Field);
+            skill.UseSkill(valuedata.SkillField[Field].ID, Field, costsPaid: costsPaid, waterballResource: waterballResource);
         }
         else if (valuedata.SkillField[Field].ID != ValueData.SunfireSkillId
-            && !valuedata.UsesRageForSkills && valuedata.AP < valuedata.SkillField[Field].Cost)
+            && !valuedata.UsesRageForSkills && !valuedata.UsesLifeForSkill(Field)
+            && valuedata.AP < valuedata.SkillField[Field].Cost)
         {
             if (valuedata.PassiveSkills[14]) // 天賦14
             {
@@ -338,7 +335,7 @@ public class PlayerCtrl : MonoBehaviour
             {
                 if (_npc.NameUI)
                 {
-                    _npc.NameUI.gameObject.SetActive(true);
+                    _npc.SetNameVisible(true);
                     _npc.NameUI.transform.parent.rotation = Camera.main.transform.rotation;
                     _npc.showName();
                 }
