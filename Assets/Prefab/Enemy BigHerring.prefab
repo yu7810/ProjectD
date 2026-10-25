@@ -332,7 +332,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2.5
+  m_Speed: 2
   m_Acceleration: 2
   avoidancePriority: 50
   m_AngularSpeed: 360
@@ -412,7 +412,7 @@ MonoBehaviour:
   maxHp: 3000
   Attack: 1
   EXP: 0
-  AttackCD: 1.2
+  AttackCD: 2
   AttackRange: 10
   rotationSpeed: 200
   idleAnimation: 0

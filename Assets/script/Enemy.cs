@@ -28,6 +28,7 @@ public class Enemy : MonoBehaviour
     public bool canBeHit; //受擊時短暫無敵，避免重複判定
     Animator m_Animator;
     Rigidbody rb;
+    private Collider bodyCollider;
 
     Transform target;
     NavMeshAgent agent;
@@ -44,8 +45,47 @@ public class Enemy : MonoBehaviour
     Coroutine attackCD;
     public int BossStage; // Boss階段
     public GameObject[] MinionPosition; // 要招喚小怪的點
+    private bool hasDied;
+    private bool bossActionInProgress;
+    private bool bossConsumptionHealingUnlocked;
+    private bool bossSprintBoostUnlocked;
+    private bool startActionOnStart;
+
+    private bool IsHerringBoss => enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Boss;
+
+    private void RefreshBossPhase()
+    {
+        if (!IsHerringBoss || hasDied || Hp <= 0 || maxHp <= 0)
+            return;
+
+        if (Hp < maxHp * 0.5f)
+        {
+            bossConsumptionHealingUnlocked = true;
+            bossSprintBoostUnlocked = true;
+        }
+
+        // Odd stages have a summon pending; the following even stage has consumed it.
+        // Catch up directly after burst damage, without queueing every skipped wave.
+        int requiredStage = Hp <= maxHp * 0.25f ? 5
+            : Hp <= maxHp * 0.5f ? 3
+            : Hp <= maxHp * 0.75f ? 1 : 0;
+        if (requiredStage > BossStage)
+            BossStage = requiredStage;
+
+        // Healing does not rewind an unlocked combat phase.
+        if (BossStage >= 5)
+            AttackCD = 1f;
+        else if (BossStage >= 3)
+            AttackCD = 1.5f;
+    }
 
     private void OnEnable() {
+        bodyCollider = GetComponent<Collider>();
+        hasDied = false;
+        bossActionInProgress = false;
+        bossConsumptionHealingUnlocked = false;
+        bossSprintBoostUnlocked = false;
+        startActionOnStart = false;
         m_Animator = GetComponent<Animator>();
         Hp = maxHp;
         canBeHit = true;
@@ -87,6 +127,13 @@ public class Enemy : MonoBehaviour
         }
         if (NoticeRange)
             noticeDistance = NoticeRange.GetComponent<SphereCollider>().radius;
+
+        // Summoned herring must initialize their target and agent before acting.
+        if (startActionOnStart)
+        {
+            startActionOnStart = false;
+            StartAction();
+        }
     }
 
     void LateUpdate()
@@ -106,6 +153,8 @@ public class Enemy : MonoBehaviour
 
     //受到傷害時使用
     public void Hurt(float Dmg, int Filed = -1) {
+        if (hasDied)
+            return;
         if (NoticeRange && NoticeRange.activeSelf)
             StartAction();
         if (immortal)
@@ -122,15 +171,7 @@ public class Enemy : MonoBehaviour
                 hpUI.value = Hp / maxHp;
                 beAttack();
 
-                if (enemyRarity == EnemyRarity.Boss) // BOSS轉階段條件
-                {
-                    if (Hp <= maxHp * 3 / 4 && BossStage == 0)
-                        BossStage = 1;
-                    else if (Hp <= maxHp * 1 / 2 && BossStage == 2)
-                        BossStage = 3;
-                    else if (Hp <= maxHp * 1 / 4 && BossStage == 4)
-                        BossStage = 5;
-                }
+                RefreshBossPhase();
             }
             else
             {
@@ -171,6 +212,13 @@ public class Enemy : MonoBehaviour
     }
 
     public void Die(int Filed = -1) {
+        DieInternal(Filed, true);
+    }
+
+    private void DieInternal(int Filed, bool triggerKillManaRecovery) {
+        if (hasDied)
+            return;
+        hasDied = true;
         //UICtrl.Instance.GetEXP(EXP);
         if (enemyType != EnemyType.Barrel && enemyRarity != EnemyRarity.Minion)
         {
@@ -185,7 +233,7 @@ public class Enemy : MonoBehaviour
                 money[1] *= moneyadd;
             }
         }
-        if (ValueData.Instance.PassiveSkills[27]) // 天賦27 擊殺回魔
+        if (triggerKillManaRecovery && ValueData.Instance.PassiveSkills[27]) // 天賦27 擊殺回魔
             ValueData.Instance.GetAp(ValueData.Instance.maxAP / 5);
 
         int _money = Random.Range(money[0], money[1]+1);
@@ -216,16 +264,34 @@ public class Enemy : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.tag == "EnemyAttack")
+        if (!hasDied && other.tag == "EnemyAttack")
         {
             // 被鯡魚王吃掉
-            if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion && other.GetComponent<EnemyAttack>().enemy.enemyRarity == EnemyRarity.Boss)
+            if (enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Minion
+                && other.TryGetComponent<EnemyAttack>(out var enemyAttack)
+                && enemyAttack.enemy != null && enemyAttack.enemy.IsHerringBoss
+                && IsBodyOverlapping(other))
             {
-                Instantiate(Skill.Instance.Skill_Herringhealth, transform.position, Skill.Instance.Skill_Herringhealth.transform.rotation);
-                other.GetComponent<EnemyAttack>().enemy.Hurt(100); // boss回血
-                Die();
+                Enemy boss = enemyAttack.enemy;
+                boss.RefreshBossPhase();
+                if (boss.Hp > 0 && boss.bossConsumptionHealingUnlocked)
+                {
+                    Instantiate(Skill.Instance.Skill_Herringhealth, transform.position, Skill.Instance.Skill_Herringhealth.transform.rotation);
+                    boss.Hurt(100);
+                }
+                DieInternal(-1, false);
             }
         }
+    }
+
+    private bool IsBodyOverlapping(Collider other)
+    {
+        // Child sensing triggers share this Rigidbody and also deliver OnTriggerEnter.
+        // Only contact with the root body collider may trigger consumption.
+        return bodyCollider != null && bodyCollider.enabled
+            && Physics.ComputePenetration(
+                bodyCollider, bodyCollider.transform.position, bodyCollider.transform.rotation,
+                other, other.transform.position, other.transform.rotation, out _, out _);
     }
 
     void StartAction()
@@ -344,6 +410,16 @@ public class Enemy : MonoBehaviour
     //動畫事件
     public void StartAttack()
     {
+        if (IsHerringBoss)
+        {
+            if (hasDied || bossActionInProgress)
+                return;
+            bossActionInProgress = true;
+            RefreshBossPhase();
+        }
+        // Summoning completes synchronously and resumes movement inside
+        // StartCoroutine. Block another attack before any action can finish.
+        canAttack = false;
         if (enemyType == EnemyType.Melee || enemyType == EnemyType.Warrior)
         {
             AttackCollider.SetActive(true);
@@ -367,22 +443,20 @@ public class Enemy : MonoBehaviour
                 else if (BossStage == 1)
                 {
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(4));
                     BossStage = 2;
+                    call = StartCoroutine(CallHerring(4));
                 }
                 else if (BossStage == 3)
                 {
-                    AttackCD = 1.5f;
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(8));
                     BossStage = 4;
+                    call = StartCoroutine(CallHerring(8));
                 }
                 else if (BossStage == 5)
                 {
-                    AttackCD = 1f;
                     m_Animator.SetInteger("Attack Type", 1);
-                    call = StartCoroutine(CallHerring(12));
                     BossStage = 6;
+                    call = StartCoroutine(CallHerring(8));
                 }
             }
             else
@@ -396,10 +470,14 @@ public class Enemy : MonoBehaviour
             int _time = Random.Range(3, 6);
             StartCoroutine(Mageattack(_time));
         }
-        canAttack = false;
     }
     public void EndAttack()
     {
+        if (IsHerringBoss)
+        {
+            bossActionInProgress = false;
+            RefreshBossPhase();
+        }
         if (enemyType == EnemyType.Melee)
             AttackCollider.SetActive(false);
         else if(enemyType == EnemyType.Tank)
@@ -432,7 +510,9 @@ public class Enemy : MonoBehaviour
         float attackcd = AttackCD;
         if(attackcd != 0)
         {
-            float rng = Random.Range(0.7f, 1.7f);
+            float rng = IsHerringBoss
+                ? Random.Range(0.8f, 1.2f)
+                : Random.Range(0.7f, 1.7f);
             attackcd *= rng;
         }
         yield return new WaitForSeconds(attackcd);
@@ -489,7 +569,8 @@ public class Enemy : MonoBehaviour
         while (Hp > 0 && _time > 0)
         {
             yield return new WaitForSeconds(Time.fixedDeltaTime);
-            rb.linearVelocity = transform.forward * 2.5f * agent.speed;
+            float speedMultiplier = IsHerringBoss && bossSprintBoostUnlocked ? 3.5f : 2.5f;
+            rb.linearVelocity = transform.forward * speedMultiplier * agent.speed;
             _time -= Time.fixedDeltaTime;
         }
 
@@ -499,26 +580,26 @@ public class Enemy : MonoBehaviour
     // 招喚小怪鯡魚
     IEnumerator CallHerring(int count)
     {
-        if (MinionPosition.Length == 0 || count <= 0)
+        if (MinionPosition == null || MinionPosition.Length == 0 || count <= 0)
         {
             StopAction();
             yield break;
         }
 
-        int lastposition = -1;
-        float _time = 1f / count; // 在x秒內招喚完
-        for(int i = 0 ; i < count ; i++)
+        // Use the first four/eight configured points, all in the same frame.
+        int pointCount = Mathf.Min(count, MinionPosition.Length);
+        for (int i = 0; i < pointCount; i++)
         {
-            int newposition = Random.Range(0, MinionPosition.Length);
-            if (newposition == lastposition && MinionPosition.Length >= 1) //新招喚點與上次招喚點相同則重骰
-                newposition = Random.Range(0, MinionPosition.Length);
-            lastposition = newposition;
-            yield return new WaitForSeconds(_time);
-            GameObject _minion = Instantiate(LevelCtrl.Instance.EnemyHerring, MinionPosition[newposition].transform.position, MinionPosition[newposition].transform.rotation);
-            Enemy _enemy = _minion.GetComponent<Enemy>();
-            _enemy.enemyRarity = EnemyRarity.Minion;
-            _enemy.money[0] = 0;
-            _enemy.money[1] = 0;
+            GameObject position = MinionPosition[i];
+            if (position == null)
+                continue;
+
+            GameObject minion = Instantiate(LevelCtrl.Instance.EnemyHerring, position.transform.position, position.transform.rotation);
+            Enemy enemy = minion.GetComponent<Enemy>();
+            enemy.enemyRarity = EnemyRarity.Minion;
+            enemy.money[0] = 0;
+            enemy.money[1] = 0;
+            enemy.startActionOnStart = true;
         }
         StopAction();
     }
