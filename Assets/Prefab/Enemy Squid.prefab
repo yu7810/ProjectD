@@ -444,8 +444,9 @@ MonoBehaviour:
   maxHp: 20
   Attack: 1
   EXP: 5
-  AttackCD: 1.5
+  AttackCD: 2
   AttackRange: 12
+  retreatDistance: 5
   rotationSpeed: 120
   idleAnimation: 0
   money: 0300000005000000

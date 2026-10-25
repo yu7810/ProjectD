@@ -17,6 +17,8 @@ public class Enemy : MonoBehaviour
     public float EXP; // 怪物提供的經驗值
     public float AttackCD; // 攻擊間隔
     public float AttackRange; // 攻擊範圍
+    [Min(0f)]
+    public float retreatDistance = 3f;
     public float rotationSpeed;
     [Range(0, 2)]
     public int idleAnimation; // 待機動畫
@@ -50,6 +52,15 @@ public class Enemy : MonoBehaviour
     private bool bossConsumptionHealingUnlocked;
     private bool bossSprintBoostUnlocked;
     private bool startActionOnStart;
+    private bool isRetreating;
+    private NavMeshPath retreatPath;
+    private float retreatRepathTime;
+    private float retreatAttackUntil;
+    private float retreatProgressTime;
+    private Vector3 retreatProgressPosition;
+    private Vector3 blockedRetreatDirection;
+    private float blockedRetreatUntil;
+    private static readonly float[] RetreatAngles = { 0f, 30f, -30f, 60f, -60f, 90f, -90f };
 
     private bool IsHerringBoss => enemyType == EnemyType.Tank && enemyRarity == EnemyRarity.Boss;
 
@@ -86,6 +97,8 @@ public class Enemy : MonoBehaviour
         bossConsumptionHealingUnlocked = false;
         bossSprintBoostUnlocked = false;
         startActionOnStart = false;
+        isRetreating = false;
+        retreatRepathTime = retreatAttackUntil = retreatProgressTime = blockedRetreatUntil = 0f;
         m_Animator = GetComponent<Animator>();
         Hp = maxHp;
         canBeHit = true;
@@ -352,6 +365,25 @@ public class Enemy : MonoBehaviour
             yield return new WaitForFixedUpdate();
         }
 
+        if (enemyType == EnemyType.Ranged)
+        {
+            if (ShouldRetreat() && MoveAwayFromPlayer())
+            {
+                isRetreating = true;
+                yield return null;
+                move = StartCoroutine(_Move());
+                yield break;
+            }
+
+            if (isRetreating)
+            {
+                isRetreating = false;
+                agent.ResetPath();
+                agent.isStopped = true;
+                m_Animator.SetBool("isMoving", false);
+            }
+        }
+
         Vector3 playerpos = ValueData.Instance.Player.transform.position;
         playerpos.y = 0.5f;
         Vector3 directionToPlayer = (playerpos - transform.position).normalized;
@@ -371,8 +403,11 @@ public class Enemy : MonoBehaviour
                 direction.y = 0; // 忽略垂直方向的差異
 
                 // 旋轉角色面向目標
-                Quaternion lookRotation = Quaternion.LookRotation(direction);
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+                if (direction.sqrMagnitude > 0.0001f)
+                {
+                    Quaternion lookRotation = Quaternion.LookRotation(direction);
+                    transform.rotation = Quaternion.RotateTowards(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+                }
 
                 // 攻擊行為
                 if (canAttack)
@@ -410,6 +445,14 @@ public class Enemy : MonoBehaviour
     //動畫事件
     public void StartAttack()
     {
+        // Recheck at the firing event: the player may approach during wind-up.
+        if (enemyType == EnemyType.Ranged && ShouldRetreat() && MoveAwayFromPlayer())
+        {
+            canAttack = false;
+            m_Animator.SetBool("Attack", false);
+            EndAttack();
+            return;
+        }
         if (IsHerringBoss)
         {
             if (hasDied || bossActionInProgress)
@@ -427,6 +470,12 @@ public class Enemy : MonoBehaviour
         }
         else if (enemyType == EnemyType.Ranged)
         {
+            // Aim again at the firing event, using the player's current position.
+            Vector3 fireDirection = target.position - transform.position;
+            fireDirection.y = 0f;
+            if (fireDirection.sqrMagnitude > 0.0001f)
+                transform.rotation = Quaternion.LookRotation(fireDirection);
+
             GameObject bullet = Instantiate(Skill.Instance.Skill_Squidarrow, transform.position, transform.rotation);
             bullet.transform.GetChild(0).GetComponent<EnemyAttack>().enemy = this;
             m_Animator.SetBool("Attack", false);
@@ -515,9 +564,113 @@ public class Enemy : MonoBehaviour
                 : Random.Range(0.7f, 1.7f);
             attackcd *= rng;
         }
-        yield return new WaitForSeconds(attackcd);
+        if (enemyType == EnemyType.Ranged)
+        {
+            float remaining = attackcd;
+            while (remaining > 0f)
+            {
+                yield return null;
+                if (!ShouldRetreat())
+                    remaining -= Time.deltaTime;
+            }
+        }
+        else
+        {
+            yield return new WaitForSeconds(attackcd);
+        }
         canAttack = true;
         attackCD = null;
+    }
+
+    private bool ShouldRetreat()
+    {
+        if (enemyType != EnemyType.Ranged || target == null || retreatDistance <= 0f
+            || Time.time < retreatAttackUntil)
+            return false;
+
+        Vector3 offset = transform.position - target.position;
+        offset.y = 0f;
+        return offset.sqrMagnitude <= retreatDistance * retreatDistance;
+    }
+
+    private bool MoveAwayFromPlayer()
+    {
+        if (!agent.enabled || !agent.isOnNavMesh)
+            return false;
+
+        Vector3 progress = transform.position - retreatProgressPosition;
+        progress.y = 0f;
+        bool stalled = isRetreating && Time.time - retreatProgressTime >= 0.5f
+            && progress.sqrMagnitude < 0.01f;
+        if (stalled)
+        {
+            blockedRetreatDirection = (agent.destination - transform.position).normalized;
+            blockedRetreatUntil = Time.time + 1.5f;
+        }
+        if (isRetreating && !stalled && Time.time < retreatRepathTime
+            && (agent.pathPending || agent.hasPath && agent.remainingDistance > 0.2f))
+            return true;
+
+        Vector3 away = transform.position - target.position;
+        away.y = 0f;
+        float distance = away.magnitude;
+        away = distance > 0.001f ? away / distance : -transform.forward;
+        float step = Mathf.Max(1.5f, retreatDistance - distance + 0.5f);
+        Vector3 bestPosition = default;
+        float bestScore = float.NegativeInfinity;
+        if (retreatPath == null)
+            retreatPath = new NavMeshPath();
+        foreach (float angle in RetreatAngles)
+        {
+            Vector3 direction = Quaternion.Euler(0f, angle, 0f) * away;
+            if (Time.time < blockedRetreatUntil && Vector3.Dot(direction, blockedRetreatDirection) > 0.8f)
+                continue;
+            Vector3 candidate = transform.position + direction * step;
+            if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 0.5f, agent.areaMask))
+                continue;
+            Vector3 travel = hit.position - transform.position;
+            travel.y = 0f;
+            float length = travel.magnitude;
+            Vector3 playerOffset = hit.position - target.position;
+            playerOffset.y = 0f;
+            if (length < 0.4f || playerOffset.magnitude < distance + 0.1f
+                || Vector3.Dot(travel.normalized, away) < -0.05f
+                || Physics.SphereCast(transform.position + Vector3.up * 0.7f, agent.radius * 0.6f,
+                    travel.normalized, out _, length, 1 << 8, QueryTriggerInteraction.Ignore)
+                || NavMesh.Raycast(transform.position, hit.position, out _, agent.areaMask)
+                || !agent.CalculatePath(hit.position, retreatPath)
+                || retreatPath.status != NavMeshPathStatus.PathComplete)
+                continue;
+            float score = playerOffset.magnitude - Mathf.Abs(angle) * 0.005f;
+            if (score > bestScore)
+            {
+                bestScore = score;
+                bestPosition = hit.position;
+            }
+        }
+        if (!float.IsNegativeInfinity(bestScore))
+        {
+            m_Animator.SetBool("Attack", false);
+            agent.isStopped = false;
+            agent.angularSpeed = rotationSpeed;
+            agent.SetDestination(bestPosition);
+            m_Animator.SetBool("isMoving", true);
+            retreatRepathTime = Time.time + 0.5f;
+            if (!isRetreating || Time.time - retreatProgressTime >= 0.5f)
+            {
+                retreatProgressTime = Time.time;
+                retreatProgressPosition = transform.position;
+            }
+            isRetreating = true;
+            return true;
+        }
+
+        // No escape route: stay still and allow cooldown/attacks before retrying.
+        retreatAttackUntil = Time.time + 1.5f;
+        agent.ResetPath();
+        agent.isStopped = true;
+        m_Animator.SetBool("isMoving", false);
+        return false;
     }
 
     IEnumerator BellCD()
