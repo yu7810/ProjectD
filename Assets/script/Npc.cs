@@ -14,6 +14,9 @@ public class Npc : MonoBehaviour
     public int money;
     public int passivepoint;
     public int fixedPassiveTreeId = -1;
+    public bool allowPassiveTreeReroll = true;
+    [Min(0f)] public float lifeMaxIncrease = 3f;
+    [Min(0f)] public float lifeRecovery = 3f;
     private bool rewardConsumed;
 
     [Header("商店 / 道具")]
@@ -35,8 +38,9 @@ public class Npc : MonoBehaviour
     private static void ResetShopPoolCache() => commonShopPool = null;
 
     [Header("門")]
-    public PrizeBase Prize;//獎勵類型
-    public int Level;//關卡編號
+    [HideInInspector] public PrizeBase Prize;//獎勵類型
+    public int Level;
+    [HideInInspector] public int randomSkillRewardLevel = 1;
 
     private IEnumerator Start()
     {
@@ -131,11 +135,21 @@ public class Npc : MonoBehaviour
                 }
                 break;
             case NpcType.Passivetree:
-                if (Switch && !rewardConsumed && UICtrl.Instance.TryCallPassivetreeSelect(fixedPassiveTreeId))
+                if (Switch && !rewardConsumed && UICtrl.Instance.TryCallPassivetreeSelect(fixedPassiveTreeId, allowPassiveTreeReroll))
                 {
                     rewardConsumed = true;
                     if (gameObject.TryGetComponent<Collider>(out Collider treeCollider))
                         PlayerCtrl.Instance.OnTriggerExit(treeCollider);
+                    Destroy(gameObject);
+                }
+                break;
+            case NpcType.Life:
+                if (Switch && !rewardConsumed)
+                {
+                    rewardConsumed = true;
+                    ValueData.Instance.GrantLifeReward(lifeMaxIncrease, lifeRecovery);
+                    if (gameObject.TryGetComponent<Collider>(out Collider lifeCollider))
+                        PlayerCtrl.Instance.OnTriggerExit(lifeCollider);
                     Destroy(gameObject);
                 }
                 break;
@@ -225,7 +239,11 @@ public class Npc : MonoBehaviour
     {
         string _name = "";
         if (npcType == NpcType.Door)
+        {
             LocalizationManager.TryGetTranslation(Name, out _name);
+            if (Prize == PrizeBase.RandomSkill && !string.IsNullOrEmpty(_name))
+                _name = string.Format(_name, randomSkillRewardLevel);
+        }
         else if (npcType == NpcType.Weaponstore)
             LocalizationManager.TryGetTranslation("NPC/Weaponstore Name", out _name);
         else if (npcType == NpcType.Skillstore)
@@ -242,6 +260,8 @@ public class Npc : MonoBehaviour
         }
         else if (npcType == NpcType.Passivetree)
             LocalizationManager.TryGetTranslation("NPC/Item Passivetree Name", out _name);
+        else if (npcType == NpcType.Life)
+            LocalizationManager.TryGetTranslation("NPC/Item Life Name", out _name);
         else if (npcType == NpcType.Weapon)
             LocalizationManager.TryGetTranslation("Weapon/Weapon Name " + item[0], out _name);
         else if (npcType == NpcType.Skill)
@@ -265,4 +285,5 @@ public enum NpcType{
     Weapon,
     Skill,
     Passivetree,
+    Life,
 }

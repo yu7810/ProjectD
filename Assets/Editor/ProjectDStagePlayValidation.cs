@@ -75,7 +75,7 @@ public static class ProjectDStagePlayValidation
                 case 3:
                     CheckArrival(controller);
                     Clear(controller);
-                    Require(doors.Count == 1 && doors.Values.First().Room.kind == StageRoomKind.Merchant, "Stage 2 must lead to merchant.");
+                    Require(doors.Count == 1 && doors.Values.First().Room.kind == StageRoomKind.Store, "Stage 2 must lead to merchant.");
                     Enter(doors, 4); break;
                 case 4:
                     CheckArrival(controller);
@@ -129,7 +129,7 @@ public static class ProjectDStagePlayValidation
     {
         Require(controller.CurrentRoom.name == SessionState.GetString("ProjectD.StagePlayValidation.ExpectedRoom", ""), "Selected room rerolled during load/restart.");
         Require(controller.CurrentLevelIndex == SessionState.GetInt("ProjectD.StagePlayValidation.ExpectedProgress", -9), "Progress mismatch.");
-        Require(controller.nowPrize == controller.CurrentRoom.reward, "Scene/reward binding lost.");
+        Require(controller.CurrentRoom.ValidateRewards(out _), "Invalid room reward list.");
     }
 
     private static void Clear(LevelCtrl controller)
@@ -142,7 +142,7 @@ public static class ProjectDStagePlayValidation
 
     private static void CheckMerchant(LevelCtrl controller, Dictionary<Npc, StagePortalChoice> doors, int count)
     {
-        Require(controller.CurrentRoom.kind == StageRoomKind.Merchant && controller.leftEnemy == 0 && doors.Count == count, "Merchant exit policy failed.");
+        Require(controller.CurrentRoom.kind == StageRoomKind.Store && controller.leftEnemy == 0 && doors.Count == count, "Merchant exit policy failed.");
         Npc[] merchants = UnityEngine.Object.FindObjectsByType<Npc>(FindObjectsSortMode.None)
             .Where(n => n.npcType == NpcType.Skillstore || n.npcType == NpcType.Weaponstore).ToArray();
         Require(merchants.Length == 2 && merchants.All(n => n.item.Count > 0), "Preplaced merchant inventory missing.");

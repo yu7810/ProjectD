@@ -274,11 +274,12 @@ MonoBehaviour:
   immortal: 0
   notMove: 0
   Hp: 0
-  maxHp: 40
+  maxHp: 50
   Attack: 1
   EXP: 0
   AttackCD: 3
   AttackRange: 6
+  retreatDistance: 3
   rotationSpeed: 200
   idleAnimation: 0
   money: 0500000006000000

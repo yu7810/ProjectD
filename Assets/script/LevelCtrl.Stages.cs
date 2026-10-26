@@ -10,7 +10,7 @@ public partial class LevelCtrl
     {
         get { EnsureStagePools(); return stagePools; }
     }
-    public StageRoomDefinition CurrentRoom { get; private set; }
+    public StageRoomSelection CurrentRoom { get; private set; }
     private readonly Dictionary<Npc, StagePortalChoice> offeredDoors = new Dictionary<Npc, StagePortalChoice>();
     private readonly List<DoorAnchor> doorAnchors = new List<DoorAnchor>();
     private Transform generatedDoors;
@@ -29,29 +29,15 @@ public partial class LevelCtrl
         if (isLoadingLevel) yield break;
         EnsureStagePools();
         if (stagePools == null) yield break;
-        string scene = SceneManager.GetActiveScene().name;
-        if (stagePools.home != null && stagePools.home.sceneName == scene)
+        if (stagePools.TryResolveLoadedScene(SceneManager.GetActiveScene().name, out var initial))
         {
-            SetProgress(0);
-            CurrentRoom = stagePools.home;
-        }
-        else
-        {
-            foreach (StagePool pool in stagePools.pools)
-            {
-                foreach (StageRoomWeight entry in pool.rooms)
-                {
-                    if (entry?.room == null || entry.room.sceneName != scene) continue;
-                    SetProgress(pool.progressIndex);
-                    CurrentRoom = entry.room;
-                    break;
-                }
-                if (CurrentRoom != null) break;
-            }
+            CurrentRoom = initial;
+            SetProgress(initial.ProgressIndex);
         }
         if (CurrentRoom != null)
         {
-            nowPrize = CurrentRoom.reward;
+            if (!ValidateCompletionRewards(CurrentRoom, out string error))
+            { Debug.LogError($"Invalid completion rewards for {CurrentRoom.name}: {error}", CurrentRoom.Context); yield break; }
             PrepareRoom();
         }
     }
@@ -69,35 +55,26 @@ public partial class LevelCtrl
         nowLevel = StagePoolDatabase.ChapterForProgress(level);
     }
 
-    private bool TryLoadStage(int level, StageRoomDefinition selectedRoom, bool portalRecovery)
+    private bool TryLoadStage(int level, StageRoomSelection selectedRoom, bool portalRecovery)
     {
         if (isLoadingLevel) return false;
         EnsureStagePools();
         if (stagePools == null) return false;
-        StageRoomDefinition room = selectedRoom;
-        if (level == 0) room = stagePools.home;
-        else if (level > 0)
+        StageRoomSelection room = selectedRoom;
+        if (level >= 0)
         {
-            StagePool pool = stagePools.Find(level);
-            if (pool == null) { Debug.LogError($"Missing stage pool {level}.", this); return false; }
-            // Restart keeps the selected scene/reward pair; debug stage selection rolls once.
-            if (room == null && CurrentLevelIndex == level && pool.Contains(CurrentRoom)) room = CurrentRoom;
-            if (room == null)
-            {
-                List<StageRoomDefinition> selection = pool.Draw(1, () => Random.value);
-                if (selection.Count > 0) room = selection[0];
-            }
-            if (room == null || !pool.Contains(room))
-            { Debug.LogError($"No valid room in stage pool {level}.", this); return false; }
+            if (room == null && CurrentRoom != null && CurrentLevelIndex == level) room = CurrentRoom;
+            if (room == null && !stagePools.TryDrawArrival(level, () => Random.value, out room, out string drawError))
+            { Debug.LogError(drawError, this); return false; }
+            if (room == null || room.ProgressIndex != level || room.Scene == null || room.Door == null)
+            { Debug.LogError("Invalid captured stage selection for progress " + level, this); return false; }
         }
         else if (level != -1) return false;
-
         string scene = level == -1 ? "Title" : room != null ? room.sceneName : null;
         if (string.IsNullOrEmpty(scene) || !Application.CanStreamedLevelBeLoaded(scene))
         { Debug.LogError($"Stage scene is not enabled in Build Settings: {scene}", this); return false; }
-        if (room != null && room.kind != StageRoomKind.Boss && room.reward == PrizeBase.Money &&
-            !stagePools.TryGetChapterMoneyReward(StagePoolDatabase.ChapterForProgress(level), out _))
-        { Debug.LogError($"Missing or invalid chapter money reward for progress {level}.", this); return false; }
+        if (!ValidateCompletionRewards(room, out string rewardError, level))
+        { Debug.LogError($"Invalid completion rewards for {room.name}: {rewardError}", room.Context); return false; }
         isLoadingLevel = true;
         if (portalRecovery) ValueData.Instance.ApplyPortalRecovery();
         if (Skill.Instance != null) Skill.Instance.StopAllSunfire();
@@ -152,26 +129,17 @@ public partial class LevelCtrl
     private void CreateStageExits()
     {
         if (CurrentRoom == null || generatedDoors != null || CurrentRoom.exitCount <= 0) return;
-        int next = CurrentLevelIndex == 0 ? stagePools.firstProgressIndex :
-            stagePools.Find(CurrentLevelIndex)?.nextProgressIndex ?? 0;
-        var choices = new List<StageRoomDefinition>();
-        if (next == 0)
-        {
-            if (stagePools.home != null) choices.Add(stagePools.home);
-        }
-        else
-        {
-            StagePool pool = stagePools.Find(next);
-            if (pool != null) choices = pool.Draw(CurrentRoom.exitCount, () => Random.value);
-        }
-        if (choices.Count == 0)
-        { Debug.LogError($"No exit candidates for stage {CurrentLevelIndex}, next pool {next}.", this); return; }
+        if (!stagePools.TryDrawChoices(CurrentLevelIndex, () => Random.value, out var choices, out string error,
+            CurrentRoom.exitCount))
+        { Debug.LogError(error, this); return; }
+        if (choices.Count == 0) return;
         generatedDoors = new GameObject("Stage Exits (Runtime)").transform;
         for (int i = 0; i < choices.Count; i++)
         {
-            StageRoomDefinition target = choices[i];
-            if (target.entrancePrefab == null)
-            { Debug.LogError($"Room {target.name} has no entrance prefab.", target); continue; }
+            StageRoomSelection target = choices[i].Room;
+            GameObject entrance = target.EntrancePrefab;
+            if (entrance == null)
+            { Debug.LogError($"Room {target.name} has no entrance prefab.", target.Context); continue; }
             DoorAnchor anchor;
             if (i < doorAnchors.Count) anchor = doorAnchors[i];
             else
@@ -180,15 +148,17 @@ public partial class LevelCtrl
                     new DoorAnchor { position = new Vector3(0, 0.3f, 8), rotation = Quaternion.identity, scale = Vector3.one };
                 anchor.position += anchor.rotation * Vector3.right * (4f * (i - doorAnchors.Count + 1));
             }
-            GameObject instance = Instantiate(target.entrancePrefab, anchor.position, anchor.rotation, generatedDoors);
+            GameObject instance = Instantiate(entrance, anchor.position, anchor.rotation, generatedDoors);
             instance.transform.localScale = anchor.scale;
             Npc door = instance.GetComponent<Npc>();
-            if (door == null) { Destroy(instance); Debug.LogError($"Room {target.name} entrance has no Npc.", target); continue; }
-            door.Level = next;
-            door.Prize = target.reward;
-            if (!string.IsNullOrEmpty(target.entranceNameKey)) door.Name = target.entranceNameKey;
+            if (door == null) { Destroy(instance); Debug.LogError($"Room {target.name} entrance has no Npc.", target.Context); continue; }
+            door.Level = choices[i].ProgressIndex;
+            var skillReward = target.rewards?.Find(reward => reward != null && reward.type == StageRewardType.RandomSkill);
+            door.Prize = target.kind == StageRoomKind.Skill ? PrizeBase.RandomSkill : PrizeBase.None;
+            if (skillReward != null) door.randomSkillRewardLevel = skillReward.skillLevel;
+            door.Name = StageEntranceCatalog.NameKeyFor(target.kind);
             door.SetNameVisible(false);
-            offeredDoors.Add(door, new StagePortalChoice(next, target));
+            offeredDoors.Add(door, choices[i]);
             instance.SetActive(true);
         }
     }

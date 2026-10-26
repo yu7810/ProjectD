@@ -12,88 +12,381 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e338df7495548f4bbb94330d6ea7fc8, type: 3}
   m_Name: StagePools
   m_EditorClassIdentifier: 
-  home: {fileID: 11400000, guid: 36e435b7a09d4703a2419acab9b0b5a1, type: 2}
+  home:
+    kind: 5
+    rewards: []
   firstProgressIndex: 1
+  homeExitCount: 1
+  homeExits:
+  - door:
+      kind: 1
+      rewards:
+      - type: 1
+        amount: 2
+        useChapterMoney: 0
+        allowPassiveTreeReroll: 1
+        lifeMaxIncrease: 3
+        lifeRecovery: 3
+        skillPool: {fileID: 0}
+        skillLevel: 1
+    weight: 1
+  homeScenes:
+  - scene: {fileID: 11400000, guid: eadfb042db7b47aaaf6183e89dbb2845, type: 2}
+    weight: 1
   pools:
   - progressIndex: 1
     nextProgressIndex: 2
-    rooms:
-    - room: {fileID: 11400000, guid: 0bd6f3567c704f71ad82b5bd3d9ad26d, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: d43f3dfcd772480a905bb1ed07e5fc73, type: 2}
+      weight: 1
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 2
     nextProgressIndex: 3
-    rooms:
-    - room: {fileID: 11400000, guid: aad94140a4744e6b812b463ec7260b64, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 6
+        rewards: []
       weight: 1
-    - room: {fileID: 11400000, guid: 6b698fe24ed34441863c8372e376b71a, type: 2}
-      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: d9963cffb1e04fc486ac83aca48940ec, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 3
     nextProgressIndex: 4
-    rooms:
-    - room: {fileID: 11400000, guid: 163e7284167945ea8d9e6dccd84cba3a, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    combatScenes: []
+    bossScenes: []
+    storeScenes:
+    - scene: {fileID: 11400000, guid: d4488e7ad5574fbaaa2f8dee74b80619, type: 2}
       weight: 1
   - progressIndex: 4
     nextProgressIndex: 5
-    rooms:
-    - room: {fileID: 11400000, guid: a197d4836af041c99f4b0309b49483ec, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
-    - room: {fileID: 11400000, guid: b445a915c2e24981884d2ab48686ce44, type: 2}
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: c3fce7ff76f44f8e9bea654f5097a641, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 5
     nextProgressIndex: 6
-    rooms:
-    - room: {fileID: 11400000, guid: 5e7c3e54332143e9a74bc68804bbd429, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 6
+        rewards: []
       weight: 1
-    - room: {fileID: 11400000, guid: b309987bb6064dafa4fd8073d157b164, type: 2}
-      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: c4574697d47e4737bdced1139a8bb38b, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 6
     nextProgressIndex: 7
-    rooms:
-    - room: {fileID: 11400000, guid: 0712822a38ad4bfc80c5e52ea0120649, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    combatScenes: []
+    bossScenes: []
+    storeScenes:
+    - scene: {fileID: 11400000, guid: 6c7a919f95274b7b9ad7cdb1f6e2dda6, type: 2}
       weight: 1
   - progressIndex: 7
     nextProgressIndex: 8
-    rooms:
-    - room: {fileID: 11400000, guid: 5ff6e24b58f140b99a877a232179a5e6, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
-    - room: {fileID: 11400000, guid: d6deb29e888946fe9a46750821d1a905, type: 2}
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: c0f1163acae543c3895b40416d9263de, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 8
     nextProgressIndex: 9
-    rooms:
-    - room: {fileID: 11400000, guid: b6f1210fed834f0baa93e361d1fd3a35, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 6
+        rewards: []
       weight: 1
-    - room: {fileID: 11400000, guid: 20a7487708174dc399a1e86cc38dab4c, type: 2}
-      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: 62282741308a40ba82c155b3c12e1363, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 9
     nextProgressIndex: 10
-    rooms:
-    - room: {fileID: 11400000, guid: c2991899554140a8a7fdf39940b04782, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 4
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+        - type: 2
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+        - type: 3
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    combatScenes: []
+    bossScenes: []
+    storeScenes:
+    - scene: {fileID: 11400000, guid: 24ca19e7b1e04f63a00469cf592c3fef, type: 2}
       weight: 1
   - progressIndex: 10
     nextProgressIndex: 11
-    rooms:
-    - room: {fileID: 11400000, guid: 88392c67353e4db0876d491fe223c4d0, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 7
+        rewards:
+        - type: 4
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 11400000, guid: c591a34f419b4b9c8a7012d2e9abcabc, type: 2}
+          skillLevel: 2
       weight: 1
+    combatScenes: []
+    bossScenes:
+    - scene: {fileID: 11400000, guid: ec514c9d0ffb4ef0848c57c2924e78de, type: 2}
+      weight: 1
+    storeScenes: []
   - progressIndex: 11
     nextProgressIndex: 12
-    rooms:
-    - room: {fileID: 11400000, guid: d1c8728a6e1142349141609827f75646, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    - door:
+        kind: 3
+        rewards:
+        - type: 3
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
+      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: 16570a9da3654a88bf25aac4d070dd24, type: 2}
+      weight: 1
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 12
     nextProgressIndex: 13
-    rooms:
-    - room: {fileID: 11400000, guid: 80b55cc6759b4dbbb840ad35ddf66884, type: 2}
+    exitCount: 2
+    exits:
+    - door:
+        kind: 1
+        rewards:
+        - type: 1
+          amount: 2
+          useChapterMoney: 0
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
-    - room: {fileID: 11400000, guid: 4208e5699b6e4e7292b43fd4dae6bb8e, type: 2}
+    - door:
+        kind: 0
+        rewards:
+        - type: 0
+          amount: 0
+          useChapterMoney: 1
+          allowPassiveTreeReroll: 1
+          lifeMaxIncrease: 3
+          lifeRecovery: 3
+          skillPool: {fileID: 0}
+          skillLevel: 1
       weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: 7acf13f91d084257bf71875e63ce3e06, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   - progressIndex: 13
     nextProgressIndex: 0
-    rooms:
-    - room: {fileID: 11400000, guid: d5455d63c7444e0f9200957743532d43, type: 2}
+    exitCount: 1
+    exits:
+    - door:
+        kind: 5
+        rewards: []
       weight: 1
-    - room: {fileID: 11400000, guid: d071ef1ce86d435698c7a7a6e29ce0cc, type: 2}
-      weight: 1
+    combatScenes:
+    - scene: {fileID: 11400000, guid: 76a32cf6c3a64dbdbd265fe74f953a2a, type: 2}
+      weight: 2
+    bossScenes: []
+    storeScenes: []
   chapterMoneyRewards:
   - chapter: 1
     money: 20

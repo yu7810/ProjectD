@@ -12,7 +12,6 @@ public partial class LevelCtrl : MonoBehaviour
     public int CurrentLevelIndex { get; private set; } = 0;
     public int nowclass = 0; // 當前章節編號
     public int nowLevel = 0; // 當前關卡編號
-    public PrizeBase nowPrize; // 當前關卡通關後會獲得的獎勵
     public GameObject Enemys;
     private readonly HashSet<Enemy> requiredEnemies = new HashSet<Enemy>();
     private bool stageCompleted = true;
@@ -24,6 +23,7 @@ public partial class LevelCtrl : MonoBehaviour
     public GameObject itemMoney;
     public GameObject itemPassivepoint;
     public GameObject itemPassiveTree;
+    public GameObject itemLife;
     public GameObject itemWeapon;
     public GameObject itemSkill;
     public CanvasGroup ScreenMask;
@@ -67,73 +67,13 @@ public partial class LevelCtrl : MonoBehaviour
     }
 
     //領獎
-    public void getPrize() {
-
-        Vector3 p = ValueData.Instance.Player.transform.position;
-        p.y = 0;
-        Npc npc;
-
-        if (CurrentRoom != null && CurrentRoom.kind == StageRoomKind.Boss)
-        {
-            DropBossRewards(p);
-            return;
-        }
-
-        switch (nowPrize) {
-            case PrizeBase.None:
-                //Debug.Log("未設定獎勵");
-                return;
-            case PrizeBase.PassivePoin:
-                //Debug.Log("天賦點");
-                GameObject _itemPassivepoint = Instantiate(itemPassivepoint, p, itemPassivepoint.transform.rotation);
-                npc = _itemPassivepoint.GetComponent<Npc>();
-                npc.passivepoint = 2;
-                npc.showName();
-                return;
-            case PrizeBase.Skill:
-                //Debug.Log("技能商店");
-                GameObject skillstore = Instantiate(skillstorePrefab,new Vector3(p.x, skillstorePrefab.transform.position.y, p.z), skillstorePrefab.transform.rotation);
-                skillstore.GetComponent<Npc>().startRandom = true;
-                skillstore.GetComponent<Npc>().RandomItem();
-                return;
-            case PrizeBase.Weapon:
-                //Debug.Log("武器商店");
-                GameObject weaponstore = Instantiate(weaponstorePrefab, new Vector3(p.x, weaponstorePrefab.transform.position.y, p.z), weaponstorePrefab.transform.rotation);
-                weaponstore.GetComponent<Npc>().startRandom = true;
-                weaponstore.GetComponent<Npc>().RandomItem();
-                return;
-            case PrizeBase.Money:
-                //Debug.Log("金幣");
-                var rewards = StagePools;
-                if (rewards == null || !rewards.TryGetChapterMoneyReward(nowLevel, out int _money))
-                {
-                    Debug.LogError("Missing or invalid money reward for chapter " + nowLevel + ".", this);
-                    return;
-                }
-                if (_money == 0) return;
-                GameObject _itemMoney =  Instantiate(itemMoney, p, itemMoney.transform.rotation);
-                npc = _itemMoney.GetComponent<Npc>();
-                npc.money = _money;
-                npc.showName();
-                break;
-        }
-    }
-
-    private void DropBossRewards(Vector3 position)
+    public void getPrize()
     {
-        GameObject points = Instantiate(itemPassivepoint, position + Vector3.left * 1.25f,
-            itemPassivepoint.transform.rotation);
-        Npc pointReward = points.GetComponent<Npc>();
-        pointReward.passivepoint = 2;
-        pointReward.showName();
-
-        GameObject treePrefab = itemPassiveTree != null ? itemPassiveTree : itemPassivepoint;
-        GameObject tree = Instantiate(treePrefab, position + Vector3.right * 1.25f,
-            treePrefab.transform.rotation);
-        Npc treeReward = tree.GetComponent<Npc>();
-        treeReward.npcType = NpcType.Passivetree;
-        treeReward.passivepoint = 0;
-        treeReward.showName();
+        if (CurrentRoom == null || !CurrentRoom.GrantsCompletionRewards || !CurrentRoom.HasRewards)
+            return;
+        Vector3 position = ValueData.Instance.Player.transform.position;
+        position.y = 0;
+        DropConfiguredRewards(position);
     }
 
     public void ResetRun()
@@ -145,7 +85,6 @@ public partial class LevelCtrl : MonoBehaviour
             Enemys.SetActive(false);
         Enemys = null;
         leftEnemy = 0;
-        nowPrize = PrizeBase.None;
         CurrentRoom = null;
         offeredDoors.Clear();
         if (generatedDoors != null) Destroy(generatedDoors.gameObject);
@@ -158,7 +97,7 @@ public partial class LevelCtrl : MonoBehaviour
         TryLoadStage(level, null, false);
     }
 
-    IEnumerator LoadSceneWithProgress(int level, StageRoomDefinition room)
+    IEnumerator LoadSceneWithProgress(int level, StageRoomSelection room)
     {
         ClearStageEnemies();
         if(PlayerCtrl.Instance)
@@ -182,7 +121,6 @@ public partial class LevelCtrl : MonoBehaviour
         // Merchants initialize during scene activation, so set depth before loading.
         SetProgress(level);
         CurrentRoom = room;
-        nowPrize = room != null ? room.reward : PrizeBase.None;
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(targetScene);
 
@@ -306,4 +244,5 @@ public enum PrizeBase{
     Weapon = 2,
     Skill = 3,
     Money = 4,
+    RandomSkill = 5,
 }

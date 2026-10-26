@@ -75,7 +75,7 @@ Skill/Skill Info 6,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,
 Skill/Skill Info 7,Text,,會以 新月斬→弦月斬→明月斬 順序輪替,,会以 新月斩→弦月斩→明月斩 顺序轮替
 Skill/Skill Info 8,Text,,生成一個持續3秒的喪鐘，你對喪鐘造成的傷害會被喪鐘以圓形範圍釋放，該傷害不會暴擊,,生成一个持续3秒的丧钟，你对丧钟造成的伤害会被丧钟以圆形范围释放，该伤害不会暴击
 Skill/Skill Info 9,Text,,朝滑鼠方向發射一枚飛彈，命中敵人後消失,,朝滑鼠方向发射一枚飞弹，命中敌人后消失
-Skill/Skill Info 10,Text,,在滑鼠位置生成水球，稍後爆炸。額外消耗當前資源的{0}%，造成（比例消耗量總和×{1}）基礎傷害；消耗量受天賦與裝備影響。一般消耗魔力，壓抑改用盛怒，腥紅魔典改用生命，兩者並用時同時消耗並合計傷害。生命必須大於總生命消耗。每次施放前，所使用的每一種資源都必須至少有 1；觸發與重複施放同樣適用。,"Create a water orb at the cursor that explodes after a delay. Spend an additional {0}% of current resources to deal (total percentage resource spent × {1}) base damage; cost modifiers apply. Normally uses mana; Suppression uses Rage; Crimson Grimoire uses life. With both, spend both and add their damage. Life must exceed the total life cost. Before every cast, each resource used must be at least 1, including triggered and repeated casts.",在滑鼠位置生成水球，稍后爆炸。额外消耗当前资源的{0}%，造成（比例消耗量总和×{1}）基础伤害；消耗量受天赋与装备影响。一般消耗魔力，压抑改用盛怒，腥红魔典改用生命，两者并用时同时消耗并合计伤害。生命必须大于总生命消耗。每次施放前，所使用的每一种资源都必须至少有 1；触发与重复施放同样适用。
+Skill/Skill Info 10,Text,,在滑鼠位置生成水球，稍後爆炸。消耗當前資源的{0}%，造成（比例消耗量總和×{1}）基礎傷害。,,在滑鼠位置生成水球，稍后爆炸。消耗当前资源的{0}%，造成（比例消耗量总和×{1}）基础伤害。
 Skill/Skill Info 11,Text,,向前衝刺，撞到第一個目標後停下並造成範圍傷害，速度和衝刺距離會提升傷害。,,向前冲刺，撞到第一个目标后停下并造成范围伤害，速度和冲刺距离会提升伤害。
 Skill/Skill Name 0,Text,,–,,–
 Skill/Skill Name 1,Text,,風壓,Wind Pressure,风压
@@ -235,6 +235,8 @@ Weapon/Weapon Info 29,Text,,投射物會追蹤範圍內最近的敵人,,投射�
 Skill/Skill Name 12,Text,,日炎,Sunfire,日炎
 Skill/Skill Info 12,Text,,開啟後產生跟隨玩家的圓形傷害圈，每 0.5 秒消耗 0.5 魔力，對圈內目標造成玩家當前最大生命 50% 的基礎傷害,"While active, a circular damage aura follows you. Every 0.5 seconds, spend 0.5 mana to deal base damage equal to 50% of your current maximum life to targets inside.",开启后产生跟随玩家的圆形伤害圈，每 0.5 秒消耗 0.5 魔力，对圈内目标造成玩家当前最大生命 50% 的基础伤害
 Weapon/Weapon Name 30,Text,,腥紅魔典,Crimson Grimoire,腥红魔典
-Weapon/Weapon Info 30,Text,,技能的魔力消耗改為消耗生命；與壓抑並用時同時消耗生命與盛怒。生命必須大於總生命消耗。,"Skills spend life instead of mana. With Suppression, spend both life and Rage. Life must exceed the total life cost.",技能的魔力消耗改为消耗生命；与压抑并用时同时消耗生命与盛怒。生命必须大于总生命消耗。
+Weapon/Weapon Info 30,Text,,技能的魔力消耗改為消耗生命。,Skills spend life instead of mana. ,技能的魔力消耗改为消耗生命。
 UI/Sell,Text,,販售,Sell,贩售
 UI/Sell Price,Text,,{[PRICE]},{[PRICE]},{[PRICE]}
+NPC/Item Life Name,Text,生命獎勵道具名稱,生命,Life,生命
+NPC/Exitdoor Random Skill,Text,指定技能等級的隨機技能獎勵傳送門名稱；{0} 為技能等級,隨機技能（等級 {0}）,Random Skill (Level {0}),随机技能（等级 {0}）

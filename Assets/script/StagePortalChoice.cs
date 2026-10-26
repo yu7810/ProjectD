@@ -3,9 +3,9 @@
 public sealed class StagePortalChoice
 {
     public readonly int ProgressIndex;
-    public readonly StageRoomDefinition Room;
+    public readonly StageRoomSelection Room;
 
-    public StagePortalChoice(int progressIndex, StageRoomDefinition room)
+    public StagePortalChoice(int progressIndex, StageRoomSelection room)
     {
         ProgressIndex = progressIndex;
         Room = room;

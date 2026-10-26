@@ -6,10 +6,12 @@ using UnityEngine;
 [CustomEditor(typeof(StagePoolDatabase))]
 public sealed class ProjectDStagePoolDatabaseEditor : Editor
 {
+    private bool showMoney;
     private ReorderableList rewards;
     private SerializedProperty rewardData;
 
     [MenuItem("Tools/ProjectD/Stages/章節金幣獎勵")]
+    [MenuItem("Tools/ProjectD/Stages/關卡權重設定")]
     public static void Open()
     {
         var database = Resources.Load<StagePoolDatabase>("StagePools");
@@ -54,12 +56,21 @@ public sealed class ProjectDStagePoolDatabaseEditor : Editor
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-        DrawPropertiesExcluding(serializedObject, "chapterMoneyRewards", "pools");
+        EditorGUILayout.LabelField("據點（第 0 關）", EditorStyles.boldLabel);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("home"), new GUIContent("據點門／獎勵資料"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("firstProgressIndex"), new GUIContent("出發的第一關"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("homeExitCount"), new GUIContent("據點門數"));
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("homeExits"), new GUIContent("離開據點的門類型池"), true);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("homeScenes"), new GUIContent("返回據點的場景池"), true);
         EditorGUILayout.Space();
-        EditorGUILayout.HelpBox("金幣關通關獎勵依大章節查表。同章每個金幣關給相同金額，不再隨小關變動或隨機。0 表示不給金幣；不影響敵人掉落與 BOSS 獎勵。", MessageType.Info);
-        rewards.DoLayoutList();
-        EditorGUILayout.PropertyField(serializedObject.FindProperty("pools"), true);
+        EditorGUILayout.HelpBox("每關分開設定：進入本關的場景池，以及本關結束後的門類型池。先抽不重複的門，再從下一關對應的場景池各抽一次；門生成後固定結果，選門與重開不重抽。據點門回到第 0 關。", MessageType.Info);
+        EditorGUILayout.HelpBox("門池各項直接設定權重、關卡／門類型與通關獎勵，不需另建門獎勵資產。場景池右側數字是相對權重；0 代表停用。一般獎勵門共用戰鬥場景池，不同門可以抽到相同場景。", MessageType.Info);
+        EditorGUILayout.PropertyField(serializedObject.FindProperty("pools"), new GUIContent("逐關設定"), true);
+        showMoney = EditorGUILayout.Foldout(showMoney, "章節金幣獎勵", true);
+        if (showMoney) rewards.DoLayoutList();
         serializedObject.ApplyModifiedProperties();
+        foreach (string error in ((StagePoolDatabase)target).ConfigurationErrors())
+            EditorGUILayout.HelpBox(error, MessageType.Error);
         foreach (string error in ((StagePoolDatabase)target).ChapterMoneyRewardErrors())
             EditorGUILayout.HelpBox(error, MessageType.Error);
     }

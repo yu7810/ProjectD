@@ -422,6 +422,7 @@ MonoBehaviour:
   money: 0
   passivepoint: 0
   fixedPassiveTreeId: -1
+  allowPassiveTreeReroll: 1
   startRandom: 0
   unlimited: 0
   item: 

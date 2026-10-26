@@ -157,6 +157,7 @@ public class ValueData : MonoBehaviour
     public int MaximumBackpackCapacity => Mathf.Max(0, WeaponField.Length - EquipmentFieldCount);
     public int BackpackCapacity { get; private set; }
     private int additionalBackpackCapacity;
+    private float additionalLifeRewardMaxHp;
 
     public bool IsWeaponFieldUnlocked(int field)
     {
@@ -164,6 +165,13 @@ public class ValueData : MonoBehaviour
             && (field < EquipmentFieldCount || field - EquipmentFieldCount < BackpackCapacity);
     }
 
+    // Run rewards stack before passive multipliers; healing follows existing rules.
+    public void GrantLifeReward(float maxLifeIncrease, float recovery)
+    {
+        additionalLifeRewardMaxHp += Mathf.Max(0f, maxLifeIncrease);
+        PlayerValueUpdate();
+        GetHp(Mathf.Max(0f, recovery));
+    }
     // Capacity starts at zero each run. Future rewards/talents can unlock slots in order.
     public void AddBackpackCapacity(int amount)
     {
@@ -476,7 +484,7 @@ public class ValueData : MonoBehaviour
         //¥[Á`
         UpdateBackpackCapacity();
         maxAP = base_maxAp + add_maxAp;
-        maxHP = base_maxHp + add_maxHp;
+        maxHP = base_maxHp + add_maxHp + additionalLifeRewardMaxHp;
         if (PassiveSkills[28]) 
         {
             maxAP *= 1.5f;
@@ -690,6 +698,7 @@ public class ValueData : MonoBehaviour
         _rageCount = null;
 
         additionalBackpackCapacity = 0;
+        additionalLifeRewardMaxHp = 0f;
         BackpackCapacity = 0;
         UICtrl.Instance.UpdateBackpackCapacityUI();
         Array.Clear(PassiveTree, 0, PassiveTree.Length);

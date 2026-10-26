@@ -11,41 +11,25 @@ public static class ProjectDStageValidation
     {
         StagePoolDatabase database = Resources.Load<StagePoolDatabase>("StagePools");
         Require(database != null && database.home != null, "StagePools and home room are required.");
-        var moneyErrors = database.ChapterMoneyRewardErrors();
-        Require(moneyErrors.Count == 0, string.Join("\n", moneyErrors));
+        Require(StageEntranceCatalog.Default != null, "StageEntrances catalog is required.");
+        Require(StageEntranceCatalog.Default.Validate(out string entranceError), entranceError);
+        var errors = database.ConfigurationErrors();
+        errors.AddRange(database.ChapterMoneyRewardErrors());
+        Require(errors.Count == 0, string.Join("\n", errors));
         var scenes = new HashSet<string>(EditorBuildSettings.scenes.Where(s => s.enabled)
             .Select(s => System.IO.Path.GetFileNameWithoutExtension(s.path)));
-        var indices = new HashSet<int>();
-        var rooms = new HashSet<StageRoomDefinition> { database.home };
-        foreach (StagePool pool in database.pools)
+        var all = new List<StageSceneWeight>(database.homeScenes);
+        foreach (var pool in database.pools)
         {
-            Require(pool != null && pool.progressIndex > 0 && indices.Add(pool.progressIndex), "Duplicate/invalid progress index.");
-            Require(pool.rooms != null && pool.rooms.Count > 0, $"Empty pool {pool.progressIndex}.");
-            var unique = new HashSet<StageRoomDefinition>();
-            foreach (StageRoomWeight entry in pool.rooms)
-            {
-                Require(entry != null && entry.room != null, $"Missing room in pool {pool.progressIndex}.");
-                Require(!float.IsNaN(entry.weight) && !float.IsInfinity(entry.weight) && entry.weight >= 0, "Invalid weight.");
-                Require(unique.Add(entry.room), $"Duplicate room {entry.room.name} in pool {pool.progressIndex}.");
-                rooms.Add(entry.room);
-            }
-            Require(pool.Draw(int.MaxValue, () => 0.5).Count > 0, $"No selectable rooms in pool {pool.progressIndex}.");
+            all.AddRange(pool.combatScenes); all.AddRange(pool.bossScenes); all.AddRange(pool.storeScenes);
+            Require(database.TryDrawChoices(pool.progressIndex, () => .5, out var choices, out _), "Invalid exit draw");
+            Require(choices.Select(c => c.Room.kind).Distinct().Count() == choices.Count, "Door kinds duplicated");
         }
-        Require(database.Find(database.firstProgressIndex) != null, "Missing first pool.");
-        foreach (StagePool pool in database.pools)
-            Require(pool.nextProgressIndex == 0 || database.Find(pool.nextProgressIndex) != null, $"Missing next pool for {pool.progressIndex}.");
-        foreach (StageRoomDefinition room in rooms)
-        {
-            Require(scenes.Contains(room.sceneName), $"Scene not enabled: {room.sceneName}");
-            Require(room.exitCount >= 0, $"Negative exit count: {room.name}");
-            Require(room.entrancePrefab != null && room.entrancePrefab.GetComponent<Npc>()?.npcType == NpcType.Door,
-                $"Invalid entrance prefab: {room.name}");
-            if (room.kind == StageRoomKind.Home || room.kind == StageRoomKind.Merchant)
-                Require(room.completion == StageCompletionRule.OpenOnEntry && room.reward == PrizeBase.None,
-                    $"Home/merchant room must open immediately without a combat reward: {room.name}");
-        }
+        foreach (var entry in all)
+            if (entry?.scene != null && entry.weight > 0)
+                Require(scenes.Contains(entry.scene.sceneName), "Scene not enabled: " + entry.scene.sceneName);
         CheckSelection();
-        Debug.Log($"STAGES VALIDATED: {database.pools.Count} pools, {rooms.Count} rooms; weighted selection checks passed.");
+        Debug.Log($"STAGES VALIDATED: {database.pools.Count} independent progress pools; weighted selection checks passed.");
     }
 
     private static void CheckSelection()

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94a2f9ecfc1b45a9a92961be9a00af39, type: 3}
+  m_Name: StageEntrances
+  m_EditorClassIdentifier: 
+  money: {fileID: 659189170931763591, guid: 2605b8383806cd84485dbd351d718df3, type: 3}
+  talent: {fileID: 8112057721827862969, guid: b7a8d658a2d19fe42b07dfea5647041f, type: 3}
+  talentTree: {fileID: 7714243556258934473, guid: 1c2c8ba170530594a9b2afeeab606875,
+    type: 3}
+  life: {fileID: 2957996488367741023, guid: a7507e680485dc34a8b3ec0fe52b24c3, type: 3}
+  boss: {fileID: 174420620450296537, guid: 2dc7724db91628341a4b2b6274fabbda, type: 3}
+  home: {fileID: 5499447353376228769, guid: db39ea2b51e96a94ab83ee5473527bf5, type: 3}
+  store: {fileID: 3336997205225623237, guid: 8259a0975b3961d4e8c3bac6d22c1af5, type: 3}
+  skill: {fileID: 4576428248604537732, guid: 3fcd86bfc80b40b449b261e01708b502, type: 3}

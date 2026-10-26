@@ -1688,6 +1688,7 @@ public partial class UICtrl : MonoBehaviour
     private readonly int[] passiveTreeOptions = { -1, -1, -1 };
     private readonly bool[] passiveTreeRerollUsed = new bool[3];
     private int fixedPassiveTreeOfferId = -1;
+    private bool passiveTreeRerollAllowed = true;
 
     public bool CanOfferPassiveTree(int treeId)
     {
@@ -1703,6 +1704,11 @@ public partial class UICtrl : MonoBehaviour
     }
 
     public bool TryCallPassivetreeSelect(int fixedTreeId)
+    {
+        return TryCallPassivetreeSelect(fixedTreeId, true);
+    }
+
+    public bool TryCallPassivetreeSelect(int fixedTreeId, bool allowReroll)
     {
         if (passivetreeSelectUI.activeSelf)
             return false;
@@ -1724,6 +1730,7 @@ public partial class UICtrl : MonoBehaviour
         Time.timeScale = 0;
         passivetreeSelectUI.SetActive(true);
         fixedPassiveTreeOfferId = fixedTreeId;
+        passiveTreeRerollAllowed = allowReroll && fixedTreeId < 0;
         for (int n = 0 ; n < 3 ; n ++)
         {
             passiveTreeOptions[n] = -1;
@@ -1783,7 +1790,7 @@ public partial class UICtrl : MonoBehaviour
     private List<int> GetPassiveTreeRerollPool()
     {
         List<int> pool = new List<int>();
-        if (fixedPassiveTreeOfferId >= 0)
+        if (!passiveTreeRerollAllowed || fixedPassiveTreeOfferId >= 0)
             return pool;
 
         for (int treeId = 0; treeId < ValueData.Instance.PassiveTree.Length; treeId++)
@@ -1797,7 +1804,7 @@ public partial class UICtrl : MonoBehaviour
 
     public void RerollPassiveTreeOption(int optionIndex)
     {
-        if (!passivetreeSelectUI.activeSelf || optionIndex < 0 || optionIndex >= 3
+        if (!passivetreeSelectUI.activeSelf || !passiveTreeRerollAllowed || optionIndex < 0 || optionIndex >= 3
             || passiveTreeOptions[optionIndex] < 0 || passiveTreeRerollUsed[optionIndex])
             return;
 
@@ -1821,7 +1828,7 @@ public partial class UICtrl : MonoBehaviour
             UnityEngine.UI.Button refresh = GetPassiveTreeRefreshButton(i);
             if (refresh != null)
             {
-                refresh.gameObject.SetActive(passiveTreeOptions[i] >= 0 && !passiveTreeRerollUsed[i]);
+                refresh.gameObject.SetActive(passiveTreeRerollAllowed && passiveTreeOptions[i] >= 0 && !passiveTreeRerollUsed[i]);
                 refresh.interactable =
                     passiveTreeOptions[i] >= 0 && !passiveTreeRerollUsed[i] && hasReplacement;
             }

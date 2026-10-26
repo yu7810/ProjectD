@@ -1,8 +1,8 @@
 ID,Rarity,Price,Name,Damage,Cooldown,Size,Speed,Cost,Crit,CritDamage,Special1Purpose,Special1Value,Special2Purpose,Special2Value,Special3Purpose,Special3Value
 0,Normal,0,空手,0,0,0,0,0,0,0,,,,,,
-1,Normal,20,鐵劍,0.15,-0.15,0,0,0,0,0,,,,,,
+1,Normal,20,鐵劍,0.2,-0.2,0,0,0,0,0,,,,,,
 2,Normal,20,鐵弓,0,0,0,0.15,-0.12,0,0,,,,,,
-3,Normal,20,鐵斧,0.5,0.15,0,-0.2,0,0,0,,,,,,
+3,Normal,20,鐵斧,0.5,0.2,0,-0.2,0,0,0,,,,,,
 4,Magic,60,守財犬,-0.1,0,0,0,0,0,0,,,,,,
 5,Rare,180,無盡,0,0,0,0,0.3,0.1,2,,,,,,
 6,Rare,180,風暴,0.6,0.4,0,0,0.4,0,0,,,,,,

@@ -1039,6 +1039,7 @@ MonoBehaviour:
   EXP: 0
   AttackCD: 0.5
   AttackRange: 1.6
+  retreatDistance: 3
   rotationSpeed: 500
   idleAnimation: 0
   money: 0600000006000000

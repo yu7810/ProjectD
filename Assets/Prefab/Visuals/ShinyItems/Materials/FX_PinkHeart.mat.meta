@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a827d697762f449d857a9d42a8ba463d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 207966
+  packageName: Shiny Items
+  packageVersion: 1.2
+  assetPath: Assets/PJFX/ShinyItems/Prefabs/Item_Materials/FX_PinkHeart.mat
+  uploadId: 593668
